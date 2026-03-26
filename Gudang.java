@@ -5,12 +5,25 @@ import java.math.BigDecimal;
 public class Gudang {
     private List<Mainan> daftarStok = new ArrayList<>();
 
-    public void tambahMainan(Mainan m) {
-      for(Mainan n : daftarStok){
-        daftarStok.tambahStok();
+    public void tambahMainan(Mainan barangBaru) {
+        boolean sudahAda = false;
+        //Looping liat isi Gudang
+      for(Mainan m : daftarStok){
+        if (m.getNama().equalsIgnoreCase(barangBaru.getNama())) {
+            int stokLama = m.getStok();
+            int stokBaru = barangBaru.getStok();
+
+            m.setStok(stokLama + stokBaru);
+            System.out.println("[INFO] stok " + m.getNama() + " berhasil diupdate!" );
+            sudahAda = true;
+            break;
+        }
+        if (!sudahAda) {
+            daftarStok.add(barangBaru);
+            System.out.println("[INFO] Barang baru berhasil ditambah!");
+        }
+        
       }
-     
-        daftarStok.add(m);
     }
 
     public void tampilkanLaporan() {
