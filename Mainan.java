@@ -8,6 +8,7 @@ public class Mainan {
     private BigDecimal hargaJual;
     private int stok;
     private LocalDateTime waktuInput;
+    private int id;
 
     public Mainan(String nama, double modal, double jual, int stok) {
         this.nama = nama;
