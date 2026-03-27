@@ -35,14 +35,26 @@ public class Gudang {
         }
     }
 
-    public void jualBarang(String nama, int jumlah) {
+    public void jualBarang(String nama, int jumlahDiminta) {
         for (Mainan m : daftarStok) {
             if (m.getNama().equalsIgnoreCase(nama)) {
-                if (m.getStok() >= jumlah) {
-                    m.kurangiStok(jumlah);
-                    System.out.println("Berhasil menjual " + jumlah + " " + nama);
+
+                int stokSekarang = m.getStok();
+                if (stokSekarang >= jumlahDiminta) {
+
+                    m.kurangiStok(jumlahDiminta);
+                    System.out.println("Berhasil menjual " + jumlahDiminta + " " + nama);
+
+                } else if (stokSekarang > 0) {
+                    
+                    int sisaSanggup = stokSekarang;
+                    int pending = jumlahDiminta - sisaSanggup;
+
+                    m.setStok(0);
+                    System.out.println("Stok :" + nama + " hanya ada" + sisaSanggup);
+                    System.out.println("Terjual " + sisaSanggup + " unit. " + pending + " unit PENDING.");
                 } else {
-                    System.out.println("Stok tidak cukup!");
+                    System.out.println("Stok tidak cukup! " + nama);
                 }
                 return;
             }
