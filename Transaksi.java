@@ -3,11 +3,11 @@ import java.time.format.DateTimeFormatter;
 
 public class Transaksi {
     private LocalDateTime waktuJual;
-    private Mainan barang;
+    private String barang;
     private int jumlahBarang;
     private String namaReseller;
 
-    public Transaksi(Mainan barang, int jumlah, String reseller){
+    public Transaksi(String barang, int jumlah, String reseller){
         this.waktuJual = LocalDateTime.now();
         this.barang = barang;
         this.jumlahBarang = jumlah;

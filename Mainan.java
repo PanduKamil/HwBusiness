@@ -9,13 +9,13 @@ public class Mainan {
     private int stok;
     private LocalDateTime waktuInput;
     private int id;
-    private static int counter;
+    private static int counter; //pake UUID
 
-    public Mainan(String nama, double modal, double jual, int stok) {
+    public Mainan(String nama, BigDecimal modal, BigDecimal jual, int stok) {
         this.id = counter++;
         this.nama = nama;
-        this.hargaModal = BigDecimal.valueOf(modal);
-        this.hargaJual = BigDecimal.valueOf(jual);
+        this.hargaModal = modal;
+        this.hargaJual = jual;
         this.stok = stok;
         this.waktuInput = LocalDateTime.now();
     }

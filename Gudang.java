@@ -1,29 +1,22 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class Gudang {
-    private List<Mainan> daftarStok = new ArrayList<>();
+    private Map<String, Mainan> mapStok = new HashMap<>();
 
     public void tambahMainan(Mainan barangBaru) {
-        boolean sudahAda = false;
-        //Looping liat isi Gudang
-      for(Mainan m : daftarStok){
-        if (m.getNama().equalsIgnoreCase(barangBaru.getNama())) {
-            int stokLama = m.getStok();
-            int stokBaru = barangBaru.getStok();
+        String key = barangBaru.getNama().toLowerCase();
 
-            m.setStok(stokLama + stokBaru);
-            System.out.println("[INFO] stok " + m.getNama() + " berhasil diupdate!" );
-            sudahAda = true;
-            break;
-        }
-      }
-      
-        if (!sudahAda) {
-            daftarStok.add(barangBaru);
-            System.out.println("[INFO] Barang baru berhasil ditambah!");
+        if (mapStok.containsKey(key)) {
+            Mainan existing = mapStok.get(key);
+            existing.setStok(existing.getStok() + barangBaru.getStok());
+
+            System.out.println("[INFO] Stok " + existing.getNama() + " diupdate");
+        }else{
+            mapStok.put(key, barangBaru);
+            System.out.println("Barang Baru didaftarkan");
         }
         
     }
@@ -38,31 +31,25 @@ public class Gudang {
     }
 
     public void jualBarang(String nama, int jumlahDiminta) {
-        for (Mainan m : daftarStok) {
-            if (m.getNama().equalsIgnoreCase(nama)) {
+        Mainan m = mapStok.get(nama.toLowerCase());
 
-                int stokSekarang = m.getStok();
-                if (stokSekarang >= jumlahDiminta) {
+        if (m == null) {
+            System.out.println("Barang is Empty");
 
-                    m.kurangiStok(jumlahDiminta);
-                    System.out.println("Berhasil menjual " + jumlahDiminta + " " + nama);
+            return;
+        }
 
-                } else if (stokSekarang > 0) {
-                    
-                    int sisaSanggup = stokSekarang;
-                    int pending = jumlahDiminta - sisaSanggup;
-
-                    m.setStok(0);
-                    System.out.println("Stok :" + nama + " hanya ada" + sisaSanggup);
-                    System.out.println("Terjual " + sisaSanggup + " unit. " + pending + " unit PENDING.");
-                } else {
-                    System.out.println("Stok tidak cukup! " + nama);
-                }
-                return;
+        synchronized(m){
+            if (m.getStok() >= jumlahDiminta) {
+                m.kurangiStok(jumlahDiminta);
+                // Simpan objeck transaksi ke List<Transaksi>history
+                System.out.println("Sold" + m.getNama());
+            }else{
+                System.out.println("Empty");
             }
         }
-        System.out.println("Barang tidak ditemukan.");
     }
+
     public void hitungTotalAset() {
     BigDecimal totalModal = BigDecimal.ZERO;
     BigDecimal totalPotensiUntung = BigDecimal.ZERO;
