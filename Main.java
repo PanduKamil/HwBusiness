@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Gudang tokoSaya = new Gudang();
+        GudangService tokoSaya = new GudangService();
 
         Scanner sc = new Scanner(System.in);
 
@@ -37,6 +37,7 @@ public class Main {
                 switch (run1) {
                     case 1:
                         // Input Barang Masuk
+                        
                         break;
                     case 2:
                         // Cek barang parkiran lelang
