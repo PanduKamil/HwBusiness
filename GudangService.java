@@ -1,13 +1,27 @@
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class GudangService {
     private Map<String, Mainan> mapStok = new HashMap<>();
 
-    //
-     
+    private static GudangService instance;
+    private MainanDAO mainanDAO = new MainanDAO();
+
+    private static synchronized GudangService getInstance(){ // INI ANEH KENAPA ERROR
+        if (instance == null) {
+            instance = new GudangService();
+        }
+        return instance;
+    }
+    public void simpanMainan(Mainan barangBaru){
+        mainanDAO.tambahMainan(barangBaru);
+    }
+    public List<Transaksi> prosesPenjualan(){
+        return MainanDAO.
+    }
     public void tambahMainan(Mainan barangBaru) {
         String key = barangBaru.getNama().toLowerCase();
 
@@ -21,15 +35,6 @@ public class GudangService {
             System.out.println("Barang Baru didaftarkan");
         }
         
-    }
-
-    public void tampilkanLaporan() {
-        System.out.println("\n=== LAPORAN STOK & POTENSI CUAN ===");
-        System.out.println("Nama Barang     | Info");
-        System.out.println("------------------------------------");
-        for (Mainan m : daftarStok) {
-            System.out.println(m);
-        }
     }
 
     public void jualBarang(String nama, int jumlahDiminta) {
@@ -51,21 +56,6 @@ public class GudangService {
             }
         }
     }
-
-    public void hitungTotalAset() {
-    BigDecimal totalModal = BigDecimal.ZERO;
-    BigDecimal totalPotensiUntung = BigDecimal.ZERO;
-
-    for (Mainan m : daftarStok) {
-        // Modal per item * jumlah stok
-        totalModal = totalModal.add(m.getHargaModal().multiply(new BigDecimal(m.getStok())));
-        // Untung per unit * jumlah stok
-        totalPotensiUntung = totalPotensiUntung.add(m.getProfitPerUnit().multiply(new BigDecimal(m.getStok())));
-    }
-
-    System.out.println("Total Modal Mengendap : Rp " + totalModal);
-    System.out.println("Total Potensi Cuan    : Rp " + totalPotensiUntung);
-}
 
     public void prosesSetoranAdek(String namaBarang, BigDecimal hargaJualReal, BigDecimal hargaModalAwal) {
         // 1. Hitung Profit Kotor

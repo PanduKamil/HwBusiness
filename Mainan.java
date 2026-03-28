@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 public class Mainan {
     private String nama;
     private BigDecimal hargaModal;
-    private BigDecimal hargaJual;
+    private BigDecimal hargaPerkiraanJual;
     private int stok;
     private LocalDateTime waktuInput;
     private int id;
@@ -15,14 +15,14 @@ public class Mainan {
         this.id = counter++;
         this.nama = nama;
         this.hargaModal = modal;
-        this.hargaJual = jual;
+        this.hargaPerkiraanJual = jual;
         this.stok = stok;
         this.waktuInput = LocalDateTime.now();
     }
 
     // Hitung potensi keuntungan bersih per unit
-    public BigDecimal getProfitPerUnit() {
-        return hargaJual.subtract(hargaModal);
+    public BigDecimal getHargaPerkiraanjual() {
+        return hargaPerkiraanJual.subtract(hargaModal);
     }
 
     // Getters & Setters
@@ -42,7 +42,7 @@ public class Mainan {
     @Override
     public String toString() {
         return String.format("ID: %-3d | [%s] %-15s | Stok: %-3d | Untung/Unit: Rp%,.0f", 
-                id, getWaktuFormat(), nama, stok, getProfitPerUnit());
+                id, getWaktuFormat(), nama, stok, getHargaPerkiraanjual());
     }
 }
 

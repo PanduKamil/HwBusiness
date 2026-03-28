@@ -9,13 +9,12 @@ public class DatabaseConnection {
 
     private static Connection connection;
 
-        private DatabaseConnection(){
-
-            public static Connection getConnection() throws SQLException{
+        private DatabaseConnection(){}
+        
+        public static Connection getConnection() throws SQLException{
                 if (connection == null || connection.isClosed()) {
                     connection = DriverManager.getConnection(URL, USER, PASSWORD);
                 }
                 return connection;
             }
-        }
 }

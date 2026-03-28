@@ -1,8 +1,9 @@
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        GudangService tokoSaya = new GudangService();
+        GudangService tokoSaya = GudangService.getInstance(); // GW NYOBA SINGLETON KGK BSIA NAPA YAK!!
 
         Scanner sc = new Scanner(System.in);
 
@@ -36,8 +37,24 @@ public class Main {
 
                 switch (run1) {
                     case 1:
+
                         // Input Barang Masuk
-                        
+                        System.out.println("INPUT BARANG MASUK");
+                        System.out.println("Nama Barang");
+                        String namaBarang = sc.nextLine();
+                        System.out.println("Harga Modal");
+                        BigDecimal hargaModal = new BigDecimal(sc.next());
+                        sc.nextLine();
+                        System.out.println("Harga Jual");
+                        BigDecimal hargaJual = new BigDecimal(sc.next());
+                        sc.nextLine();
+                        System.out.println("Jumlah Stock");
+                        int stok = sc.nextInt();
+                        sc.nextLine();
+
+                        Mainan mainanBaru = new Mainan(namaBarang, hargaModal, hargaJual, stok);
+                        //gw tambah barang
+                        tokoSaya.simpanMainan(mainanBaru);
                         break;
                     case 2:
                         // Cek barang parkiran lelang
@@ -61,12 +78,22 @@ public class Main {
                 switch (run2) {
                     case 1:
                          // Input Barang laku
+                         System.out.println("INPUT BARANG LAKU");
+                         // BRE MENURUT GW YAK INI GAK PAS BUAT INPUT ID BARANG MANA TAU DI SELLER IDNYA APA KECUALI KITA SCANN PAKE KAMERA ATAU BARCODE 
+                         System.out.println("ID BARANG"); 
+                         int idBarang = sc.nextInt();
+                         sc.nextLine();
+                         System.out.println("Terjual dengan harga : ");
+                         BigDecimal hargaLaku = new BigDecimal(sc.next());
+                         sc.nextLine();
+
+
                         break;
                     case 2:
                         // Cek komisi penjualan
                         break;
                     case 3:
-                        //Booking
+                        //Booking item
                         break;
                     default:
                         break;
