@@ -1,8 +1,8 @@
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Connection;
 
 public class GudangService {
     private Map<String, Mainan> mapStok = new HashMap<>();
@@ -10,7 +10,7 @@ public class GudangService {
     private static GudangService instance;
     private MainanDAO mainanDAO = new MainanDAO();
 
-    private static synchronized GudangService getInstance(){ // INI ANEH KENAPA ERROR
+    public static synchronized GudangService getInstance(){ 
         if (instance == null) {
             instance = new GudangService();
         }
@@ -19,8 +19,19 @@ public class GudangService {
     public void simpanMainan(Mainan barangBaru){
         mainanDAO.tambahMainan(barangBaru);
     }
-    public List<Transaksi> prosesPenjualan(){
-        return MainanDAO.
+    public void prosesPenjualan(){
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            mainanDAO.updateBarang(null, conn);
+            mainanDAO.catatTransaksi(null, 0, null, null, null);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        
+
     }
     public void tambahMainan(Mainan barangBaru) {
         String key = barangBaru.getNama().toLowerCase();

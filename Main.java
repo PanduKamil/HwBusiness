@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        GudangService tokoSaya = GudangService.getInstance(); // GW NYOBA SINGLETON KGK BSIA NAPA YAK!!
+        GudangService tokoSaya = GudangService.getInstance(); 
 
         Scanner sc = new Scanner(System.in);
 
