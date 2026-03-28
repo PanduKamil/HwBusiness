@@ -47,8 +47,25 @@ public class MainanDAO {
             throw new RuntimeException("Gagal di tambahkan ke database" + e.getMessage());
         }
     }
+    public void cariBarang(int barang, BigDecimal modal){
+        String sql = "SELECT harga_modal_avg FROM barang WHERE = id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, barang);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getBigDecimal("harga_modal_avg");
+            }
+            
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal dimencari" + e.getMessage());
+        }
+    }
     public void updateBarang(Mainan barang, Connection conn){
-        String sql ="UPDATE barang SET stok = ? WHERE id_barang = ? ";
+        String sql ="UPDATE barang SET stok = ? WHERE id = ? ";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, barang.getStok());
@@ -62,7 +79,7 @@ public class MainanDAO {
     }
     // public void catatPenjualan(){   }
     public void catatTransaksi(Mainan barang, int jumlah, BigDecimal jual, BigDecimal komisi, BigDecimal labaOwner){
-        String sql ="INSERT INTO barang(barang_id, jumlah , harga_jual, komisi_reseller, net_profit_owner) " +
+        String sql ="INSERT INTO transaksi(barang_id, jumlah , harga_jual, komisi_reseller, net_profit_owner) " +
                     "VALUES(?, ?, ?, ?, ? )";
         try (Connection conn = DatabaseConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {

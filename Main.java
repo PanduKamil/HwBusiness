@@ -87,7 +87,7 @@ public class Main {
                          BigDecimal hargaLaku = new BigDecimal(sc.next());
                          sc.nextLine();
 
-
+                         
                         break;
                     case 2:
                         // Cek komisi penjualan

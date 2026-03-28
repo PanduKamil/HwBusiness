@@ -3,6 +3,7 @@ import java.util.Map;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public class GudangService {
     private Map<String, Mainan> mapStok = new HashMap<>();
@@ -19,17 +20,29 @@ public class GudangService {
     public void simpanMainan(Mainan barangBaru){
         mainanDAO.tambahMainan(barangBaru);
     }
-    public void prosesPenjualan(){
+    public void prosesPenjualan(int barang, BigDecimal hargaJual){
         Connection conn = null;
         try {
             conn = DatabaseConnection.getConnection();
             conn.setAutoCommit(false);
 
+            Mainan m = mainanDAO.
+
             mainanDAO.updateBarang(null, conn);
             mainanDAO.catatTransaksi(null, 0, null, null, null);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
+            } catch (Exception e) {
+            try {
+                if(conn != null){
+                    conn.rollback();
+                    System.err.println("Transaksi ROLLBACK");
+                }
+            } catch (SQLException ex) { ex.printStackTrace(); }
+            throw new RuntimeException(e.getMessage());
+            } finally {
+            //Close Connection
+            try { if (conn != null) conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+        
         
 
     }

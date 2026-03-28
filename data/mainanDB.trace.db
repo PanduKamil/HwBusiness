@@ -1,0 +1,3 @@
+2026-03-28 23:38:13.911790+07:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "BARANG" not found (this database is empty); SQL statement:
+INSERT INTO barang(nama_barang, harga_modal_avg, harga_jual_perkiraan, stok) VALUES(?, ?, ?, ?) [42104-224]
