@@ -9,8 +9,10 @@ public class Mainan {
     private int stok;
     private LocalDateTime waktuInput;
     private int id;
+    private static int counter;
 
     public Mainan(String nama, double modal, double jual, int stok) {
+        this.id = counter++;
         this.nama = nama;
         this.hargaModal = BigDecimal.valueOf(modal);
         this.hargaJual = BigDecimal.valueOf(jual);
@@ -24,6 +26,7 @@ public class Mainan {
     }
 
     // Getters & Setters
+    public int getId(){ return id;}
     public String getNama() { return nama; }
     public int getStok() { return stok; }
     public void kurangiStok(int jumlah) { this.stok -= jumlah; }
@@ -38,8 +41,8 @@ public class Mainan {
 
     @Override
     public String toString() {
-        return String.format("[%s] %-15s | Stok: %-3d | Untung/Unit: Rp%,.0f", 
-                getWaktuFormat(), nama, stok, getProfitPerUnit());
+        return String.format("ID: %-3d | [%s] %-15s | Stok: %-3d | Untung/Unit: Rp%,.0f", 
+                id, getWaktuFormat(), nama, stok, getProfitPerUnit());
     }
 }
 

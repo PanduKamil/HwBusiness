@@ -4,9 +4,9 @@ public class Main {
         Gudang tokoSaya = new Gudang();
 
         // 1. Input Stok Baru
-        tokoSaya.tambahMainan(new Mainan("HotWheels GTR", 25000, 35000, 10));
-        tokoSaya.tambahMainan(new Mainan("HotWheels Civic", 25000, 40000, 5));
-        tokoSaya.tambahMainan(new Mainan("Diecast 1:64", 190000, 230000, 2));
+        tokoSaya.tambahMainan(new Mainan( "HotWheels GTR", 25000, 35000, 10));
+        tokoSaya.tambahMainan(new Mainan( "HotWheels Civic", 25000, 40000, 5));
+        tokoSaya.tambahMainan(new Mainan( "Diecast 1:64", 190000, 230000, 2));
 
         // 2. Lihat Laporan Awal
         tokoSaya.tampilkanLaporan();

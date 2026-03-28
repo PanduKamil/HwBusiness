@@ -18,12 +18,13 @@ public class Gudang {
             sudahAda = true;
             break;
         }
+      }
+      
         if (!sudahAda) {
             daftarStok.add(barangBaru);
             System.out.println("[INFO] Barang baru berhasil ditambah!");
         }
         
-      }
     }
 
     public void tampilkanLaporan() {
