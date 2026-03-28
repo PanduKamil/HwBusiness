@@ -17,7 +17,7 @@ public class Transaksi {
     @Override
     public String toString(){
         return String.format("[%s] %s terjual %d unit oleh %s",
-            waktuJual.format(DateTimeFormatter.ofPattern("HH:mm")), barang.getNama(), jumlahBarang,
+            waktuJual.format(DateTimeFormatter.ofPattern("HH:mm")), barang, jumlahBarang,
             namaReseller);
     }
 }

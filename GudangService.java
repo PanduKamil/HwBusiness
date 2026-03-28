@@ -3,9 +3,11 @@ import java.util.Map;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class Gudang {
+public class GudangService {
     private Map<String, Mainan> mapStok = new HashMap<>();
 
+    //
+     
     public void tambahMainan(Mainan barangBaru) {
         String key = barangBaru.getNama().toLowerCase();
 
