@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class Gudang {
     private List<Mainan> daftarStok = new ArrayList<>();
@@ -77,5 +78,28 @@ public class Gudang {
     System.out.println("Total Potensi Cuan    : Rp " + totalPotensiUntung);
 }
 
+    public void prosesSetoranAdek(String namaBarang, BigDecimal hargaJualReal, BigDecimal hargaModalAwal) {
+        // 1. Hitung Profit Kotor
+        BigDecimal profitKotor = hargaJualReal.subtract(hargaModalAwal);
+        
+        // 2. Bagi Hasil (40% buat Adek)
+        BigDecimal bagianAdek = profitKotor.multiply(new BigDecimal("0.4")).setScale(0, RoundingMode.HALF_UP);
+        
+        // 3. Bagian Bersih Kamu (Setelah kasih adek)
+        BigDecimal jatahGw = profitKotor.subtract(bagianAdek);
+        
+        System.out.println("=== NOTIFIKASI CUAN ===");
+        System.out.println("Barang: " + namaBarang);
+        System.out.println("Kasih Adek: Rp" + bagianAdek);
+        System.out.println("Masuk Tabungan Bersih: Rp" + jatahGw);
+    }
+    public BigDecimal hitungKomisi(BigDecimal profitBersih, String tipeBarang) {
+        // Jika barang susah keluar (biasa), kasih komisi lebih gede biar dia semangat jualan
+        if (tipeBarang.equalsIgnoreCase("BIASA")) {
+            return profitBersih.multiply(new BigDecimal("0.30")); // Komisi 30% dari profit
+        } else {
+            return profitBersih.multiply(new BigDecimal("0.15")); // Komisi 15% untuk barang bagus (yang emang gampang laku)
+        }
+    }
 }
 

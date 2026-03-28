@@ -63,52 +63,6 @@ public class KalkulatorLelang {
         input.close();
     }
 }
-import java.util.Scanner;
-
-public class KalkulatorLelang {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-
-        System.out.println("=== KALKULATOR ANTI-BONCOS LELANG ===");
-        
-        // 1. Input Data Dasar
-        System.out.print("Estimasi Ongkir Total (Rp): ");
-        double ongkir = input.nextDouble();
-        
-        System.out.print("Jumlah Barang yang Mau Diparkir/Dikirim: ");
-        int jumlahBarang = input.nextInt();
-        
-        // Hitung beban ongkir per barang
-        double bebanOngkirPerUnit = ongkir / jumlahBarang;
-
-        System.out.println("\n--- Input Barang yang Sedang Di-bid ---");
-        System.out.print("Harga Menang Lelang (Rp): ");
-        double hargaLelang = input.nextDouble();
-        
-        System.out.print("Target Harga Jual (Rp): ");
-        double targetJual = input.nextDouble();
-
-        // 2. Perhitungan Modal Riil
-        double modalRiil = hargaLelang + bebanOngkirPerUnit;
-        double profitBersih = targetJual - modalRiil;
-        double persentaseProfit = (profitBersih / modalRiil) * 100;
-
-        // 3. Logika Keputusan Bisnis
-        System.out.println("\n--- HASIL ANALISIS ---");
-        System.out.printf("Modal Riil (Barang + Ongkir): Rp%,.0f\n", modalRiil);
-        System.out.printf("Potensi Profit: Rp%,.0f (%.2f%%)\n", profitBersih, persentaseProfit);
-
-        if (persentaseProfit < 15) {
-            System.out.println("⚠️ STATUS: JANGAN BID! Terlalu mepet, risiko rugi tinggi.");
-        } else if (persentaseProfit >= 15 && persentaseProfit < 30) {
-            System.out.println("✅ STATUS: AMAN. Margin standar untuk perputaran uang.");
-        } else {
-            System.out.println("💰 STATUS: SANGAT UNTUNG! Hajar terus, ini barang 'Emas'.");
-        }
-        
-        input.close();
-    }
-}
 import java.math.BigDecimal;
 
 public class PenjualanAdek {
