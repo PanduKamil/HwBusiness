@@ -20,16 +20,28 @@ public class GudangService {
     public void simpanMainan(Mainan barangBaru){
         mainanDAO.tambahMainan(barangBaru);
     }
-    public void prosesPenjualan(int barang, BigDecimal hargaJual){
+    public void prosesPenjualan(int idInput, BigDecimal hargaLaku){
         Connection conn = null;
         try {
+            Mainan m = mainanDAO.cariBarang(idInput);
+            if (m == null || m.getStok() <= 0) {
+                System.out.println("Barang Kosong");
+
+                return;
+            }
+
+            BigDecimal profitKotor = hargaLaku.subtract(m.getHargaModal());
+            BigDecimal komisiReseller = profitKotor.multiply(new BigDecimal("0.4"));
+            BigDecimal labaOwner = profitKotor.subtract(komisiReseller);
+
             conn = DatabaseConnection.getConnection();
             conn.setAutoCommit(false);
 
-            Mainan m = mainanDAO.
-
-            mainanDAO.updateBarang(null, conn);
-            mainanDAO.catatTransaksi(null, 0, null, null, null);
+            m.kurangiStok(1);
+            mainanDAO.updateBarang(m, conn);
+            mainanDAO.catatTransaksi(m, 1, hargaLaku, komisiReseller, labaOwner);
+            conn.commit();
+            System.out.println("Penjualan berhasil");
             } catch (Exception e) {
             try {
                 if(conn != null){

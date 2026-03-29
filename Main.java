@@ -4,7 +4,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         GudangService tokoSaya = GudangService.getInstance(); 
-
+        DatabaseConnection.setupDatabase();
         Scanner sc = new Scanner(System.in);
 
         System.out.println(" Selamat Datang di HW Data");
@@ -87,7 +87,7 @@ public class Main {
                          BigDecimal hargaLaku = new BigDecimal(sc.next());
                          sc.nextLine();
 
-                         
+
                         break;
                     case 2:
                         // Cek komisi penjualan
