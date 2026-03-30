@@ -29,10 +29,8 @@ public class Main {
                         // Login Owner
                         System.out.println(" LogIn Owner");
                         String logIn = sc.nextLine();
-                        sc.nextLine();
                         System.out.println(" Password : ");
                         String password = sc.nextLine();
-                        sc.nextLine();
                         if (logIn.equals("Pandu Kamil") && password.equals("Panduak27")) {
                             System.out.println("Menu Owner");
                             System.out.println("1. Input Barang Masuk");
@@ -94,6 +92,7 @@ public class Main {
                         switch (run2) {
                             case 1:
                                 // Input Barang laku
+                                tokoSaya.lihatDaftarBarang();
                                 System.out.println("INPUT BARANG LAKU");
                                 // BRE MENURUT GW YAK INI GAK PAS BUAT INPUT ID BARANG MANA TAU DI SELLER IDNYA APA KECUALI KITA SCANN PAKE KAMERA ATAU BARCODE 
                                 System.out.println("ID BARANG"); 
@@ -146,6 +145,7 @@ public class Main {
         
             } catch (Exception e) {
                 System.out.println("Errorr" + e.getMessage());
+                sc.nextLine();
             }
                 
         

@@ -32,8 +32,8 @@ public class Mainan {
     public void setStok(int stok){
         this.stok = stok;
      }
-     public int setId(int id){
-        return this.id;
+     public void setId(int id){
+        this.id = id;
     }
      public String getWaktuFormat(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");

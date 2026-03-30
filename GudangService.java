@@ -20,6 +20,9 @@ public class GudangService {
     public void simpanMainan(Mainan barangBaru){
         mainanDAO.tambahMainan(barangBaru);
     }
+    public void lihatDaftarBarang(){
+        mainanDAO.tampilkanKatalog();
+    }
     public void prosesPenjualan(int idInput, BigDecimal hargaLaku){
         Connection conn = null;
         try {

@@ -64,7 +64,7 @@ public class MainanDAO {
             
             pstmt.setInt(1, barang.getId());
             pstmt.setInt(2, barang.getStok());
-            pstmt.setBigDecimal(3, barang.getHargaPerkiraanjual());
+            pstmt.setBigDecimal(3, jual);
             pstmt.setBigDecimal(4, komisi);
             pstmt.setBigDecimal(5, labaOwner);
 
@@ -78,7 +78,7 @@ public class MainanDAO {
     public void pullLaporanKeuangan(){
         String sql = "SELECT COALESCE(SUM(harga_jual), 0) as total_omset, " +
                         "COALESCE(SUM(komisi_reseller), 0) as total_komisi, " +
-                        "COALESCE(SUM(net_profit_owner), 0) as total_bersih, " +
+                        "COALESCE(SUM(net_profit_owner), 0) as total_bersih " +
                         "FROM transaksi ";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -95,6 +95,28 @@ public class MainanDAO {
             System.err.println("Gagal Tarik laporan :" + e.getMessage());
         }
     }
+    public void tampilkanKatalog(){
+        String sql = "SELECT * FROM barang WHERE stok > 0";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                    ResultSet rs = pstmt.executeQuery()) {
+            System.out.println(" DATA HOTWHEELS");
+            System.out.printf("%-4s | %-18s | %-8s | &-10s\n", "ID", "NAMA BARANG", "STOK", "HARGA");
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nama = rs.getString("nama_barang");
+                int stok = rs.getInt("stok");
+                BigDecimal harga = rs.getBigDecimal("harga_jual_perkiraan");
+
+                System.out.printf("&-4s | %-18s |%-8d | Rp%,.0f\n", id, nama, stok, harga);
+            }
+        } catch (SQLException e) {
+            System.err.println("Gagal memuat Katalog" + e.getMessage());
+        }
+    }
+
 
 
 }
