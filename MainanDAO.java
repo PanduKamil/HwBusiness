@@ -102,7 +102,7 @@ public class MainanDAO {
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                     ResultSet rs = pstmt.executeQuery()) {
             System.out.println(" DATA HOTWHEELS");
-            System.out.printf("%-4s | %-18s | %-8s | &-10s\n", "ID", "NAMA BARANG", "STOK", "HARGA");
+            System.out.printf("%-4s | %-18s | %-8s | %-10s\n", "ID", "NAMA BARANG", "STOK", "HARGA");
 
             while (rs.next()) {
                 int id = rs.getInt("id");
@@ -110,7 +110,7 @@ public class MainanDAO {
                 int stok = rs.getInt("stok");
                 BigDecimal harga = rs.getBigDecimal("harga_jual_perkiraan");
 
-                System.out.printf("&-4s | %-18s |%-8d | Rp%,.0f\n", id, nama, stok, harga);
+                System.out.printf("%-4s | %-18s |%-8d | Rp%,.0f\n", id, nama, stok, harga);
             }
         } catch (SQLException e) {
             System.err.println("Gagal memuat Katalog" + e.getMessage());

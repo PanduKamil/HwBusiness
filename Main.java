@@ -27,57 +27,63 @@ public class Main {
                 switch (run) {
                     case 1:
                         // Login Owner
-                        System.out.println(" LogIn Owner");
-                        String logIn = sc.nextLine();
-                        System.out.println(" Password : ");
-                        String password = sc.nextLine();
-                        if (logIn.equals("Pandu Kamil") && password.equals("Panduak27")) {
-                            System.out.println("Menu Owner");
-                            System.out.println("1. Input Barang Masuk");
-                            System.out.println("2. Laporan Keuangan");
-                            System.out.println("3. Lokasi barang");
-                            System.out.println("4. Keluar ");
-                            int run1 = sc.nextInt();
-                            sc.nextLine();
-
-                            switch (run1) {
-                                case 1:
-
-                                    // Input Barang Masuk
-                                    System.out.println("INPUT BARANG MASUK");
-                                    System.out.println("Nama Barang");
-                                    String namaBarang = sc.nextLine();
-                                    System.out.println("Harga Modal");
-                                    BigDecimal hargaModal = new BigDecimal(sc.next());
-                                    sc.nextLine();
-                                    System.out.println("Harga Jual");
-                                    BigDecimal hargaJual = new BigDecimal(sc.next());
-                                    sc.nextLine();
-                                    System.out.println("Jumlah Stock");
-                                    int stok = sc.nextInt();
+                        boolean admin = false;
+                        while (!admin) {
+                            System.out.println(" LogIn Owner");
+                            String logIn = sc.nextLine();
+                            System.out.println(" Password : ");
+                            String password = sc.nextLine();
+                                if (logIn.equals("Pandu Kamil") && password.equals("Panduak27")) {
+                                    System.out.println("Menu Owner");
+                                    System.out.println("1. Input Barang Masuk");
+                                    System.out.println("2. Laporan Keuangan");
+                                    System.out.println("3. Lokasi barang");
+                                    System.out.println("4. Keluar ");
+                                    int run1 = sc.nextInt();
                                     sc.nextLine();
 
-                                    Mainan mainanBaru = new Mainan(namaBarang, hargaModal, hargaJual, stok);
-                                    //gw tambah barang
-                                    tokoSaya.simpanMainan(mainanBaru);
-                                    break;
-                                case 2:
-                                    // Cek barang parkiran lelang
-                                    // Laporan Keuangan
-                                    tokoSaya.cetakLaporanOwner();
-                                    
-                                    break;
-                                case 3:
-                                    // cek lokasi barang
-                                    break;
-                                case 4:
-                                    break;
-                                default:
+                                    switch (run1) {
+                                        case 1:
 
-                                    break;
-                            }
-                        }else{
-                            System.out.println("[ERROR] GAGAL LOGIN");
+                                            // Input Barang Masuk
+                                            System.out.println("INPUT BARANG MASUK");
+                                            System.out.println("Nama Barang");
+                                            String namaBarang = sc.nextLine();
+                                            System.out.println("Harga Modal");
+                                            BigDecimal hargaModal = new BigDecimal(sc.next());
+                                            sc.nextLine();
+                                            System.out.println("Harga Jual");
+                                            BigDecimal hargaJual = new BigDecimal(sc.next());
+                                            sc.nextLine();
+                                            System.out.println("Jumlah Stock");
+                                            int stok = sc.nextInt();
+                                            sc.nextLine();
+
+                                            Mainan mainanBaru = new Mainan(namaBarang, hargaModal, hargaJual, stok);
+                                            //gw tambah barang
+                                            tokoSaya.simpanMainan(mainanBaru);
+                                            break;
+                                        case 2:
+                                            // Cek barang parkiran lelang
+                                            // Laporan Keuangan
+                                            System.out.println("MENU LAPORAN KEUANGAN");
+                                            tokoSaya.cetakLaporanOwner();
+                                            
+                                            break;
+                                        case 3:
+                                            // cek lokasi barang
+                                             System.out.println("CEK LOKASI BELUM TERSEDIA");
+                                            break;
+                                        case 4:
+                                            System.out.println("Anda telah keluar");
+                                            break;
+                                        default:
+                                        System.out.println("Pilihan salah");
+                                            break;
+                                    }
+                                }else{
+                                    System.out.println("[ERROR] GAGAL LOGIN");
+                                }
                         }
                         break;
                     case 2:
@@ -86,6 +92,7 @@ public class Main {
                         System.out.println("1. Input Barang Laku");
                         System.out.println("2. Cek komisi penjualan");
                         System.out.println("3. Booking");
+                        System.out.println("4. Keluar");
                         int run2 = sc.nextInt();
                         sc.nextLine();
                         // Cek komisi penjual
@@ -106,11 +113,17 @@ public class Main {
                                 break;
                             case 2:
                                 // Cek komisi penjualan
+                                System.out.println("KOMISI PENJUALAN BELUM TERSEDIA");
                                 break;
                             case 3:
                                 //Booking item
+                                System.out.println("MENU Booking Belum tersedia");
+                                break;
+                            case 4:
+                                System.out.println("Anda telah keluar");
                                 break;
                             default:
+                                System.out.println("Pilihan salah");
                                 break;
                         }
                         
@@ -126,25 +139,29 @@ public class Main {
                         switch (run3) {
                             case 1:
                                 // CEK TOTAL MODAL MENGENDAP
+                                System.out.println("MENU TOTAL MENGENDAP NULL");
                                 break;
                             case 2:
                                 // CEK TOTAL PROFIT BERSIH
+                                System.out.println("MENU PROFIT DIPINDAHKAN");
                                 break;
                             case 3:
                                 // RIWAYAT TRANSAKSI
+                                System.out.println("MENU RIWAYAT TRANSAKSI BELUM TERSEDIA");
                             default:
+                                System.out.println("Pilihan salah");
                                 break;
                             }
                     case 4:
-                        running = false;
-                        
+                        System.out.println("Anda Telah keluar");
                     break;
                     default:
+                        System.out.println("Pilihan salah");
                     break;
             }
-        
+                break;
             } catch (Exception e) {
-                System.out.println("Errorr" + e.getMessage());
+                System.out.println("Error" + e.getMessage());
                 sc.nextLine();
             }
                 
