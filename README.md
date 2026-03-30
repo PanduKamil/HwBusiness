@@ -112,3 +112,7 @@ main.java lama
 
         // 4. Lihat Laporan Setelah Penjualan
         tokoSaya.tampilkanLaporan();
+
+SELECT b.nama_barang, b.stok, t.harga_jual, t.komisi_reseller FROM barang b JOIN transaksi t ON b.id = t.barang_id
+
+TRUNCATE TABLE transaksi

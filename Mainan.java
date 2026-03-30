@@ -9,10 +9,8 @@ public class Mainan {
     private int stok;
     private LocalDateTime waktuInput;
     private int id;
-    private static int counter; //pake UUID
 
     public Mainan(String nama, BigDecimal modal, BigDecimal jual, int stok) {
-        this.id = counter++;
         this.nama = nama;
         this.hargaModal = modal;
         this.hargaPerkiraanJual = jual;
@@ -22,7 +20,7 @@ public class Mainan {
 
     // Hitung potensi keuntungan bersih per unit
     public BigDecimal getHargaPerkiraanjual() {
-        return hargaPerkiraanJual.subtract(hargaModal);
+        return hargaPerkiraanJual;
     }
 
     // Getters & Setters
@@ -34,10 +32,15 @@ public class Mainan {
     public void setStok(int stok){
         this.stok = stok;
      }
+     public int setId(int id){
+        return this.id;
+    }
      public String getWaktuFormat(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         return waktuInput.format(formatter);
      }
+     ///ADMIN
+     /// 
 
     @Override
     public String toString() {

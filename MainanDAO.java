@@ -36,6 +36,7 @@ public class MainanDAO {
                     rs.getBigDecimal("harga_jual_perkiraan"),
                     rs.getInt("stok")
                 );
+                m.setId(rs.getInt("id"));
                 return m;
             }
         } catch (SQLException e) {e.printStackTrace();}
@@ -46,6 +47,7 @@ public class MainanDAO {
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, barang.getStok());
+            pstmt.setInt(2, barang.getId());
 
             pstmt.executeUpdate();
 
@@ -55,11 +57,10 @@ public class MainanDAO {
         }
     }
     // public void catatPenjualan(){   }
-    public void catatTransaksi(Mainan barang, int jumlah, BigDecimal jual, BigDecimal komisi, BigDecimal labaOwner){
+    public void catatTransaksi(Mainan barang, int jumlah, BigDecimal jual, BigDecimal komisi, BigDecimal labaOwner, Connection conn){
         String sql ="INSERT INTO transaksi(barang_id, jumlah , harga_jual, komisi_reseller, net_profit_owner) " +
                     "VALUES(?, ?, ?, ?, ? )";
-        try (Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setInt(1, barang.getId());
             pstmt.setInt(2, barang.getStok());
@@ -72,6 +73,26 @@ public class MainanDAO {
             System.out.println("Penjualan Berhasil dicatat");
         } catch (SQLException e) {
             throw new RuntimeException("Gagal dicatat ke database" + e.getMessage());
+        }
+    }
+    public void pullLaporanKeuangan(){
+        String sql = "SELECT COALESCE(SUM(harga_jual), 0) as total_omset, " +
+                        "COALESCE(SUM(komisi_reseller), 0) as total_komisi, " +
+                        "COALESCE(SUM(net_profit_owner), 0) as total_bersih, " +
+                        "FROM transaksi ";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                    ResultSet rs = pstmt.executeQuery())
+                {
+                    if (rs.next()) {
+                        System.out.println("Laporan keuangan");
+                        System.out.println("Total omset : Rp " + rs.getBigDecimal("total_omset"));
+                        System.out.println("Total komisi : Rp " + rs.getBigDecimal("total_komisi"));
+                        System.out.println("Total bersih : Rp " + rs.getBigDecimal("total_bersih"));
+                    }
+            
+        } catch (SQLException e) {
+            System.err.println("Gagal Tarik laporan :" + e.getMessage());
         }
     }
 

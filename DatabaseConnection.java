@@ -34,7 +34,7 @@ public class DatabaseConnection {
                             "barang_id INT , " +
                             "jumlah INT, " +
                             "harga_jual DECIMAL(12,5), " +
-                            "komisi_seller DECIMAL(12,5), " +
+                            "komisi_reseller DECIMAL(12,5), " +
                             "net_profit_owner DECIMAL(12,5), " +
                             "tanggal_jual TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                             "FOREIGN KEY (barang_id) REFERENCES barang(id))";

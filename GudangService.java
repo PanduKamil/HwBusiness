@@ -26,10 +26,8 @@ public class GudangService {
             Mainan m = mainanDAO.cariBarang(idInput);
             if (m == null || m.getStok() <= 0) {
                 System.out.println("Barang Kosong");
-
                 return;
             }
-
             BigDecimal profitKotor = hargaLaku.subtract(m.getHargaModal());
             BigDecimal komisiReseller = profitKotor.multiply(new BigDecimal("0.4"));
             BigDecimal labaOwner = profitKotor.subtract(komisiReseller);
@@ -39,7 +37,7 @@ public class GudangService {
 
             m.kurangiStok(1);
             mainanDAO.updateBarang(m, conn);
-            mainanDAO.catatTransaksi(m, 1, hargaLaku, komisiReseller, labaOwner);
+            mainanDAO.catatTransaksi(m, 1, hargaLaku, komisiReseller, labaOwner, conn);
             conn.commit();
             System.out.println("Penjualan berhasil");
             } catch (Exception e) {
@@ -54,9 +52,6 @@ public class GudangService {
             //Close Connection
             try { if (conn != null) conn.close(); } catch (SQLException e) { e.printStackTrace(); }
             }
-        
-        
-
     }
     public void tambahMainan(Mainan barangBaru) {
         String key = barangBaru.getNama().toLowerCase();
@@ -71,6 +66,9 @@ public class GudangService {
             System.out.println("Barang Baru didaftarkan");
         }
         
+    }
+    public void cetakLaporanOwner(){
+        mainanDAO.pullLaporanKeuangan();
     }
 
     public void jualBarang(String nama, int jumlahDiminta) {
