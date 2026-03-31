@@ -16,13 +16,13 @@ public class MenuView {
 
             String choice = sc.nextLine();
             switch (choice) {
-                case "1" : handleOwnerLogin();
-                case "2" : handleResellerMenu();
-                case "3" : {
+                case "1" -> handleOwnerLogin();
+                case "2" -> handleResellerMenu();
+                case "3" -> {
                     System.out.println("Terima Kasih");
                     running = false;
                 }
-                default:
+                default -> 
                     System.out.println("Pilihan Salah");
             }
         }
@@ -42,6 +42,7 @@ public class MenuView {
     public void showOwnerMenu(){
         boolean back = false;
         while (!back) {
+            sc.nextLine();
             System.out.println("Menu Owner");
             System.out.println("1. Input Barang Masuk");
             System.out.println("2. Laporan Keuangan");
@@ -50,10 +51,10 @@ public class MenuView {
 
             String choice = sc.nextLine();
             switch (choice) {
-                case "1": handleInputBarang();
-                case "2": service.cetakLaporanOwner();
-                case "3": back = true;
-                default : System.out.println("Pilihan Salah");
+                case "1"-> handleInputBarang();
+                case "2"-> service.cetakLaporanOwner();
+                case "3"-> back = true;
+                default -> System.out.println("Pilihan Salah");
             }
         }
     }
@@ -71,7 +72,9 @@ public class MenuView {
 
              Mainan mainanBaru = new Mainan(namaBarang, hargaModal, hargaJual, stok);
              //gw tambah barang
-            service.simpanMainan(mainanBaru);
+            
+            String hasil = service.simpanMainan(mainanBaru);
+            System.out.println(hasil);
             System.out.println("Barang berhasil diInput");      
         } catch (Exception e) {
             System.err.println("Gagal diINPUT" + e.getMessage());

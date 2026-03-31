@@ -2,11 +2,10 @@ import java.sql.*;
 import java.math.BigDecimal;
 public class MainanDAO {
 
-    public void tambahMainan(Mainan barang){
+    public void tambahMainan(Mainan barang, Connection conn){
         String sql = "INSERT INTO barang(nama_barang, harga_modal_avg, harga_jual_perkiraan, stok) " +
                     "VALUES(?, ?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
                 pstmt.setString(1, barang.getNama());
                 pstmt.setBigDecimal(2, barang.getHargaModal());
@@ -115,6 +114,26 @@ public class MainanDAO {
         } catch (SQLException e) {
             System.err.println("Gagal memuat Katalog" + e.getMessage());
         }
+    }
+    public Mainan cariBarangAccordingName(String namaCari){
+        String sql = "SELECT * FROM barang WHERE LOWER(nama_barang) = LOWER(?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, namaCari);
+                    ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Mainan m = new Mainan(
+                    rs.getString("nama_barang"),
+                    rs.getBigDecimal("harga_modal_avg"),
+                    rs.getBigDecimal("harga_jual_perkiraan"),
+                    rs.getInt("stok"));
+                m.setId(rs.getInt("id"));
+                return m;
+            }
+        } catch (SQLException e) {e.printStackTrace();}
+    return null;
     }
 
 

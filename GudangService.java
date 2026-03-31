@@ -24,9 +24,9 @@ public class GudangService {
             if (m.getStok() <= 0) throw new Exception("Stok Barang " + m.getNama() + " Kosong");
 
 
-            BigDecimal profitKotor = hargaLaku.subtract(m.getHargaModal());
-            BigDecimal komisiReseller = profitKotor.multiply(new BigDecimal("0.4"));
-            BigDecimal labaOwner = profitKotor.subtract(komisiReseller);
+            BigDecimal profitKotor = FinanceCalculator.hitungProfitKotor(hargaLaku, m.getHargaModal());
+            BigDecimal komisiReseller = FinanceCalculator.hitungKomisi(profitKotor);
+            BigDecimal labaOwner = FinanceCalculator.hitungNetProfit(profitKotor, komisiReseller);
 
         try (Connection conn = DatabaseConnection.getConnection()){
             conn.setAutoCommit(false);
@@ -41,8 +41,30 @@ public class GudangService {
             }
         }
     }
-    public void simpanMainan(Mainan barangBaru){
-        mainanDAO.tambahMainan(barangBaru);
+    public String simpanMainan(Mainan barangBaru)throws Exception{ //Cek Barang
+        Mainan existing = mainanDAO.cariBarangAccordingName(barangBaru.getNama());
+        String message = "";
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                if (existing != null) {
+                    //update stok
+                    existing.setStok(existing.getStok() + barangBaru.getStok());
+                    mainanDAO.updateBarang(existing, conn);
+
+                    message = "Stok " + existing.getNama() +  " berhasil diperbaharui"; 
+                }else{
+                    mainanDAO.tambahMainan(barangBaru,conn);
+                    message = "Barang baru berhasil didaftarkan";
+                }
+            conn.commit();
+            return message;
+            }catch (Exception e) {
+            conn.rollback();
+            throw new Exception("Barang gagal disimpan " + e.getMessage());
+        } 
+        }
     }  
     public void lihatDaftarBarang(){
         mainanDAO.tampilkanKatalog();
