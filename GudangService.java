@@ -1,13 +1,8 @@
-import java.util.HashMap;
-import java.util.Map;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class GudangService {
-    private Map<String, Mainan> mapStok = new HashMap<>();
-
     private static GudangService instance;
     private MainanDAO mainanDAO = new MainanDAO();
 
@@ -17,105 +12,43 @@ public class GudangService {
         }
         return instance;
     }
-    public void simpanMainan(Mainan barangBaru){
-        mainanDAO.tambahMainan(barangBaru);
+    public boolean authenticate(String user, String pass){
+        return user.equals("Pandu Kamil") && pass.equals("Panduak27");
     }
-    public void lihatDaftarBarang(){
-        mainanDAO.tampilkanKatalog();
-    }
-    public void prosesPenjualan(int idInput, BigDecimal hargaLaku){
-        Connection conn = null;
-        try {
+    public void prosesPenjualan(int idInput, BigDecimal hargaLaku) throws Exception{
             Mainan m = mainanDAO.cariBarang(idInput);
-            if (m == null || m.getStok() <= 0) {
-                System.out.println("Barang Kosong");
-                return;
-            }
+
+            //Validation
+            if (m == null) throw new Exception("Barang dengan ID: " + idInput + "tidak ditemuka!!");
+
+            if (m.getStok() <= 0) throw new Exception("Stok Barang " + m.getNama() + " Kosong");
+
+
             BigDecimal profitKotor = hargaLaku.subtract(m.getHargaModal());
             BigDecimal komisiReseller = profitKotor.multiply(new BigDecimal("0.4"));
             BigDecimal labaOwner = profitKotor.subtract(komisiReseller);
 
-            conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection()){
             conn.setAutoCommit(false);
-
+            try {
             m.kurangiStok(1);
             mainanDAO.updateBarang(m, conn);
             mainanDAO.catatTransaksi(m, 1, hargaLaku, komisiReseller, labaOwner, conn);
-            conn.commit();
-            System.out.println("Penjualan berhasil");
-            } catch (Exception e) {
-            try {
-                if(conn != null){
-                    conn.rollback();
-                    System.err.println("Transaksi ROLLBACK");
-                }
-            } catch (SQLException ex) { ex.printStackTrace(); }
-            throw new RuntimeException(e.getMessage());
-            } finally {
-            //Close Connection
-            try { if (conn != null) conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+            conn.commit(); 
+            } catch(SQLException e){
+                conn.rollback();
+                throw new Exception("Gagal Memproses Transaksi: " + e.getMessage());
             }
-    }
-    public void tambahMainan(Mainan barangBaru) {
-        String key = barangBaru.getNama().toLowerCase();
-
-        if (mapStok.containsKey(key)) {
-            Mainan existing = mapStok.get(key);
-            existing.setStok(existing.getStok() + barangBaru.getStok());
-
-            System.out.println("[INFO] Stok " + existing.getNama() + " diupdate");
-        }else{
-            mapStok.put(key, barangBaru);
-            System.out.println("Barang Baru didaftarkan");
         }
-        
+    }
+    public void simpanMainan(Mainan barangBaru){
+        mainanDAO.tambahMainan(barangBaru);
+    }  
+    public void lihatDaftarBarang(){
+        mainanDAO.tampilkanKatalog();
     }
     public void cetakLaporanOwner(){
         mainanDAO.pullLaporanKeuangan();
-    }
-
-    public void jualBarang(String nama, int jumlahDiminta) {
-        Mainan m = mapStok.get(nama.toLowerCase());
-
-        if (m == null) {
-            System.out.println("Barang is Empty");
-
-            return;
-        }
-
-        synchronized(m){
-            if (m.getStok() >= jumlahDiminta) {
-                m.kurangiStok(jumlahDiminta);
-                // Simpan objeck transaksi ke List<Transaksi>history
-                System.out.println("Sold" + m.getNama());
-            }else{
-                System.out.println("Empty");
-            }
-        }
-    }
-
-    public void prosesSetoranAdek(String namaBarang, BigDecimal hargaJualReal, BigDecimal hargaModalAwal) {
-        // 1. Hitung Profit Kotor
-        BigDecimal profitKotor = hargaJualReal.subtract(hargaModalAwal);
-        
-        // 2. Bagi Hasil (40% buat Adek)
-        BigDecimal bagianAdek = profitKotor.multiply(new BigDecimal("0.4")).setScale(0, RoundingMode.HALF_UP);
-        
-        // 3. Bagian Bersih Kamu (Setelah kasih adek)
-        BigDecimal jatahGw = profitKotor.subtract(bagianAdek);
-        
-        System.out.println("=== NOTIFIKASI CUAN ===");
-        System.out.println("Barang: " + namaBarang);
-        System.out.println("Kasih Adek: Rp" + bagianAdek);
-        System.out.println("Masuk Tabungan Bersih: Rp" + jatahGw);
-    }
-    public BigDecimal hitungKomisi(BigDecimal profitBersih, String tipeBarang) {
-        // Jika barang susah keluar (biasa), kasih komisi lebih gede biar dia semangat jualan
-        if (tipeBarang.equalsIgnoreCase("BIASA")) {
-            return profitBersih.multiply(new BigDecimal("0.30")); // Komisi 30% dari profit
-        } else {
-            return profitBersih.multiply(new BigDecimal("0.15")); // Komisi 15% untuk barang bagus (yang emang gampang laku)
-        }
     }
 }
 
