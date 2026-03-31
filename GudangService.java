@@ -15,13 +15,13 @@ public class GudangService {
     public boolean authenticate(String user, String pass){
         return user.equals("Pandu Kamil") && pass.equals("Panduak27");
     }
-    public void prosesPenjualan(int idInput, BigDecimal hargaLaku) throws Exception{
+    public void prosesPenjualan(int idInput, BigDecimal hargaLaku) throws GudangException{
             Mainan m = mainanDAO.cariBarang(idInput);
 
             //Validation
-            if (m == null) throw new Exception("Barang dengan ID: " + idInput + "tidak ditemuka!!");
+            if (m == null) throw new GudangException("Barang dengan ID: " + idInput + "tidak ditemuka!!");
 
-            if (m.getStok() <= 0) throw new Exception("Stok Barang " + m.getNama() + " Kosong");
+            if (m.getStok() <= 0) throw new StokKurangException("Stok Barang " + m.getNama() + " Kosong");
 
 
             BigDecimal profitKotor = FinanceCalculator.hitungProfitKotor(hargaLaku, m.getHargaModal());
@@ -36,19 +36,26 @@ public class GudangService {
             mainanDAO.catatTransaksi(m, 1, hargaLaku, komisiReseller, labaOwner, conn);
             conn.commit(); 
             } catch(SQLException e){
-                conn.rollback();
-                throw new Exception("Gagal Memproses Transaksi: " + e.getMessage());
+                try {conn.rollback();} catch (SQLException ex) {
+                }
             }
+        }catch (SQLException e) {
+            throw new GudangException("Gagal Memproses Transaksi: " + e.getMessage());
         }
     }
     public String simpanMainan(Mainan barangBaru)throws Exception{ //Cek Barang
         Mainan existing = mainanDAO.cariBarangAccordingName(barangBaru.getNama());
+        mainanDAO.cariBarangAccordingName(barangBaru.getNama());
         String message = "";
 
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
                 if (existing != null) {
+                    //Modal Rata-rata
+                    BigDecimal modalBaruAvg = FinanceCalculator.hitungRataRataModal(existing.getStok(), existing.getHargaModal(), 
+                                                barangBaru.getStok(), barangBaru.getHargaModal());
+                    existing.setHargaModal(modalBaruAvg);
                     //update stok
                     existing.setStok(existing.getStok() + barangBaru.getStok());
                     mainanDAO.updateBarang(existing, conn);
@@ -66,11 +73,18 @@ public class GudangService {
         } 
         }
     }  
-    public void lihatDaftarBarang(){
-        mainanDAO.tampilkanKatalog();
+    public void lihatDaftarBarangReseller(){
+        mainanDAO.tampilkanKatalogReseller();
     }
+    public void lihatDaftarBarangOwner(){
+        mainanDAO.tampilkanKatalogOwner();
+    }
+
     public void cetakLaporanOwner(){
         mainanDAO.pullLaporanKeuangan();
+    }
+    public void cetakLaporanBulanan(int bulan, int tahun){
+        mainanDAO.pullLaporanKeuanganBulanan(bulan, tahun);
     }
 }
 

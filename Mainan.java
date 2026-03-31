@@ -35,6 +35,8 @@ public class Mainan {
      public void setId(int id){
         this.id = id;
     }
+    public void setHargaModal(BigDecimal hargaModal){  
+        this.hargaModal = hargaModal;}
      public String getWaktuFormat(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         return waktuInput.format(formatter);

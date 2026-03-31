@@ -46,14 +46,18 @@ public class MenuView {
             System.out.println("Menu Owner");
             System.out.println("1. Input Barang Masuk");
             System.out.println("2. Laporan Keuangan");
-            System.out.println("3. Keluar");
+            System.out.println("3. Katalog Barang");
+            System.out.println("4. Laporan Keuangan Bulanan");
+            System.out.println("5. Keluar");
             System.out.print("Pilih : ");
 
             String choice = sc.nextLine();
             switch (choice) {
                 case "1"-> handleInputBarang();
                 case "2"-> service.cetakLaporanOwner();
-                case "3"-> back = true;
+                case "3"-> service.lihatDaftarBarangOwner();
+                case "4"-> handleLaporanBulanan();
+                case "5"-> back = true;
                 default -> System.out.println("Pilihan Salah");
             }
         }
@@ -83,7 +87,7 @@ public class MenuView {
     public void handleResellerMenu(){
         System.out.println("\n Menu Laporan Penjualan");
 
-        service.lihatDaftarBarang();
+        service.lihatDaftarBarangReseller();
         try {
             System.out.println("Masukan ID Barang"); 
             int idBarang = Integer.parseInt(sc.nextLine());
@@ -91,8 +95,18 @@ public class MenuView {
             BigDecimal hargaLaku = new BigDecimal(sc.nextLine());
 
             service.prosesPenjualan(idBarang, hargaLaku);
-        } catch (Exception e) {
+        } catch (GudangException e) {
             System.err.println("ERROR" + e.getMessage());
+        }catch( Exception e){
+            System.err.println("ERROR TAK TERDUGA: " + e.getMessage());
         }
+    }
+    public void handleLaporanBulanan(){
+        System.out.print("Masukan Bulan(1-12): ");
+        int bulan = Integer.parseInt(sc.nextLine());
+        System.out.print("Masukan Tahun (contoh : 2026): ");
+        int tahun = Integer.parseInt(sc.nextLine());
+
+        service.cetakLaporanBulanan(bulan, tahun);
     }
 }
