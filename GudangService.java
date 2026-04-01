@@ -74,18 +74,17 @@ public class GudangService {
         } 
         }
     }  
-    public void lihatDaftarBarangReseller(){
-        mainanDAO.getKatalogReseller();
+    public List<MainanReseller> lihatDaftarBarangReseller(){
+        return mainanDAO.getKatalogReseller();
     }
     public List<Mainan> lihatDaftarBarangOwner(){
         return mainanDAO.getKatalogOwner();
     }
-
-    public void cetakLaporanOwner(){
-        mainanDAO.pullLaporanKeuangan();
+    public Laporan cetakLaporanOwner(Integer bulan, Integer tahun){
+        return mainanDAO.getLaporanKeuangan(bulan, tahun);
     }
-    public void cetakLaporanBulanan(int bulan, int tahun){
-        mainanDAO.getLaporanBulanan(bulan, tahun);
+    public Laporan cetakLaporanBulanan(int bulan, int tahun){
+        return mainanDAO.getLaporanBulanan(bulan, tahun);
     }
 }
 

@@ -68,33 +68,42 @@ public class MainanDAO {
             pstmt.setBigDecimal(3, jual);
             pstmt.setBigDecimal(4, komisi);
             pstmt.setBigDecimal(5, labaOwner);
-
-
             pstmt.executeUpdate();
-            System.out.println("Penjualan Berhasil dicatat");
         } catch (SQLException e) {
             throw new RuntimeException("Gagal dicatat ke database" + e.getMessage());
         }
     }
-    public void pullLaporanKeuangan(){
+    public Laporan getLaporanKeuangan(Integer bulan, Integer tahun){
         String sql = "SELECT COALESCE(SUM(harga_jual), 0) as total_omset, " +
                         "COALESCE(SUM(komisi_reseller), 0) as total_komisi, " +
                         "COALESCE(SUM(net_profit_owner), 0) as total_bersih " +
-                        "FROM transaksi ";
+                        "FROM transaksi WHERE 1=1";
+                if (bulan != null && tahun != null) {
+                    sql += "AND MONTH(tanggal_jual) = ? AND YEAR(tanggal_jual) = ? ";
+                }
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
-                    ResultSet rs = pstmt.executeQuery())
+                    )
                 {
-                    if (rs.next()) {
-                        System.out.println("Laporan keuangan");
-                        System.out.println("Total omset : Rp " + rs.getBigDecimal("total_omset"));
-                        System.out.println("Total komisi : Rp " + rs.getBigDecimal("total_komisi"));
-                        System.out.println("Total bersih : Rp " + rs.getBigDecimal("total_bersih"));
+                    if (bulan != null && tahun != null) {
+                        pstmt.setInt(1, bulan);
+                        pstmt.setInt(2, tahun);
                     }
-            
+                    try (ResultSet rs = pstmt.executeQuery()) {
+                        if (rs.next()) {
+                            String label = (bulan == null) ? "SEMUA PERIODE " : bulan + "/" + tahun; 
+                        return new Laporan(
+                            rs.getBigDecimal("total_omset"),
+                            rs.getBigDecimal("total_komisi"),
+                            rs.getBigDecimal("total_bersih"),
+                            label
+                            );
+                        }
+                    } 
         } catch (SQLException e) {
-            System.err.println("Gagal Tarik laporan :" + e.getMessage());
+            throw new RuntimeException("Gagal Tarik laporan :" + e.getMessage());
         }
+        return null;
     }
     public List<Mainan> getKatalogOwner(){
         List<Mainan> daftar = new ArrayList<>();
@@ -135,7 +144,7 @@ public class MainanDAO {
                     daftar.add(m);
             }
         } catch (SQLException e) {
-            System.err.println("Gagal memuat Katalog" + e.getMessage());
+            throw new RuntimeException("Gagal memuat Katalog" + e.getMessage());
         }
         return daftar;
     }
