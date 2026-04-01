@@ -42,9 +42,7 @@ public class DatabaseConnection {
             Statement pstmt = conn.createStatement();) {
                 pstmt.execute(sqlBarang);
                 pstmt.execute(sqlTransaksi);
-                System.out.println("[LOG] Tabel Nasabah & Tabel Transaksi berhasil diinisiasi");
-        } catch (SQLException e) {
-            System.out.println("[ERROR] gagal inisialisasi " + e.getMessage());
+        } catch (SQLException e) { e.printStackTrace();
         }
     }
 }

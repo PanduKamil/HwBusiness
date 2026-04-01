@@ -1,6 +1,7 @@
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class GudangService {
     private static GudangService instance;
@@ -74,17 +75,17 @@ public class GudangService {
         }
     }  
     public void lihatDaftarBarangReseller(){
-        mainanDAO.tampilkanKatalogReseller();
+        mainanDAO.getKatalogReseller();
     }
-    public void lihatDaftarBarangOwner(){
-        mainanDAO.tampilkanKatalogOwner();
+    public List<Mainan> lihatDaftarBarangOwner(){
+        return mainanDAO.getKatalogOwner();
     }
 
     public void cetakLaporanOwner(){
         mainanDAO.pullLaporanKeuangan();
     }
     public void cetakLaporanBulanan(int bulan, int tahun){
-        mainanDAO.pullLaporanKeuanganBulanan(bulan, tahun);
+        mainanDAO.getLaporanBulanan(bulan, tahun);
     }
 }
 

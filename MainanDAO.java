@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.math.BigDecimal;
 public class MainanDAO {
 
@@ -94,48 +96,48 @@ public class MainanDAO {
             System.err.println("Gagal Tarik laporan :" + e.getMessage());
         }
     }
-    public void tampilkanKatalogOwner(){
+    public List<Mainan> getKatalogOwner(){
+        List<Mainan> daftar = new ArrayList<>();
         String sql = "SELECT * FROM barang WHERE stok > 0";
 
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                     ResultSet rs = pstmt.executeQuery()) {
-            System.out.println(" DATA HOTWHEELS");
-            System.out.printf("%-4s | %-18s | %-6s | %-12s | %-12s\n", "ID", "NAMA BARANG", "STOK", "MODAL (AVG)", "EST. JUAL");
-
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String nama = rs.getString("nama_barang");
-                int stok = rs.getInt("stok");
-                BigDecimal modal = rs.getBigDecimal("harga_modal_avg");
-                BigDecimal harga = rs.getBigDecimal("harga_jual_perkiraan");
-
-                System.out.printf("%-4s | %-18s |%-6d | Rp%,11.0f | Rp%,11.0f\n", id, nama, stok, modal, harga);
+                Mainan m = new Mainan(
+                rs.getString("nama_barang"),
+                rs.getBigDecimal("harga_modal_avg"),
+                rs.getBigDecimal("harga_jual_perkiraan"),
+                rs.getInt("stok")
+            );
+            m.setId(rs.getInt("id"));
+            daftar.add(m);
             }
         } catch (SQLException e) {
-            System.err.println("Gagal memuat Katalog" + e.getMessage());
+            throw new RuntimeException("Gagal memuat Katalog" + e.getMessage());
         }
+        return daftar;
     }
-    public void tampilkanKatalogReseller(){
-        String sql = "SELECT * FROM barang WHERE stok > 0";
+    public List<MainanReseller> getKatalogReseller(){
+        List<MainanReseller> daftar = new ArrayList<>();
+        String sql = "SELECT id, nama_barang, stok, harga_jual_perkiraan FROM barang WHERE stok > 0";
 
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                     ResultSet rs = pstmt.executeQuery()) {
-            System.out.println(" DATA HOTWHEELS");
-            System.out.printf("%-4s | %-18s | %-6s | %-12s\n", "ID", "NAMA BARANG", "STOK", "EST. JUAL");
-
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String nama = rs.getString("nama_barang");
-                int stok = rs.getInt("stok");
-                BigDecimal harga = rs.getBigDecimal("harga_jual_perkiraan");
+                MainanReseller m = new MainanReseller(
+                    rs.getString("nama_barang"), 
+                    rs.getBigDecimal("harga_jual_perkiraan"), 
+                    rs.getInt("stok"));
 
-                System.out.printf("%-4s | %-18s |%-6d |Rp%,11.0f\n", id, nama, stok, harga);
+                    m.setId(rs.getInt("id"));
+                    daftar.add(m);
             }
         } catch (SQLException e) {
             System.err.println("Gagal memuat Katalog" + e.getMessage());
         }
+        return daftar;
     }
     public Mainan cariBarangAccordingName(String namaCari){
         String sql = "SELECT * FROM barang WHERE LOWER(nama_barang) = LOWER(?)";
@@ -157,7 +159,7 @@ public class MainanDAO {
         } catch (SQLException e) {e.printStackTrace();}
     return null;
     }
-    public void pullLaporanKeuanganBulanan(int bulan, int tahun){
+    public Laporan getLaporanBulanan(int bulan, int tahun){
         String sql = "SELECT COALESCE(SUM(harga_jual), 0) as total_omset, " +
                         "COALESCE(SUM(komisi_reseller), 0) as total_komisi, " +
                         "COALESCE(SUM(net_profit_owner), 0) as total_bersih " +
@@ -167,20 +169,20 @@ public class MainanDAO {
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
                     pstmt.setInt(1, bulan);
                     pstmt.setInt(2, tahun);
-
-                    try (ResultSet rs = pstmt.executeQuery()) {
-                        if (rs.next()) {
-                            System.out.println(" LAPORAN KEUANGAN PERIODE " + bulan + " / " + tahun);
-                            System.out.println("Laporan keuangan");
-                            System.out.printf("Total omset : Rp%,15.0f\n", rs.getBigDecimal("total_omset"));
-                            System.out.printf("Total komisi : Rp%,15.0f\n", rs.getBigDecimal("total_komisi"));
-                            System.out.printf("Total bersih : Rp%,15.0f\n", rs.getBigDecimal("total_bersih"));
-                        }
-                    } 
+                    
+                        try (ResultSet rs = pstmt.executeQuery();) {
+                            if (rs.next()) {
+                            return new Laporan(
+                            rs.getBigDecimal("total_omset"), 
+                            rs.getBigDecimal("total_komisi"), 
+                            rs.getBigDecimal("total_bersih"),
+                            bulan + "/" + tahun);
+                            }
+                        } 
         } catch (SQLException e) {
-            System.err.println("Gagal tarik laporan bulanan: " + e.getMessage());
+            throw new RuntimeException("Gagal tarik laporan bulanan: " + e.getMessage());
         }
-                        
+       return null;                 
     }
 
 
