@@ -79,7 +79,7 @@ public class MainanDAO {
                         "COALESCE(SUM(net_profit_owner), 0) as total_bersih " +
                         "FROM transaksi WHERE 1=1";
                 if (bulan != null && tahun != null) {
-                    sql += "AND MONTH(tanggal_jual) = ? AND YEAR(tanggal_jual) = ? ";
+                    sql += " AND MONTH(tanggal_jual) = ? AND YEAR(tanggal_jual) = ? ";
                 }
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);

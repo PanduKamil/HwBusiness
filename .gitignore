@@ -1,0 +1,11 @@
+#Database Secret
+.env
+
+#Java Compiled Fiiles
+*.class
+
+# IDE folders
+.vscode/
+.settings/
+.project/
+.classpath/

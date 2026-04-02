@@ -2,17 +2,32 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.io.FileInputStream;
+import java.util.Properties;
 
 public class DatabaseConnection {
-    private static final String URL ="jdbc:h2:./data/mainanDB";
-    private static final String USER = "dudu";
-    private static final String PASSWORD = "";
-
+    private static String URL;
+    private static String USER;
+    private static String PASSWORD;
     private static Connection connection;
 
         private DatabaseConnection(){}
         
+        static{
+            try {
+                Properties prop = new Properties();
+
+                prop.load(new FileInputStream(".env"));
+
+                URL = prop.getProperty("DB_URL");
+                USER = prop.getProperty("DB_USER");
+                PASSWORD = prop.getProperty("DB_PASS");
+            } catch (Exception e) {
+                throw new RuntimeException("File .env gagal terbaca");
+            }
+        }
         public static Connection getConnection() throws SQLException{
+            
                 if (connection == null || connection.isClosed()) {
                     connection = DriverManager.getConnection(URL, USER, PASSWORD);
                 }

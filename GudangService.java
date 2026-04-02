@@ -46,7 +46,6 @@ public class GudangService {
     }
     public String simpanMainan(Mainan barangBaru)throws Exception{ //Cek Barang
         Mainan existing = mainanDAO.cariBarangAccordingName(barangBaru.getNama());
-        mainanDAO.cariBarangAccordingName(barangBaru.getNama());
         String message = "";
 
         try (Connection conn = DatabaseConnection.getConnection()) {

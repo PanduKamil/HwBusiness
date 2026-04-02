@@ -1,6 +1,8 @@
 import java.math.BigDecimal;
 import java.util.Scanner;
 import java.util.List;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 public class MenuView {
     private Scanner sc = new Scanner(System.in);
@@ -56,7 +58,7 @@ public class MenuView {
             switch (choice) {
                 case "1"-> handleInputBarang();
                 case "2"-> handleMenuLaporan();
-                case "3"-> service.lihatDaftarBarangOwner();
+                case "3"-> handleKatalogBarang();
                 case "4"-> handleLaporanBulanan();
                 case "5"-> back = true;
                 default -> System.out.println("Pilihan Salah");
@@ -94,10 +96,10 @@ public class MenuView {
         }else{
             System.out.printf("%-4s | %-18s | %-6s | Rp%-12s\n", 
                             "ID", "Nama Barang", "Stok", "Estimasi Jual");
-        }
-        for (MainanReseller m : list) {
+            for (MainanReseller m : list) {
             System.out.printf("%-4s | %-18s | %-6s | Rp%-11s\n", 
-                            m.getId(), m.getNama(), m.getStok(), m.getHargaPerkiraanjual());
+                            m.getId(), m.getNama(), m.getStok(), formatRupiah(m.getHargaPerkiraanjual()));
+            }
         }
 
         try {
@@ -114,12 +116,18 @@ public class MenuView {
         }
     }
     public void handleLaporanBulanan(){
-        System.out.print("Masukan Bulan(1-12): ");
+        try {
+            System.out.print("Masukan Bulan(1-12): ");
         int bulan = Integer.parseInt(sc.nextLine());
         System.out.print("Masukan Tahun (contoh : 2026): ");
         int tahun = Integer.parseInt(sc.nextLine());
 
-        service.cetakLaporanBulanan(bulan, tahun);
+        Laporan lap = service.cetakLaporanBulanan(bulan, tahun);
+        tampilkanLaporan(lap);
+
+        } catch (NumberFormatException e) {
+            System.err.println("Input Harus Angka!!!!");
+        }
     }
     public void handleMenuLaporan(){
         System.out.println("MENU LAPORAN");
@@ -154,9 +162,31 @@ public class MenuView {
             return;
         }
         System.out.println("Laporan Keuangan - " + lap.getPeriod());
-        System.out.printf(" Total Omset    : Rp%,15.0f\n", lap.getOmset());
-        System.out.printf(" Total Komisi    : Rp%,15.0f\n", lap.getOmset());
-        System.out.printf(" Net Profit    : Rp%,15.0f\n", lap.getOmset());
+        System.out.printf(" Total Omset   : %s\n", formatRupiah(lap.getOmset()));
+        System.out.printf(" Total Komisi  : %s\n", formatRupiah(lap.getKomisi()));
+        System.out.printf(" Net Profit    : %s\n", formatRupiah(lap.getProfit()));
+    }
+    public void handleKatalogBarang(){
+        List<Mainan> katalog = service.lihatDaftarBarangOwner();
+        if (katalog.isEmpty()) {
+            System.out.println("Data Kosong");
+        }else{
+            System.out.println("Katalog Barang HotWheels");
+            System.out.printf("%-4s | %-25s | %-12s | %-12s | %-6s\n", 
+                                    "ID", "Nama Barang", "Harga Modal", "Harga Jual", "Stok");
+            for (Mainan m : katalog) {
+                System.out.printf("%-4s | %-25s | %-12s | %-12s | %-6s\n", m.getId(),
+                    m.getNama(), formatRupiah(m.getHargaModal()), formatRupiah(m.getHargaPerkiraanjual()), m.getStok());
+            }
+        }
+    }
+    private String formatRupiah(BigDecimal angka){
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+
+        symbols.setGroupingSeparator('.');
+
+        DecimalFormat df = new DecimalFormat("###,###", symbols);
+        return "Rp" + df.format(angka);
     }
 
 }
