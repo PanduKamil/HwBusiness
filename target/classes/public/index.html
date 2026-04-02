@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-widht, initial-scale=1.0">
+    <title>Gudang Hotwheels</title>
+    <style>
+        body{ font-family: sans-serif; padding: 20px; background: #f4f4f4;}
+        .card{background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(red, green, blue, alpha);}
+        button{background: #e74c3c ; color: #f4f4f4; border: none; padding: 10px; border-radius: 5px;
+                cursor: pointer;}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Stok Gudang</h1>
+        <div id="display-stok">Loading stok</div>
+        <hr>
+        <button onclick="cekStok()">Refresh Stok</button>
+    </div>
+    <script>
+        async function cekStok(){
+            const response = await fetch('/api/stok');
+            const data = await response.text();
+            document.getElementById('display-stok').innerText = data;
+        }
+        cekStok();
+    </script>
+</body>
+</html>
