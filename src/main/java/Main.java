@@ -7,8 +7,7 @@ public class Main {
 
         //port html 7070
          Javalin app = Javalin.create(config -> {
-            config.staticFiles.add("
-            /public");
+            config.staticFiles.add("/public");
             config.plugins.enableCors(cors -> {
                 cors.add(it -> it.anyHost()); // Agar HTML bisa akses Java
             });
