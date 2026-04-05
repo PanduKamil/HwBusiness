@@ -2,29 +2,61 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-widht, initial-scale=1.0">
-    <title>Gudang Hotwheels</title>
-    <style>
-        body{ font-family: sans-serif; padding: 20px; background: #f4f4f4;}
-        .card{background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(red, green, blue, alpha);}
-        button{background: #e74c3c ; color: #f4f4f4; border: none; padding: 10px; border-radius: 5px;
-                cursor: pointer;}
-    </style>
-</head>
+    <title>HW DATA - Warehouse System</title>
+    <link rel="stylesheet" href="style.css"> </head>
 <body>
-    <div class="card">
-        <h1>Stok Gudang</h1>
-        <div id="display-stok">Loading stok</div>
-        <hr>
-        <button onclick="cekStok()">Refresh Stok</button>
+    <div id="app">
+        <h1>Menu HW DATA</h1>
+        
+        <div id="main-menu">
+            <button onclick="showSection('owner-login')">1. Owner Only</button>
+            <button onclick="showSection('reseller-menu')">2. Lapor Penjualan (Reseller)</button>
+            <button onclick="exitApp()">3. Keluar</button>
+        </div>
+
+        <div id="owner-login" style="display:none;">
+            <h3>Owner Login</h3>
+            <input type="text" id="user" placeholder="User">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="handleOwnerLogin()">Login</button>
+            <button onclick="showSection('main-menu')">Kembali</button>
+        </div>
+
+        <div id="owner-menu" style="display:none;">
+            <h3>Menu Owner</h3>
+            <button onclick="showSection('input-barang')">1. Input Barang Masuk</button>
+            <button onclick="showSection('katalog-barang')">2. Katalog Barang</button>
+            <button onclick="showSection('main-menu')">3. Logout</button>
+        </div>
+
+        <div id="input-barang" style="display:none;">
+            <h3>Input Barang Masuk</h3>
+            <input type="text" id="namaBarang" placeholder="Nama Barang">
+            <input type="number" id="hargaModal" placeholder="Harga Modal">
+            <input type="number" id="hargaJual" placeholder="Harga Jual">
+            <input type="number" id="stok" placeholder="Jumlah Stok">
+            <button onclick="handleInputBarang()">Simpan</button>
+            <button onclick="showSection('owner-menu')">Batal</button>
+        </div>
+
+        <div id="reseller-menu" style="display:none;">
+            <h3>Daftar Barang (Reseller)</h3>
+            <table border="1" id="reseller-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama</th>
+                        <th>Stok</th>
+                        <th>Estimasi Jual</th>
+                    </tr>
+                </thead>
+                <tbody id="reseller-list-body"></tbody>
+            </table>
+            <br>
+            <button onclick="showSection('main-menu')">Kembali</button>
+        </div>
     </div>
-    <script>
-        async function cekStok(){
-            const response = await fetch('/api/stok');
-            const data = await response.text();
-            document.getElementById('display-stok').innerText = data;
-        }
-        cekStok();
-    </script>
+
+    <script src="script.js"></script>
 </body>
 </html>

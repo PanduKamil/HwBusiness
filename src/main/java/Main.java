@@ -1,15 +1,37 @@
 import io.javalin.Javalin;
+import java.math.BigDecimal;
 
 public class Main {
     public static void main(String[] args) {
+        GudangService service = GudangService.getInstance();
+
         //port html 7070
-        var app = Javalin.create(config -> {
-            config.staticFiles.add("/public");
+         Javalin app = Javalin.create(config -> {
+            config.plugins.enableCors(cors -> {
+                cors.add(it -> it.anyHost()); // Agar HTML bisa akses Java
+            });
         }).start(7070);
+        // Endpoint untuk Login
+        app.post("/api/login", ctx -> {
+            LoginRequest req = ctx.bodyAsClass(LoginRequest.class);
+            if (service.authenticate(req.user, req.password)) {
+                ctx.status(200).result("Login Berhasil");
+            } else {
+                ctx.status(401).result("Login Gagal");
+            }
+        });
 
-        //api getStok data
+        // Endpoint untuk Lihat Katalog (Reseller/Owner)
+        app.get("/api/barang", ctx -> {
+            ctx.json(service.lihatDaftarBarangOwner());
+        });
 
-        app.get("/api/stok", ctx ->{ctx.result("GTR: 10, Supra: 5, Civic: 3 ");});
+        // Endpoint untuk Input Barang (POST)
+        app.post("/api/barang", ctx -> {
+            Mainan baru = ctx.bodyAsClass(Mainan.class);
+            String hasil = service.simpanMainan(baru);
+            ctx.status(201).result(hasil);
+        });
 
         System.out.println("Server nyalai di http://localhost:7070");
 
@@ -18,3 +40,5 @@ public class Main {
         ui.displayMenu();
     }
 }
+class LoginRequest { public String user, password; }
+// Helper class untuk request body

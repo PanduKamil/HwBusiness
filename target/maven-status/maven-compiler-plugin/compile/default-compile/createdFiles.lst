@@ -7,6 +7,7 @@ FinanceCalculator.class
 Main.class
 Mainan.class
 DatabaseConnection.class
+LoginRequest.class
 Transaksi.class
 TransactionWrapper.class
 StokKurangException.class
