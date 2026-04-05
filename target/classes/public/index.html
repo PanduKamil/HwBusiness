@@ -10,7 +10,7 @@
         
         <div id="main-menu">
             <button onclick="showSection('owner-login')">1. Owner Only</button>
-            <button onclick="showSection('reseller-menu')">2. Lapor Penjualan (Reseller)</button>
+            <button onclick="showSection('reseller-menu'); muatKatalogReseller('reseller-table')">2. Lapor Penjualan (Reseller)</button>
             <button onclick="exitApp()">3. Keluar</button>
         </div>
 
@@ -48,6 +48,7 @@
                         <th>ID</th>
                         <th>Nama Barang</th>
                         <th>Stok</th>
+                        <th>Harga Modal</th>
                         <th>Harga Jual (Est)</th>
                     </tr>
                 </thead>
