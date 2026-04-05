@@ -18,7 +18,7 @@ async function simpanBarang() {
 
     try {
         // "Ngetok pintu" ke Javalin
-        const response = await fetch('http://localhost:7000/api/barang', {
+        const response = await fetch('http://localhost:7070/api/barang', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -36,7 +36,7 @@ async function simpanBarang() {
 // 3. Fungsi Ambil Data dari Javalin (GET)
 async function muatKatalog() {
     try {
-        const response = await fetch('http://localhost:7000/api/barang');
+        const response = await fetch('http://localhost:7070/api/barang');
         const dataBarang = await response.json();
         
         let tabel = document.getElementById('tabel-katalog');
@@ -53,5 +53,41 @@ async function muatKatalog() {
         });
     } catch (error) {
         alert("Gagal mengambil data katalog");
+    }
+}
+// Gunakan fungsi ini untuk pindah halaman/menu
+function showSection(id) {
+    // Sembunyikan semua div yang ada di dalam #app (kecuali h1)
+    const sections = ['main-menu', 'owner-login', 'owner-menu', 'input-barang', 'reseller-menu'];
+    sections.forEach(s => {
+        const element = document.getElementById(s);
+        if (element) element.style.display = 'none';
+    });
+    
+    // Tampilkan yang dipilih
+    document.getElementById(id).style.display = 'block';
+}
+
+// Fungsi Simpan (Pastikan Port 7070)
+async function handleInputBarang() {
+    const data = {
+        nama: document.getElementById('namaBarang').value,
+        hargaModal: parseFloat(document.getElementById('hargaModal').value),
+        hargaPerkiraanjual: parseFloat(document.getElementById('hargaJual').value),
+        stok: parseInt(document.getElementById('stok').value)
+    };
+
+    try {
+        const response = await fetch('http://localhost:7070/api/barang', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const text = await response.text();
+        alert(text);
+        showSection('owner-menu');
+    } catch (err) {
+        alert("Server mati! Pastikan Main.java sudah di-run.");
     }
 }

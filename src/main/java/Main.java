@@ -7,6 +7,8 @@ public class Main {
 
         //port html 7070
          Javalin app = Javalin.create(config -> {
+            config.staticFiles.add("
+            /public");
             config.plugins.enableCors(cors -> {
                 cors.add(it -> it.anyHost()); // Agar HTML bisa akses Java
             });
@@ -35,9 +37,9 @@ public class Main {
 
         System.out.println("Server nyalai di http://localhost:7070");
 
-        DatabaseConnection.setupDatabase();
-        MenuView ui = new MenuView();
-        ui.displayMenu();
+        // DatabaseConnection.setupDatabase();
+        // MenuView ui = new MenuView();
+        // ui.displayMenu();
     }
 }
 class LoginRequest { public String user, password; }
