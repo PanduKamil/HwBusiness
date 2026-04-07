@@ -13,7 +13,12 @@ function showSection(idTerpilih) {
 
     if (inputBulan) document.getElementById('filter-bulan').value ="";
     if (inputTahun) document.getElementById('filter-tahun').value = "2026";
-    
+    //Reset angka Laporan
+    const field = ['display-omset', 'display-komisi', 'display-bersih', 'display-periode'];
+    field.forEach(f =>{
+        const fieldEL = document.getElementById(f);
+        if (fieldEL) fieldEL.innerText = (f === 'display-periode') ? "-" : "Rp 0";
+    });
 }
 // 2. Fungsi Ambil Data (GET)
 async function muatKatalog(targetTableId) {
@@ -76,7 +81,9 @@ async function muatKatalogReseller(targetTableId) {
                     <td>${m.id}</td>
                     <td>${m.nama}</td>
                     <td>${m.stok}</td>
-                    <td>Rp ${(m.hargaPerkiraanJual || 0).toLocaleString()}</td>
+                    <td>Rp ${m.hargaPerkiraanJual.toLocaleString()}</td>
+                    <td><button onclick="laporPenjualan(${m.id}, '${m.nama}',${m.hargaPerkiraanJual})">
+                    laku</button></td>
                 </tr>`;
             tbody.innerHTML += baris;
         });
@@ -85,9 +92,63 @@ async function muatKatalogReseller(targetTableId) {
         alert("Server mati atau database error!");
     }
 }
-function backToMenu(){
-    document.getElementById('filter-bulan').value="";
-    showSection('owner-menu');
+async function laporPenjualan(id, nama, hargaSaran) {
+    // Prompt sederhana, gak makan RAM gede dibanding bikin modal pop-up custom
+    const hargaInput = prompt(`Barang: ${nama}\nHarga Saran: Rp ${hargaSaran.toLocaleString()}\nJual di harga berapa?`, hargaSaran);
+    
+    if (hargaInput === null) return; 
+
+    const hargaLaku = parseFloat(hargaInput);
+    if (isNaN(hargaLaku) || hargaLaku <= 0) return alert("Input harga gak bener, Bree!");
+
+    try {
+        const response = await fetch(`${API_URL}/transaksi/jual/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ hargaLaku: hargaLaku })
+        });
+
+        if (response.ok) {
+            alert("Mantap! Stok otomatis berkurang.");
+            muatKatalogReseller('reseller-table'); // Auto-refresh tabel
+        } else {
+            const errorMsg = await response.text();
+            alert("Gagal: " + errorMsg);
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Server mati atau koneksi putus!");
+    }
+}
+async function laporTerjual(id, nama, harga) {
+    const hargaInput = prompt(`Barang : ${nama}\nHarga : Rp ${harga.toLocaleString()}
+    \n\nJual di harga `, harga);
+
+    if (hargaInput === null) return;
+    const hargaLaku = parseFloat(hargaInput);
+    if (isNaN(hargaLaku) || hargaLaku <= 0) {
+        return alert("Harga tidak valid");
+    }
+    try {
+        const response = await fetch(`${API_URL}/transaksi/jual`, {
+            method: 'POST',
+            headers: {'Content-Type' : 'application/json'},
+            body: JSON.stringify({
+                id: id, 
+                hargaLaku: hargaLaku
+            })
+            });
+            if (response.ok) {
+                alert("Gokil!! penjualan udh kedata bre")
+
+                muatKatalogReseller('reseller-table');
+            }else{
+                const pesanError = await response.text();
+                alert("Gagal : " + pesanError);
+            }
+    } catch (error) {
+        alert("Server Error")
+    }
 }
 // 2. Fungsi Login
 async function handleOwnerLogin() {
@@ -195,3 +256,4 @@ function exitApp() {
         alert("Aplikasi Berhenti.");
     }
 }
+showSection('main-menu');

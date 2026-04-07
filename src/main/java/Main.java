@@ -1,5 +1,6 @@
 import io.javalin.Javalin;
 import java.math.BigDecimal;
+import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
@@ -46,11 +47,27 @@ public class Main {
             int tahun = Integer.parseInt(ctx.pathParam("tahun"));
             ctx.json(service.cetakLaporanBulanan(bulan, tahun));
         });
+        //Endpoint untuk input Laporan
+        // Endpoint Jual: Ambil ID dari URL agar lebih 'RESTful' dan ringan
+        app.post("/api/transaksi/jual/{id}", ctx -> {
+            int idBarang = Integer.parseInt(ctx.pathParam("id"));
+            // Ambil hargaLaku dari body untuk kalkulasi profit
+            Map<String, Object> body = ctx.bodyAsClass(Map.class);
+            BigDecimal hargaLaku = new BigDecimal(body.get("hargaLaku").toString());
+
+            try {
+                service.prosesPenjualan(idBarang, hargaLaku);
+                ctx.status(200).result("Laporan diterima");
+            } catch (Exception e) {
+                // Safety: Kirim pesan error spesifik ke user
+                ctx.status(400).result(e.getMessage());
+            }
+        });
         System.out.println("Server nyalai di http://localhost:7070");
 
         // MenuView ui = new MenuView();
         // ui.displayMenu();
-    }
+        }
 }
 class LoginRequest { public String user, password; }
 // Helper class untuk request body
