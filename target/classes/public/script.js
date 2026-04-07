@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:7070/api";
+const API_URL = `http://${window.location.hostname}:7070/api`;
 // 1. Fungsi Navigasi Utama
 function showSection(idTerpilih) {
     //sembunyikan semua yang punya class section
@@ -14,7 +14,7 @@ function showSection(idTerpilih) {
     if (inputBulan) document.getElementById('filter-bulan').value ="";
     if (inputTahun) document.getElementById('filter-tahun').value = "2026";
     //Reset angka Laporan
-    const field = ['display-omset', 'display-komisi', 'display-bersih', 'display-periode'];
+    const field = ['display-omset', 'display-komisi', 'display-profit', 'display-periode'];
     field.forEach(f =>{
         const fieldEL = document.getElementById(f);
         if (fieldEL) fieldEL.innerText = (f === 'display-periode') ? "-" : "Rp 0";
@@ -87,6 +87,24 @@ async function muatKatalogReseller(targetTableId) {
                 </tr>`;
             tbody.innerHTML += baris;
         });
+        /*OPSIONAL ALERT KALAU GW PAKE INI WHERE STOK > 0 HARUS DIHAPUS
+        // Di script.js bagian muatKatalogReseller
+        dataBarang.forEach(m => {
+            const baris = 
+                <tr>
+                    <td>${m.id}</td>
+                    <td>${m.nama}</td>
+                    <td>${m.stok}</td>
+                    <td>Rp ${m.hargaPerkiraanJual.toLocaleString()}</td>
+                    <td>
+                        <button onclick="laporPenjualan(${m.id}, '${m.nama}', ${m.hargaPerkiraanJual})" 
+                                ${m.stok <= 0 ? 'disabled' : ''}>
+                            ${m.stok <= 0 ? 'Habis' : 'Laku'}
+                        </button>
+                    </td>
+                </tr>;
+            tbody.innerHTML += baris;
+        }); */
     } catch (error) {
         console.error("Gagal total:", error);
         alert("Server mati atau database error!");
@@ -212,7 +230,7 @@ async function muatLaporanOwner() {
     // Perhatikan nama field-nya harus sama ama di Java (Laporan.java)
     document.getElementById('display-omset').innerText = data.omset;
     document.getElementById('display-komisi').innerText = data.komisi;
-    document.getElementById('display-bersih').innerText = data.bersih;
+    document.getElementById('display-profit').innerText = data.bersih;
     alert("Laporan untuk: " + data.label);
 }
 // Fungsi Laporan Semua Periode

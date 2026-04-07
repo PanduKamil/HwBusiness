@@ -13,7 +13,7 @@ public class Main {
             config.plugins.enableCors(cors -> {
                 cors.add(it -> it.anyHost()); // Agar HTML bisa akses Java
             });
-        }).start(7070);
+        }).start("0.0.0.0", 7070);
         // Endpoint untuk Login
         app.post("/api/login", ctx -> {
             LoginRequest req = ctx.bodyAsClass(LoginRequest.class);

@@ -2,8 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HW DATA - Warehouse System</title>
     <link rel="stylesheet" href="style.css"> </head>
+    <link rel="manifest" href="manifest.json">
 <body>
     <div id="app">
         <h1>Menu HW DATA</h1>
@@ -110,6 +112,11 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js">
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(() => console.log("PWA Active, Bree!"))
+          .catch(err => console.log("PWA Gagal:", err));
+      }</script>
 </body>
 </html>
