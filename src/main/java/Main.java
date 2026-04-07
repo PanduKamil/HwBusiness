@@ -35,6 +35,17 @@ public class Main {
             ctx.status(201).result(hasil);
         });
 
+        //Endpoint untuk Lihat data laporan
+        app.get("/api/laporan/total", ctx -> {
+            ctx.json(service.cetakLaporanOwner(null, null));
+        });
+
+        //Endpoint untuk laporan bulanan
+        app.get("/api/laporan/bulanan/{bulan}/{tahun}", ctx ->{
+            int bulan = Integer.parseInt(ctx.pathParam("bulan"));
+            int tahun = Integer.parseInt(ctx.pathParam("tahun"));
+            ctx.json(service.cetakLaporanBulanan(bulan, tahun));
+        });
         System.out.println("Server nyalai di http://localhost:7070");
 
         // MenuView ui = new MenuView();

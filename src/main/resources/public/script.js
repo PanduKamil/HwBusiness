@@ -1,5 +1,17 @@
 // 1. Fungsi Navigasi Utama
 function showSection(idTerpilih) {
+    //sembunyikan semua section
+    document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+    //section yg dipilih
+    document.getElementById(idTerpilih).style.display = 'block';
+
+    //kosongkan input
+    if (document.getElementById('filter-bulan')) {
+        document.getElementById('filter-bulan').value ="";
+    }
+    if (document.getElementById('filter-bulan')) {
+        document.getElementById('filter-bulan').value = "";
+    }
     // Masukin SEMUA ID div yang ada di HTML 
     const semuaMenu = [
         'main-menu', 
@@ -7,6 +19,7 @@ function showSection(idTerpilih) {
         'owner-menu', 
         'input-barang', 
         'katalog-barang', 
+        'laporan-keuangan-section', 
         'reseller-menu'
     ];
 
@@ -18,6 +31,10 @@ function showSection(idTerpilih) {
         }
     });
 
+}
+function backToMenu(){
+    document.getElementById('filter-bulan').value="";
+    showSection('owner-menu');
 }
 // 2. Fungsi Login
 async function handleOwnerLogin() {
@@ -69,7 +86,7 @@ async function muatKatalog(targetTableId) {
                     <td>${m.nama}</td>
                     <td>${m.stok}</td>
                     <td>Rp ${(m.hargaModal || 0).toLocaleString()}</td>
-                    <td>Rp ${(m.hargaPerkiraanjual || 0).toLocaleString()}</td>
+                    <td>Rp ${(m.hargaPerkiraanJual || 0).toLocaleString()}</td>
                 </tr>`;
             tbody.innerHTML += baris;
         });
@@ -103,7 +120,7 @@ async function muatKatalogReseller(targetTableId) {
                     <td>${m.id}</td>
                     <td>${m.nama}</td>
                     <td>${m.stok}</td>
-                    <td>Rp ${(m.hargaPerkiraanjual || 0).toLocaleString()}</td>
+                    <td>Rp ${(m.hargaPerkiraanJual || 0).toLocaleString()}</td>
                 </tr>`;
             tbody.innerHTML += baris;
         });
@@ -118,7 +135,7 @@ async function handleInputBarang() {
     const data = {
         nama: document.getElementById('namaBarang').value,
         hargaModal: parseFloat(document.getElementById('hargaModal').value),
-        hargaPerkiraanjual: parseFloat(document.getElementById('hargaJual').value),
+        hargaPerkiraanJual: parseFloat(document.getElementById('hargaJual').value),
         stok: parseInt(document.getElementById('stok').value)
     };
 
@@ -131,10 +148,62 @@ async function handleInputBarang() {
 
         const text = await response.text();
         alert(text);
+
+        document.getElementById('namaBarang').value = "";
+        document.getElementById('hargaModal').value = "";
+        document.getElementById('hargaJual').value = "";
+        document.getElementById('stok').value = "";
+
         showSection('owner-menu');
     } catch (err) {
         alert("Gagal simpan! Cek terminal Java lo.");
     }
+}
+// 5. Fungsi cek Laporan total
+async function muatLaporanOwner() {
+    const response = await fetch('http://localhost:7070/api/laporan/total');
+    const data = await response.json(); // Isinya object dari class Laporan
+    
+    // Perhatikan nama field-nya harus sama ama di Java (Laporan.java)
+    document.getElementById('display-omset').innerText = data.omset;
+    document.getElementById('display-komisi').innerText = data.komisi;
+    document.getElementById('display-bersih').innerText = data.bersih;
+    alert("Laporan untuk: " + data.label);
+}
+// Fungsi Laporan Semua Periode
+async function muatLaporanTotal() {
+    try {
+        const response = await fetch('http://localhost:7070/api/laporan/total');
+        const data = await response.json();
+        updateTampilanLaporan(data);
+    } catch (err) {
+        alert("Gagal ambil laporan total!");
+    }
+}
+
+// Fungsi Laporan Filter Bulan & Tahun
+async function handleLaporanFilter() {
+    const bulan = document.getElementById('filter-bulan').value;
+    const tahun = document.getElementById('filter-tahun').value;
+
+    if (!bulan || !tahun) return alert("Isi bulan ama tahun dulu, Bree!");
+
+    try {
+        const response = await fetch(`http://localhost:7070/api/laporan/bulanan/${bulan}/${tahun}`);
+        const data = await response.json();
+        updateTampilanLaporan(data);
+    } catch (err) {
+        alert("Gagal ambil laporan bulanan!");
+    }
+}
+
+// Helper biar gak nulis ulang-ulang
+function updateTampilanLaporan(data) {
+    // Pake toLocaleString biar angkanya ada titik ribuan (Rp 1.000.000)
+    document.getElementById('display-omset').innerText = "Rp " + data.omset.toLocaleString();
+    document.getElementById('display-komisi').innerText = "Rp " + data.komisi.toLocaleString();
+    document.getElementById('display-profit').innerText = "Rp " + data.profit.toLocaleString();
+    document.getElementById('display-periode').innerText = data.periode;
 }
 function exitApp() {
     if(confirm("Yakin mau keluar?")) {

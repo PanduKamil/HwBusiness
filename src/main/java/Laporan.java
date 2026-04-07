@@ -27,7 +27,7 @@ public class Laporan {
     public void setPeriod(String masa){
         this.periode = masa;
     }
-    public String getPeriod(){
+    public String getPeriode(){
         return periode;
     }
 

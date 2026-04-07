@@ -11,7 +11,7 @@ public class MainanDAO {
             
                 pstmt.setString(1, barang.getNama());
                 pstmt.setBigDecimal(2, barang.getHargaModal());
-                pstmt.setBigDecimal(3, barang.getHargaPerkiraanjual());
+                pstmt.setBigDecimal(3, barang.getHargaPerkiraanJual());
                 pstmt.setInt(4, barang.getStok());
 
                 pstmt.executeUpdate();
@@ -49,7 +49,7 @@ public class MainanDAO {
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, barang.getStok());
             pstmt.setBigDecimal(2, barang.getHargaModal());
-            pstmt.setBigDecimal(3, barang.getHargaPerkiraanjual());
+            pstmt.setBigDecimal(3, barang.getHargaPerkiraanJual());
             pstmt.setInt(4, barang.getId());
 
             pstmt.executeUpdate();

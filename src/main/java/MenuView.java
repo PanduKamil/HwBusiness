@@ -161,7 +161,7 @@ public class MenuView {
             System.out.println("Data Laporan tidak ada");
             return;
         }
-        System.out.println("Laporan Keuangan - " + lap.getPeriod());
+        System.out.println("Laporan Keuangan - " + lap.getPeriode());
         System.out.printf(" Total Omset   : %s\n", formatRupiah(lap.getOmset()));
         System.out.printf(" Total Komisi  : %s\n", formatRupiah(lap.getKomisi()));
         System.out.printf(" Net Profit    : %s\n", formatRupiah(lap.getProfit()));
@@ -176,7 +176,7 @@ public class MenuView {
                                     "ID", "Nama Barang", "Harga Modal", "Harga Jual", "Stok");
             for (Mainan m : katalog) {
                 System.out.printf("%-4s | %-25s | %-12s | %-12s | %-6s\n", m.getId(),
-                    m.getNama(), formatRupiah(m.getHargaModal()), formatRupiah(m.getHargaPerkiraanjual()), m.getStok());
+                    m.getNama(), formatRupiah(m.getHargaModal()), formatRupiah(m.getHargaPerkiraanJual()), m.getStok());
             }
         }
     }

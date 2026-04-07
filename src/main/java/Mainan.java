@@ -17,9 +17,10 @@ public class Mainan {
         this.stok = stok;
         this.waktuInput = LocalDateTime.now();
     }
+    public Mainan(){} 
 
     // Hitung potensi keuntungan bersih per unit
-    public BigDecimal getHargaPerkiraanjual() {
+    public BigDecimal getHargaPerkiraanJual() {
         return hargaPerkiraanJual;
     }
 
@@ -47,7 +48,7 @@ public class Mainan {
     @Override
     public String toString() {
         return String.format("ID: %-3d | [%s] %-15s | Stok: %-3d | Untung/Unit: Rp%,.0f", 
-                id, getWaktuFormat(), nama, stok, getHargaPerkiraanjual());
+                id, getWaktuFormat(), nama, stok, getHargaPerkiraanJual());
     }
 }
 
