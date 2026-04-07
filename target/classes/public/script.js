@@ -1,52 +1,24 @@
+const API_URL = "http://localhost:7070/api";
 // 1. Fungsi Navigasi Utama
 function showSection(idTerpilih) {
-    // Masukin SEMUA ID div yang ada di HTML 
-    const semuaMenu = [
-        'main-menu', 
-        'owner-login', 
-        'owner-menu', 
-        'input-barang', 
-        'katalog-barang', 
-        'laporan-keuangan-section', 
-        'reseller-menu'
-    ];
+    //sembunyikan semua yang punya class section
+    document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+    //section yg dipilih
+    const el = document.getElementById(idTerpilih);
+    if (el) el.style.display = 'block';
+    
+    //kosongkan input tiap pindah section
+    const inputBulan = document.getElementById('filter-bulan');
+    const inputTahun = document.getElementById('filter-tahun');
 
-    semuaMenu.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            // Sembunyiin semua, kecuali yang dipilih
-            el.style.display = (id === idTerpilih) ? 'block' : 'none';
-        }
-    });
-
+    if (inputBulan) document.getElementById('filter-bulan').value ="";
+    if (inputTahun) document.getElementById('filter-tahun').value = "2026";
+    
 }
-// 2. Fungsi Login
-async function handleOwnerLogin() {
-    const userIn = document.getElementById('user').value;
-    const passIn = document.getElementById('password').value;
-
-    try {
-        const response = await fetch('http://localhost:7070/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: userIn, password: passIn })
-        });
-        
-        if (response.ok) {
-            alert("Login berhasil");
-            showSection('owner-menu');
-        } else {
-            alert("Gagal: Username atau Password salah!");
-        }
-    } catch (err) {
-        alert("Gagal koneksi ke Server! Cek terminal Java lo.");
-    }
-}
-
-// 3. Fungsi Ambil Data (GET)
+// 2. Fungsi Ambil Data (GET)
 async function muatKatalog(targetTableId) {
     try {
-        const response = await fetch('http://localhost:7070/api/barang');
+        const response = await fetch(`${API_URL}/barang`);
         const dataBarang = await response.json();
         console.log("Data dari Java:", dataBarang); // LIHAT DI CONSOLE F12
 
@@ -81,7 +53,7 @@ async function muatKatalog(targetTableId) {
 }
 async function muatKatalogReseller(targetTableId) {
     try {
-        const response = await fetch('http://localhost:7070/api/barang');
+        const response = await fetch(`${API_URL}/barang`);
         const dataBarang = await response.json();
         console.log("Data dari Java:", dataBarang); // LIHAT DI CONSOLE F12
 
@@ -113,6 +85,34 @@ async function muatKatalogReseller(targetTableId) {
         alert("Server mati atau database error!");
     }
 }
+function backToMenu(){
+    document.getElementById('filter-bulan').value="";
+    showSection('owner-menu');
+}
+// 2. Fungsi Login
+async function handleOwnerLogin() {
+    const userIn = document.getElementById('user').value;
+    const passIn = document.getElementById('password').value;
+
+    try {
+        const response = await fetch(`${API_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user: userIn, password: passIn })
+        });
+        
+        if (response.ok) {
+            alert("Login berhasil");
+            showSection('owner-menu');
+        } else {
+            alert("Gagal: Username atau Password salah!");
+        }
+    } catch (err) {
+        alert("Gagal koneksi ke Server! Cek terminal Java lo.");
+    }
+}
+
+
 
 // 4. Fungsi Input Barang (POST)
 async function handleInputBarang() {
@@ -124,7 +124,7 @@ async function handleInputBarang() {
     };
 
     try {
-        const response = await fetch('http://localhost:7070/api/barang', {
+        const response = await fetch(`${API_URL}/barang`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -145,7 +145,7 @@ async function handleInputBarang() {
 }
 // 5. Fungsi cek Laporan total
 async function muatLaporanOwner() {
-    const response = await fetch('http://localhost:7070/api/laporan/total');
+    const response = await fetch(`${API_URL}/laporan/total`);
     const data = await response.json(); // Isinya object dari class Laporan
     
     // Perhatikan nama field-nya harus sama ama di Java (Laporan.java)
@@ -157,7 +157,7 @@ async function muatLaporanOwner() {
 // Fungsi Laporan Semua Periode
 async function muatLaporanTotal() {
     try {
-        const response = await fetch('http://localhost:7070/api/laporan/total');
+        const response = await fetch(`${API_URL}/laporan/total`);
         const data = await response.json();
         updateTampilanLaporan(data);
     } catch (err) {
@@ -173,7 +173,7 @@ async function handleLaporanFilter() {
     if (!bulan || !tahun) return alert("Isi bulan ama tahun dulu, Bree!");
 
     try {
-        const response = await fetch(`http://localhost:7070/api/laporan/bulanan/${bulan}/${tahun}`);
+        const response = await fetch(`${API_URL}/laporan/bulanan/${bulan}/${tahun}`);
         const data = await response.json();
         updateTampilanLaporan(data);
     } catch (err) {
@@ -188,10 +188,6 @@ function updateTampilanLaporan(data) {
     document.getElementById('display-komisi').innerText = "Rp " + data.komisi.toLocaleString();
     document.getElementById('display-profit').innerText = "Rp " + data.profit.toLocaleString();
     document.getElementById('display-periode').innerText = data.periode;
-        document.getElementById('display-omset').value = "";
-        document.getElementById('display-komisi').value = "";
-        document.getElementById('display-profit').value = "";
-        document.getElementById('display-periode').value = "";
 }
 function exitApp() {
     if(confirm("Yakin mau keluar?")) {

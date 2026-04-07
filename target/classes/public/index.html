@@ -5,17 +5,17 @@
     <title>HW DATA - Warehouse System</title>
     <link rel="stylesheet" href="style.css"> </head>
 <body>
-    <div id="app">
+    <div id="app" class="section">
         <h1>Menu HW DATA</h1>
         
-        <div id="main-menu">
+        <div id="main-menu" class="section">
             <button onclick="showSection('owner-login')">1. Owner Only</button>
             <button onclick="showSection('reseller-menu'); muatKatalogReseller('reseller-table')">2. Lapor Penjualan (Reseller)</button>
             <button onclick="exitApp()">3. Keluar</button>
         </div>
 
 
-        <div id="owner-login" style="display:none;">
+        <div id="owner-login" style="display:none;" class="section">
             <h3>Owner Login</h3>
             <input type="text" id="user" placeholder="User">
             <input type="password" id="password" placeholder="Password">
@@ -23,7 +23,7 @@
             <button onclick="showSection('main-menu')">Kembali</button>
         </div>
 
-        <div id="owner-menu" style="display:none;">
+        <div id="owner-menu" style="display:none;" class="section">
             <h3>Menu Owner</h3>
             <button onclick="showSection('input-barang')">1. Input Barang Masuk</button>
             <button onclick="showSection('laporan-keuangan-section')">2. Laporan Keuangan</button>
@@ -31,7 +31,7 @@
             <button onclick="showSection('main-menu')">4. Logout</button>
         </div>
 
-        <div id="input-barang" style="display:none;">
+        <div id="input-barang" style="display:none;" class="section">
             <h3>Input Barang Masuk</h3>
             <input type="text" id="namaBarang" placeholder="Nama Barang">
             <input type="number" id="hargaModal" placeholder="Harga Modal">
@@ -41,7 +41,7 @@
             <button onclick="showSection('owner-menu')">Batal</button>
         </div>
 
-        <div id="katalog-barang" style="display: none;">
+        <div id="katalog-barang" style="display: none;" class="section">
             <h2>Data Stok HotWheels</h2>
             <table border="1" id="tabel-owner">
                 <thead>
@@ -60,7 +60,7 @@
             <button onclick="showSection('owner-menu')">Kembali ke Menu Owner</button>
         </div>
 
-        <div id="laporan-keuangan-section" style="display:none;">
+        <div id="laporan-keuangan-section" style="display:none;" class="section">
             <h2>Laporan Keuangan Owner</h2>
         
             <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
@@ -91,7 +91,7 @@
             <button onclick="showSection('owner-menu')">Kembali</button>
         </div>
 
-        <div id="reseller-menu" style="display:none;">
+        <div id="reseller-menu" style="display:none;" class="section">
             <h3>Daftar Barang (Reseller)</h3>
             <table border="1" id="reseller-table">
                 <thead>
