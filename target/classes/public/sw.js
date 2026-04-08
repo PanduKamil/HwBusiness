@@ -15,7 +15,7 @@ self.addEventListener('install', e => {
   );
 });
 
-// Fetch data dari Cache (Biar cepet/Offline ready)
+// Fetch data dari Cache (Biar cepet/Offline ready)``
 self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(res => {

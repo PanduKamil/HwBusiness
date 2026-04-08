@@ -8,34 +8,7 @@
     padding: 0;
     font-family: 'Share Tech Mono', sans-serif;
 }
-/* Container Utama biar gak tembus layar */
-.section {
-    width: 100%;
-    overflow-x: auto; /* Bikin tabel bisa di-geser kanan-kiri kalo kepanjangan */
-    padding: 0.5rem;
-}
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem; /* Perkecil font dikit khusus di HP */
-    table-layout: fixed; /* KUNCI: Maksa kolom bagi ruang */
-}
-
-th, td {
-    border: 1px solid #333;
-    padding: 8px 4px;
-    text-align: center;
-    word-wrap: break-word; /* Teks panjang bakal turun ke bawah, gak ngelebar */
-    overflow: hidden;
-}
-
-/* Atur lebar kolom secara spesifik biar gak rebutan */
-th:nth-child(1), td:nth-child(1) { width: 10%; } /* ID */
-th:nth-child(2), td:nth-child(2) { width: 35%; text-align: left; } /* Nama */
-th:nth-child(3), td:nth-child(3) { width: 15%; } /* Stok */
-th:nth-child(4), td:nth-child(4) { width: 25%; } /* Harga */
-th:nth-child(5), td:nth-child(5) { width: 15%; } /* Aksi/Sumbit */
 /* Ganti bagian body & h1 di CSS lo */
 body {
     background-color: #0d0d0d;
@@ -52,9 +25,14 @@ h1, h2, h3 {
 /**/
 /* Container Utama */
 #app {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     max-width: 800px;
     margin: 0 auto;
-    padding: 1.5rem;
+    padding: 20px;
     background: #1a1a1a;
     border: 1px solid #333;
     border-radius: 15px;
