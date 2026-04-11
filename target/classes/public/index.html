@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HW DATA - Warehouse System</title>
-    <link rel="stylesheet" href="style.css"> </head>
+    <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
+</head>
 <body>
     <div id="app">
         <h1>Menu HW DATA</h1>
-        
+
         <div id="main-menu" class="section">
             <button onclick="showSection('owner-login')">1. Owner Only</button>
-            <button onclick="showSection('reseller-menu'); muatKatalogReseller('reseller-table')">2. Lapor Penjualan (Reseller)</button>
+            <button onclick="showSection('reseller-menu'); muatKatalogReseller()">2. Lapor Penjualan (Reseller)</button>
             <button onclick="exitApp()">3. Keluar</button>
         </div>
 
-
-        <div id="owner-login" style="display:none;" class="section">
+        <div id="owner-login" class="section">
             <h3>Owner Login</h3>
             <input type="text" id="user" placeholder="User">
             <input type="password" id="password" placeholder="Password">
@@ -25,15 +25,15 @@
             <button onclick="showSection('main-menu')">Kembali</button>
         </div>
 
-        <div id="owner-menu" style="display:none;" class="section">
+        <div id="owner-menu" class="section">
             <h3>Menu Owner</h3>
             <button onclick="showSection('input-barang')">1. Input Barang Masuk</button>
             <button onclick="showSection('laporan-keuangan-section')">2. Laporan Keuangan</button>
-            <button onclick="showSection('katalog-barang'); muatKatalog('tabel-owner')">3. Katalog Barang</button>
+            <button onclick="showSection('katalog-barang'); muatKatalog()">3. Katalog Barang</button>
             <button onclick="showSection('main-menu')">4. Logout</button>
         </div>
 
-        <div id="input-barang" style="display:none;" class="section">
+        <div id="input-barang" class="section">
             <h3>Input Barang Masuk</h3>
             <input type="text" id="namaBarang" placeholder="Nama Barang">
             <input type="number" id="hargaModal" placeholder="Harga Modal">
@@ -43,106 +43,79 @@
             <button onclick="showSection('owner-menu')">Batal</button>
         </div>
 
-        <div id="katalog-barang" style="display: none;" class="section">
+        <div id="katalog-barang" class="section">
             <h2>Data Stok HotWheels (Owner)</h2>
-            
-            <div class="search-box" style="margin-bottom: 15px;">
+            <div class="search-box">
                 <input type="text" id="cari-barang-owner" placeholder="Cari stok di gudang..." onkeyup="filterBarangOwner()">
             </div>
-
             <div id="owner-list-cards"></div>
-
-            <br>
-            <button onclick="showSection('owner-menu')">Kembali ke Menu Owner</button>
-        </div>
-
-        <div id="laporan-keuangan-section" style="display:none;" class="section">
-            <h2>Laporan Keuangan Owner</h2>
-        
-            <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #000000;">
-                <h4>Filter Bulanan</h4>
-                <input type="number" id="filter-bulan" placeholder="Bulan (1-12)" min="1" max="12">
-                <input type="number" id="filter-tahun" placeholder="Tahun (2026)" value="2026">
-                <button onclick="handleLaporanFilter()">Cek Laporan</button>
-                <button onclick="muatLaporanTotal()">Semua Periode</button>
-            </div>
-        
-            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                <div style="padding: 15px; border: 2px solid green; border-radius: 8px;">
-                    <strong>Total Omset:</strong>
-                    <p id="display-omset">Rp 0</p>
-                </div>
-                <div style="padding: 15px; border: 2px solid orange; border-radius: 8px;">
-                    <strong>Total Komisi:</strong>
-                    <p id="display-komisi">Rp 0</p>
-                </div>
-                <div style="padding: 15px; border: 2px solid blue; border-radius: 8px;">
-                    <strong>Net Profit:</strong>
-                    <p id="display-profit">Rp 0</p>
-                </div>
-            </div>
-            
-            <p>Periode: <span id="display-periode">-</span></p>
-        
             <button onclick="showSection('owner-menu')">Kembali</button>
         </div>
 
-        <div id="reseller-menu" style="display:none;" class="section">
-    <h3>Daftar Barang (Reseller)</h3>
-    <div class="search-box" style="margin-bottom: 15px;">
-        <input type="text" id="cari-barang" placeholder="Cari nama hotwheels..." onkeyup="filterBarangReseller()">
-    </div>
-    
-    <div id="reseller-list-cards"></div>
+        <div id="laporan-keuangan-section" class="section">
+            <h2>Laporan Keuangan Owner</h2>
+            <div class="stat-card" style="border-color: #444; margin-bottom: 20px;">
+                <h4>Filter Bulanan</h4>
+                <input type="number" id="filter-bulan" placeholder="Bulan (1-12)">
+                <input type="number" id="filter-tahun" value="2026">
+                <button onclick="handleLaporanFilter()">Cek Laporan</button>
+                <button onclick="muatLaporanTotal()">Semua Periode</button>
+            </div>
 
-    <br>
-    <button onclick="showSection('main-menu')">Kembali</button>
-</div>
+            <div class="laporan-container">
+                <div class="stat-card" style="border-color: green;">
+                    <strong>Omset</strong>
+                    <p id="display-omset">Rp 0</p>
+                </div>
+                <div class="stat-card" style="border-color: orange;">
+                    <strong>Komisi</strong>
+                    <p id="display-komisi">Rp 0</p>
+                </div>
+                <div class="stat-card" style="border-color: blue;">
+                    <strong>Net Profit</strong>
+                    <p id="display-profit">Rp 0</p>
+                </div>
+            </div>
+            <p style="text-align:center;">Periode: <span id="display-periode">-</span></p>
+            <button onclick="showSection('owner-menu')">Kembali</button>
+        </div>
+<div id="reseller-menu" class="section">
+            <h3>Daftar Barang (Reseller)</h3>
+            <div class="search-box">
+                <input type="text" id="cari-barang" placeholder="Cari nama hotwheels..." onkeyup="filterBarangReseller()">
+            </div>
+            <div id="reseller-list-cards"></div>
+            <button onclick="showSection('main-menu')">Kembali</button>
+        </div>
+    </div>
 
-        <div id="reseller-lapor" style="display:none;" class="section">
-            <h3>Lapor Penjualan</h3>
-            <p id="lapor-barang-info"></p>
-            <input type="number" id="jumlahTerjual" placeholder="Jumlah Terjual">
-            <button onclick="handleLaporPenjualan()">Lapor</button>
-            <button onclick="showSection('reseller-menu')">Batal</button>
+    <div id="modal-edit" class="modal-overlay">
+        <div class="modal-content" style="border-color: #00ccff;">
+            <h3>Edit HotWheels</h3>
+            <input type="hidden" id="edit-id">
+            <label>Nama Barang:</label>
+            <input type="text" id="edit-nama">
+            <label>Harga Modal:</label>
+            <input type="number" id="edit-modal">
+            <label>Harga Jual (Est):</label>
+            <input type="number" id="edit-jual">
+            <button onclick="simpanPerubahanBarang()" style="border-color:#00ccff; color:#00ccff;">Simpan</button>
+            <button onclick="tutupModalEdit()" style="border-color:#ff4444; color:#ff4444;">Batal</button>
+        </div>
     </div>
-<div id="modal-edit" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
-    <div style="background:#1a1a1a; padding:20px; border:2px solid #00ccff; border-radius:10px; width:90%; max-width:400px;">
-        <h3>Edit HotWheels</h3>
-        <input type="hidden" id="edit-id">
-        <label>Nama Barang:</label>
-        <input type="text" id="edit-nama">
-        <label>Harga Modal:</label>
-        <input type="number" id="edit-modal">
-        <label>Harga Jual (Est):</label>
-        <input type="number" id="edit-jual">
-        <button onclick="simpanPerubahanBarang()" style="background:#00ccff; color:black;">Simpan Perubahan</button>
-        <button onclick="tutupModalEdit()" style="border-color:#ff4444; color:#ff4444;">Batal</button>
+
+    <div id="modal-lapor" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Lapor Terjual</h3>
+            <p id="lapor-info-barang"></p>
+            <input type="hidden" id="lapor-id">
+            <label>Harga Jual Laku:</label>
+            <input type="number" id="lapor-harga-input">
+            <button onclick="eksekusiLaporPenjualan()">Konfirmasi Laku</button>
+            <button onclick="tutupModalLapor()" style="border-color:#ff4444; color:#ff4444;">Batal</button>
+        </div>
     </div>
-</div>
-<div id="modal-lapor" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1001; justify-content:center; align-items:center;">
-    <div style="background:#1a1a1a; padding:20px; border:2px solid #bc13fe; border-radius:10px; width:90%; max-width:400px;">
-        <h3 style="color: #bc13fe;">Lapor Terjual</h3>
-        <p id="lapor-info-barang" style="font-size: 0.9rem; margin-bottom: 10px;"></p>
-        
-        <input type="hidden" id="lapor-id">
-        <label>Harga Jual Laku:</label>
-        <input type="number" id="lapor-harga-input">
-        
-        <button onclick="eksekusiLaporPenjualan()" style="background:#bc13fe; color:black;">Konfirmasi Laku</button>
-        <button onclick="tutupModalLapor()" style="border-color:#ff4444; color:#ff4444;">Batal</button>
-    </div>
-</div>
 
     <script src="script.js"></script>
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-              .then(() => console.log("PWA Active, Bree!"))
-              .catch(err => console.log("PWA Gagal:", err));
-        });
-    }
-</script>
 </body>
 </html>
