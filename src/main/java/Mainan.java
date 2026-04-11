@@ -37,8 +37,15 @@ public class Mainan {
         this.id = id;
     }
     public void setHargaModal(BigDecimal hargaModal){  
-        this.hargaModal = hargaModal;}
-     public String getWaktuFormat(){
+        this.hargaModal = hargaModal;
+    }
+    public void setNama(String nama){
+        this.nama = nama;
+    }
+    public void setHargaPerkiraanJual(BigDecimal hargaPerkiraanJual){
+        this.hargaPerkiraanJual = hargaPerkiraanJual;
+    }
+    public String getWaktuFormat(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         return waktuInput.format(formatter);
      }

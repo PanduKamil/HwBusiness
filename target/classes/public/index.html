@@ -95,6 +95,7 @@
 
         <div id="reseller-menu" style="display:none;" class="section">
             <h3>Daftar Barang (Reseller)</h3>
+            <input type="text" id="cari-barang" placeholder="Cari nama hotwheels..." onkeyup="filterBarangReseller()">
             <table border="1" id="reseller-table">
                 <thead>
                     <tr>
@@ -112,11 +113,15 @@
         </div>
     </div>
 
-    <script src="script.js">
+    <script src="script.js"></script>
+<script>
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-          .then(() => console.log("PWA Active, Bree!"))
-          .catch(err => console.log("PWA Gagal:", err));
-      }</script>
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+              .then(() => console.log("PWA Active, Bree!"))
+              .catch(err => console.log("PWA Gagal:", err));
+        });
+    }
+</script>
 </body>
 </html>

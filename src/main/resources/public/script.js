@@ -274,6 +274,24 @@ function updateTampilanLaporan(data) {
     document.getElementById('display-profit').innerText = "Rp " + data.profit.toLocaleString();
     document.getElementById('display-periode').innerText = data.periode;
 }
+function filterBarangReseller() {
+    const input = document.getElementById('cari-barang').value.toLowerCase();
+    const table = document.getElementById('reseller-table');
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        if (cells.length > 1) {
+            const nama = cells[1].innerText.toLowerCase();
+            if (nama.includes(input)) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    }
+
+}
 function exitApp() {
     if(confirm("Yakin mau keluar?")) {
         window.close(); // Cuma jalan di beberapa browser, atau arahkan ke page lain

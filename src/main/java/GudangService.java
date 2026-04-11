@@ -85,5 +85,26 @@ public class GudangService {
     public Laporan cetakLaporanBulanan(int bulan, int tahun){
         return mainanDAO.getLaporanBulanan(bulan, tahun);
     }
+    public void editBarang(int id, String nama, BigDecimal hargaModal, BigDecimal hargaJual) throws Exception{
+        Mainan m = mainanDAO.cariBarang(id);
+        if (m == null) throw new Exception("Barang dengan ID: " + id + "tidak ditemuka!!");
+
+        m.setNama(nama);
+        m.setHargaModal(hargaModal);
+        m.setHargaPerkiraanJual(hargaJual);
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                mainanDAO.updateBarang(m, conn);
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw new Exception("Gagal mengupdate barang: " + e.getMessage());
+            }
+        } catch (SQLException e) {
+            throw new Exception("Gagal mengupdate barang: " + e.getMessage());
+        }
+    }
 }
 

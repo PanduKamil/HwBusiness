@@ -44,13 +44,14 @@ public class MainanDAO {
         return null;
     }
     public void updateBarang(Mainan barang, Connection conn){
-        String sql ="UPDATE barang SET stok = ?, harga_modal_avg = ?, harga_jual_perkiraan = ? WHERE id = ? ";
+        String sql ="UPDATE barang SET nama_barang = ?, stok = ?, harga_modal_avg = ?, harga_jual_perkiraan = ? WHERE id = ? ";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, barang.getStok());
-            pstmt.setBigDecimal(2, barang.getHargaModal());
-            pstmt.setBigDecimal(3, barang.getHargaPerkiraanJual());
-            pstmt.setInt(4, barang.getId());
+            pstmt.setString(1, barang.getNama());
+            pstmt.setInt(2, barang.getStok());
+            pstmt.setBigDecimal(3, barang.getHargaModal());
+            pstmt.setBigDecimal(4, barang.getHargaPerkiraanJual());
+            pstmt.setInt(5, barang.getId());
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -193,7 +194,4 @@ public class MainanDAO {
         }
        return null;                 
     }
-    
-
-
 }
