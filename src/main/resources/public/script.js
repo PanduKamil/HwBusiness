@@ -21,63 +21,77 @@ function showSection(idTerpilih) {
     });
 }
 // 2. Fungsi Ambil Data (GET)
-async function muatKatalog(targetTableId) {
+async function muatKatalog() {
     try {
         const response = await fetch(`${API_URL}/barang`);
         const dataBarang = await response.json();
-        console.log("Data dari Java:", dataBarang); // LIHAT DI CONSOLE F12
 
-        const tbody = document.querySelector(`#${targetTableId} tbody`);
-        if (!tbody) {
-            console.error("Gak nemu <tbody> di tabel: " + targetTableId);
-            return;
-        }
-        
-        tbody.innerHTML = ""; 
+        const listContainer = document.getElementById('owner-list-cards');
+        if (!listContainer) return;
 
-        if (dataBarang.length === 0) {
-            tbody.innerHTML = "<tr><td colspan='4'>Barang kosong, silakan input dulu.</td></tr>";
-            return;
-        }
-
-        dataBarang.forEach(m => {
-            const baris = `
-                <tr>
-                    <td>${m.id}</td>
-                    <td>${m.nama}</td>
-                    <td>${m.stok}</td>
-                    <td>Rp ${(m.hargaModal || 0).toLocaleString()}</td>
-                    <td>Rp ${(m.hargaPerkiraanJual || 0).toLocaleString()}</td>
-                </tr>`;
-            tbody.innerHTML += baris;
-        });
-    } catch (error) {
-        console.error("Gagal total:", error);
-        alert("Server mati atau database error!");
-    }
-}
-async function muatKatalogReseller(targetTableId) {
-    try {
-        const response = await fetch(`${API_URL}/barang`);
-        const dataBarang = await response.json();
-        
-        // Kita nggak pake tabel lagi, kita pake div container
-        const container = document.getElementById('reseller-menu');
-        
-        // Cari atau buat div khusus buat list kartu
-        let listContainer = document.getElementById('reseller-list-cards');
-        if (!listContainer) {
-            listContainer = document.createElement('div');
-            listContainer.id = 'reseller-list-cards';
-            container.insertBefore(listContainer, container.querySelector('br'));
-        }
-
-        // Sembunyikan tabel aslinya
-        document.getElementById('reseller-table').style.display = 'none';
         listContainer.innerHTML = ""; 
 
+        if (dataBarang.length === 0) {
+            listContainer.innerHTML = "<p style='text-align:center;'>Gudang kosong, silakan input barang.</p>";
+            return;
+        }
+
         dataBarang.forEach(m => {
+            // Kita samain formatnya kyak reseller, tapi isinya lebih lengkap (ada harga modal)
             const card = `
+                <div class="report-card" style="border-left: 5px solid #00ccff;">
+                    <div class="report-header">
+                        <span class="id-tag">ID: ${m.id}</span>
+                        <span class="stock-tag">Stok: ${m.stok}</span>
+                    </div>
+                    <div class="report-body">
+                        <h4>${m.nama}</h4>
+                        <p class="price" style="color: #ffcc00; margin-bottom: 5px;">Modal: Rp ${m.hargaModal.toLocaleString()}</p>
+                        <p class="price">Jual: Rp ${m.hargaPerkiraanJual.toLocaleString()}</p>
+                    </div>
+                    <button onclick="bukaModalEdit(${m.id}, '${m.nama}', ${m.hargaModal}, ${m.hargaPerkiraanJual})" 
+                            style="border-color: #00ccff; color: #00ccff;">
+                        EDIT BARANG
+                    </button>
+                </div>`;
+            listContainer.innerHTML += card;
+        });
+    } catch (error) {
+        console.error("Gagal muat katalog owner:", error);
+    }
+}
+
+// Fungsi Filter khusus Owner
+function filterBarangOwner() {
+    const input = document.getElementById('cari-barang-owner').value.toLowerCase();
+    const cards = document.querySelectorAll('#owner-list-cards .report-card');
+
+    cards.forEach(card => {
+        const nama = card.querySelector('h4').innerText.toLowerCase();
+        if (nama.includes(input)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+async function muatKatalogReseller() { // Gak perlu targetTableId lagi
+    try {
+        const response = await fetch(`${API_URL}/barang`);
+        const dataBarang = await response.json();
+
+        const listContainer = document.getElementById('reseller-list-cards');
+        if (!listContainer) return;
+
+        listContainer.innerHTML = ""; 
+
+        if (dataBarang.length === 0) {
+            listContainer.innerHTML = "<p style='text-align:center;'>Barang kosong, Bree.</p>";
+            return;
+        }
+
+        dataBarang.forEach(m => {
+            const card =`
                 <div class="report-card">
                     <div class="report-header">
                         <span class="id-tag">ID: ${m.id}</span>
@@ -116,14 +130,29 @@ async function muatKatalogReseller(targetTableId) {
                 </tr>;
             tbody.innerHTML += baris;
         }); */
-async function laporPenjualan(id, nama, hargaSaran) {
-    // Prompt sederhana, gak makan RAM gede dibanding bikin modal pop-up custom
-    const hargaInput = prompt(`Barang: ${nama}\nHarga Saran: Rp ${hargaSaran.toLocaleString()}\nJual di harga berapa?`, hargaSaran);
+// 1. Fungsi buat buka modal dan isi datanya
+function laporPenjualan(id, nama, hargaSaran) {
+    document.getElementById('lapor-id').value = id;
+    document.getElementById('lapor-info-barang').innerText = `Barang: ${nama} \n(Saran: Rp ${hargaSaran.toLocaleString()})`;
+    document.getElementById('lapor-harga-input').value = hargaSaran; // Default isi harga saran
     
-    if (hargaInput === null) return; 
+    document.getElementById('modal-lapor').style.display = 'flex';
+}
 
-    const hargaLaku = parseFloat(hargaInput);
-    if (isNaN(hargaLaku) || hargaLaku <= 0) return alert("Input harga gak bener, Bree!");
+// 2. Fungsi buat tutup modal
+function tutupModalLapor() {
+    document.getElementById('modal-lapor').style.display = 'none';
+}
+
+// 3. Fungsi eksekusi kirim ke Java (API)
+async function eksekusiLaporPenjualan() {
+    const id = document.getElementById('lapor-id').value;
+    const hargaLaku = parseFloat(document.getElementById('lapor-harga-input').value);
+
+    if (isNaN(hargaLaku) || hargaLaku <= 0) {
+        alert("Harga laku nggak valid, Bree!");
+        return;
+    }
 
     try {
         const response = await fetch(`${API_URL}/transaksi/jual/${id}`, {
@@ -134,7 +163,8 @@ async function laporPenjualan(id, nama, hargaSaran) {
 
         if (response.ok) {
             alert("Mantap! Stok otomatis berkurang.");
-            muatKatalogReseller('reseller-table'); // Auto-refresh tabel
+            tutupModalLapor();
+            muatKatalogReseller(); // Refresh kartu reseller
         } else {
             const errorMsg = await response.text();
             alert("Gagal: " + errorMsg);
@@ -142,36 +172,6 @@ async function laporPenjualan(id, nama, hargaSaran) {
     } catch (err) {
         console.error(err);
         alert("Server mati atau koneksi putus!");
-    }
-}
-async function laporTerjual(id, nama, harga) {
-    const hargaInput = prompt(`Barang : ${nama}\nHarga : Rp ${harga.toLocaleString()}
-    \n\nJual di harga `, harga);
-
-    if (hargaInput === null) return;
-    const hargaLaku = parseFloat(hargaInput);
-    if (isNaN(hargaLaku) || hargaLaku <= 0) {
-        return alert("Harga tidak valid");
-    }
-    try {
-        const response = await fetch(`${API_URL}/transaksi/jual`, {
-            method: 'POST',
-            headers: {'Content-Type' : 'application/json'},
-            body: JSON.stringify({
-                id: id, 
-                hargaLaku: hargaLaku
-            })
-            });
-            if (response.ok) {
-                alert("Gokil!! penjualan udh kedata bre")
-
-                muatKatalogReseller('reseller-table');
-            }else{
-                const pesanError = await response.text();
-                alert("Gagal : " + pesanError);
-            }
-    } catch (error) {
-        alert("Server Error")
     }
 }
 // 2. Fungsi Login
@@ -276,16 +276,57 @@ function updateTampilanLaporan(data) {
 }
 function filterBarangReseller() {
     const input = document.getElementById('cari-barang').value.toLowerCase();
+    // Pastikan selector-nya kena ke kartu
     const cards = document.querySelectorAll('#reseller-list-cards .report-card');
 
     cards.forEach(card => {
         const nama = card.querySelector('h4').innerText.toLowerCase();
+        // Pakai display 'flex' karena di CSS .report-card lo pake flex
         if (nama.includes(input)) {
-            card.style.display = 'flex';
+            card.style.display = 'flex'; 
         } else {
             card.style.display = 'none';
         }
     });
+}
+function bukaModalEdit(id, nama, modal, jual) {
+    document.getElementById('edit-id').value = id;
+    document.getElementById('edit-nama').value = nama;
+    document.getElementById('edit-modal').value = modal;
+    document.getElementById('edit-jual').value = jual;
+    document.getElementById('modal-edit').style.display = 'flex';
+}
+
+function tutupModalEdit() {
+    document.getElementById('modal-edit').style.display = 'none';
+}
+
+async function simpanPerubahanBarang() {
+    const id = document.getElementById('edit-id').value;
+    const data = {
+        nama: document.getElementById('edit-nama').value,
+        hargaModal: parseFloat(document.getElementById('edit-modal').value),
+        hargaPerkiraanJual: parseFloat(document.getElementById('edit-jual').value)
+    };
+
+    try {
+        const response = await fetch(`${API_URL}/barang/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            alert("Data berhasil diupdate!");
+            tutupModalEdit();
+            muatKatalog('tabel-owner'); // Refresh tabel
+        } else {
+            alert("Gagal update data!");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Server error!");
+    }
 }
 function exitApp() {
     if(confirm("Yakin mau keluar?")) {

@@ -63,6 +63,16 @@ public class Main {
                 ctx.status(400).result(e.getMessage());
             }
         });
+        //Endpoint edit barang
+        app.put("/api/barang/{id}", ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            Mainan dataEdit = ctx.bodyAsClass(Mainan.class);
+            
+            // Panggil service yang udah lo buat tadi
+            service.editBarang(id, dataEdit.getNama(), dataEdit.getHargaModal(), dataEdit.getHargaPerkiraanJual());
+            
+            ctx.status(200).result("Update Sukses");
+        });
         System.out.println("Server nyalai di http://localhost:7070");
 
         // MenuView ui = new MenuView();

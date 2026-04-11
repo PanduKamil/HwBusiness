@@ -84,3 +84,6 @@ Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong user name
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:522)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
 	... 16 more
+2026-04-11 11:46:31.133226+07:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "HARGA_MODAL_AVG DECIMAL(12, 5)": "10000000.00000 (13)"; SQL statement:
+INSERT INTO barang(nama_barang, harga_modal_avg, harga_jual_perkiraan, stok) VALUES(?, ?, ?, ?) [22001-224]
