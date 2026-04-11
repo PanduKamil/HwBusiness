@@ -224,4 +224,29 @@ public class MainanDAO {
         pstmtUpdate.executeUpdate();
     }
 }
+    /*public List<Transaksi> getAllTransaksi() {
+    List<Transaksi> list = new ArrayList<>();
+    String sql = "SELECT t.id, b.nama AS nama_barang, t.harga_laku, t.profit, t.tanggal " +
+                 "FROM transaksi t " +
+                 "JOIN barang b ON t.barang_id = b.id " +
+                 "ORDER BY t.id DESC"; // Biar yang terbaru di atas
+
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql);
+         ResultSet rs = pstmt.executeQuery()) {
+
+        while (rs.next()) {
+            Transaksi trx = new Transaksi();
+            trx.setId(rs.getInt("id"));
+            trx.setNamaBarang(rs.getString("nama_barang"));
+            trx.setHargaLaku(rs.getDouble("harga_laku"));
+            trx.setProfit(rs.getDouble("profit"));
+            trx.setTanggal(rs.getString("tanggal"));
+            list.add(trx);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}*/
 }

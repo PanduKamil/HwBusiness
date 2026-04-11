@@ -1,5 +1,6 @@
 import io.javalin.Javalin;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 public class Main {
@@ -81,6 +82,12 @@ public class Main {
             
             ctx.status(200).result("Transaksi dibatalkan & stok balik, Bree!");
         });
+        /*app.get("/api/transaksi", ctx -> {
+            List<Transaksi> listTrx = service.getAllTransaksi(); 
+            // Pastiin ini nge-return JSON, bukan string kosong
+            ctx.json(listTrx); 
+        }); */
+        
         System.out.println("Server nyalai di http://localhost:7070");
 
         // MenuView ui = new MenuView();

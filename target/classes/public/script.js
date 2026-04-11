@@ -331,23 +331,34 @@ async function simpanPerubahanBarang() {
 // 1. Fungsi muat riwayat
 async function muatRiwayat() {
     try {
-        const response = await fetch(`${API_URL}/transaksi`); // Sesuaikan endpoint Java lo
-        const dataTrx = await response.json();
+        const response = await fetch(`${API_URL}/transaksi`);
+        
+        // Cek dulu, responnya OK gak?
+        if (!response.ok) {
+            throw new Error("Gagal ambil data dari server");
+        }
+
+        // Cek isi teks aslinya sebelum di-parse ke JSON
+        const rawData = await response.text();
+        console.log("Isi data dari server:", rawData); // Liat di console isinya apa
+
+        // Baru deh diubah ke JSON kalau yakin isinya JSON
+        const dataTrx = JSON.parse(rawData);
 
         const container = document.getElementById('riwayat-list-cards');
         container.innerHTML = "";
 
         if (dataTrx.length === 0) {
-            container.innerHTML = "<p style='text-align:center;'>Belum ada transaksi masuk.</p>";
+            container.innerHTML = "<p style='text-align:center;'>Belum ada transaksi.</p>";
             return;
         }
 
         dataTrx.forEach(t => {
-            const card = 
+            const card = `
                 <div class="report-card" style="border-left: 5px solid #ffcc00;">
                     <div class="report-header">
                         <span>ID Trx: ${t.id}</span>
-                        <span>${t.tanggal}</span>
+                        <span>${t.tanggal || ''}</span>
                     </div>
                     <div class="report-body">
                         <h4>${t.namaBarang}</h4>
@@ -355,14 +366,16 @@ async function muatRiwayat() {
                         <p style="font-size: 0.8rem; color: #888;">Profit: Rp ${t.profit.toLocaleString()}</p>
                     </div>
                     <button onclick="batalkanTransaksi(${t.id})" 
-                            style="border-color: #ff4444; color: #ff4444; padding: 0.5rem; font-size: 0.8rem;">
+                            style="border-color: #ff4444; color: #ff4444; padding: 0.5rem; font-size: 0.8rem; margin-top: 10px;">
                         BATALKAN (Hapus)
                     </button>
-                </div>;
+                </div>`;
             container.innerHTML += card;
         });
     } catch (err) {
-        console.error(err);
+        console.error("Detail Error:", err);
+        const container = document.getElementById('riwayat-list-cards');
+        if(container) container.innerHTML = `<p style='color:red;'>Error: ${err.message}</p>`;
     }
 }
 
