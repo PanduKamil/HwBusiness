@@ -276,21 +276,16 @@ function updateTampilanLaporan(data) {
 }
 function filterBarangReseller() {
     const input = document.getElementById('cari-barang').value.toLowerCase();
-    const table = document.getElementById('reseller-table');
-    const rows = table.getElementsByTagName('tr');
+    const cards = document.querySelectorAll('#reseller-list-cards .report-card');
 
-    for (let i = 1; i < rows.length; i++) {
-        const cells = rows[i].getElementsByTagName('td');
-        if (cells.length > 1) {
-            const nama = cells[1].innerText.toLowerCase();
-            if (nama.includes(input)) {
-                rows[i].style.display = '';
-            } else {
-                rows[i].style.display = 'none';
-            }
+    cards.forEach(card => {
+        const nama = card.querySelector('h4').innerText.toLowerCase();
+        if (nama.includes(input)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
         }
-    }
-
+    });
 }
 function exitApp() {
     if(confirm("Yakin mau keluar?")) {
