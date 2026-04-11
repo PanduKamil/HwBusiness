@@ -328,6 +328,73 @@ async function simpanPerubahanBarang() {
         alert("Server error!");
     }
 }
+// 1. Fungsi muat riwayat
+async function muatRiwayat() {
+    try {
+        const response = await fetch(`${API_URL}/transaksi`); // Sesuaikan endpoint Java lo
+        const dataTrx = await response.json();
+
+        const container = document.getElementById('riwayat-list-cards');
+        container.innerHTML = "";
+
+        if (dataTrx.length === 0) {
+            container.innerHTML = "<p style='text-align:center;'>Belum ada transaksi masuk.</p>";
+            return;
+        }
+
+        dataTrx.forEach(t => {
+            const card = 
+                <div class="report-card" style="border-left: 5px solid #ffcc00;">
+                    <div class="report-header">
+                        <span>ID Trx: ${t.id}</span>
+                        <span>${t.tanggal}</span>
+                    </div>
+                    <div class="report-body">
+                        <h4>${t.namaBarang}</h4>
+                        <p class="price">Laku: Rp ${t.hargaLaku.toLocaleString()}</p>
+                        <p style="font-size: 0.8rem; color: #888;">Profit: Rp ${t.profit.toLocaleString()}</p>
+                    </div>
+                    <button onclick="batalkanTransaksi(${t.id})" 
+                            style="border-color: #ff4444; color: #ff4444; padding: 0.5rem; font-size: 0.8rem;">
+                        BATALKAN (Hapus)
+                    </button>
+                </div>;
+            container.innerHTML += card;
+        });
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+// 2. Fungsi Batal Transaksi (Owner Power)
+async function batalkanTransaksi(id) {
+    if (!confirm("Yakin mau batalin transaksi ini? Stok bakal balik (+1) ke gudang!")) return;
+
+    try {
+        const response = await fetch(`${API_URL}/transaksi/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            alert("Transaksi dihapus, stok sudah dikembalikan!");
+            muatRiwayat(); // Refresh riwayat
+        } else {
+            alert("Gagal menghapus transaksi.");
+        }
+    } catch (err) {
+        alert("Server Error!");
+    }
+}
+
+// 3. Filter Riwayat
+function filterRiwayat() {
+    const input = document.getElementById('cari-transaksi').value.toLowerCase();
+    const cards = document.querySelectorAll('#riwayat-list-cards .report-card');
+    cards.forEach(card => {
+        const teks = card.innerText.toLowerCase();
+        card.style.display = teks.includes(input) ? 'flex' : 'none';
+    });
+}
 function exitApp() {
     if(confirm("Yakin mau keluar?")) {
         window.close(); // Cuma jalan di beberapa browser, atau arahkan ke page lain

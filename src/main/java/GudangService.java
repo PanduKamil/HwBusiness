@@ -106,5 +106,36 @@ public class GudangService {
             throw new Exception("Gagal mengupdate barang: " + e.getMessage());
         }
     }
+    /*public List<Transaksi> lihatRiwayatTransaksi(){
+        return mainanDAO.getRiwayatTransaksi();
+    } */
+    
+    public void batalkanTransaksi(int idTransaksi) {
+    Connection conn = null;
+    try {
+        conn = DatabaseConnection.getConnection();
+        conn.setAutoCommit(false); // Kunci dimulai!
+
+        // Panggil DAO dengan mengirimkan 'conn' yang sama
+        // Gak perlu getTransaksiById terpisah kalau di DAO udah dihandle semua
+        mainanDAO.deleteTransaksi(conn, idTransaksi);
+
+        conn.commit(); // Kalau sukses semua, simpan!
+        System.out.println("Sip! Transaksi hangus, stok aman balik ke rak.");
+
+    } catch (Exception e) {
+        if (conn != null) {
+            try {
+                conn.rollback(); // Kalau ada satu aja yang gagal, tarik balik semua!
+                System.err.println("Gagal! Data dikembalikan ke kondisi awal.");
+            } catch (SQLException ex) { ex.printStackTrace(); }
+        }
+        throw new RuntimeException("Error: " + e.getMessage());
+    } finally {
+        if (conn != null) {
+            try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+    }
+}
 }
 

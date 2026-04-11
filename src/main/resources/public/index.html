@@ -30,7 +30,8 @@
             <button onclick="showSection('input-barang')">1. Input Barang Masuk</button>
             <button onclick="showSection('laporan-keuangan-section')">2. Laporan Keuangan</button>
             <button onclick="showSection('katalog-barang'); muatKatalog()">3. Katalog Barang</button>
-            <button onclick="showSection('main-menu')">4. Logout</button>
+            <button onclick="showSection('riwayat-transaksi-section'); muatRiwayat()">4. Riwayat Transaksi</button>
+            <button onclick="showSection('main-menu')">5. Logout</button>
         </div>
 
         <div id="input-barang" class="section">
@@ -79,7 +80,16 @@
             <p style="text-align:center;">Periode: <span id="display-periode">-</span></p>
             <button onclick="showSection('owner-menu')">Kembali</button>
         </div>
-<div id="reseller-menu" class="section">
+        <div id="riwayat-transaksi-section" class="section">
+            <h2>Riwayat Transaksi</h2>
+            <div class="search-box">
+                <input type="text" id="cari-transaksi" placeholder="Cari nama barang..." onkeyup="filterRiwayat()">
+            </div>
+            <div id="riwayat-list-cards"></div>
+            <button onclick="showSection('owner-menu')">Kembali</button>
+        </div>
+
+        <div id="reseller-menu" class="section">
             <h3>Daftar Barang (Reseller)</h3>
             <div class="search-box">
                 <input type="text" id="cari-barang" placeholder="Cari nama hotwheels..." onkeyup="filterBarangReseller()">
@@ -87,8 +97,8 @@
             <div id="reseller-list-cards"></div>
             <button onclick="showSection('main-menu')">Kembali</button>
         </div>
-    </div>
 
+    </div> 
     <div id="modal-edit" class="modal-overlay">
         <div class="modal-content" style="border-color: #00ccff;">
             <h3>Edit HotWheels</h3>

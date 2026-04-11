@@ -73,6 +73,14 @@ public class Main {
             
             ctx.status(200).result("Update Sukses");
         });
+        app.delete("/api/transaksi/{id}", ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            
+            // Panggil method service yang isinya 2 query tadi
+            service.batalkanTransaksi(id);
+            
+            ctx.status(200).result("Transaksi dibatalkan & stok balik, Bree!");
+        });
         System.out.println("Server nyalai di http://localhost:7070");
 
         // MenuView ui = new MenuView();
