@@ -1,4 +1,4 @@
-const API_URL = `http://${window.location.hostname}:7070/api`;
+const API_URL = "https://specimen-recliner-credible.ngrok-free.dev";
 // 1. Fungsi Navigasi Utama
 function showSection(idTerpilih) {
     //sembunyikan semua yang punya class section
