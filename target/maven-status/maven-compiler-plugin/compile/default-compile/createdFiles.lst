@@ -4,8 +4,8 @@ MainanDAO.class
 Laporan.class
 MenuView.class
 FinanceCalculator.class
-Main.class
 Mainan.class
+Main.class
 DatabaseConnection.class
 LoginRequest.class
 Transaksi.class

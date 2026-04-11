@@ -60,34 +60,45 @@ async function muatKatalogReseller(targetTableId) {
     try {
         const response = await fetch(`${API_URL}/barang`);
         const dataBarang = await response.json();
-        console.log("Data dari Java:", dataBarang); // LIHAT DI CONSOLE F12
-
-        const tbody = document.querySelector(`#${targetTableId} tbody`);
-        if (!tbody) {
-            console.error("Gak nemu <tbody> di tabel: " + targetTableId);
-            return;
-        }
         
-        tbody.innerHTML = ""; 
-
-        if (dataBarang.length === 0) {
-            tbody.innerHTML = "<tr><td colspan='4'>Barang kosong, silakan input dulu.</td></tr>";
-            return;
+        // Kita nggak pake tabel lagi, kita pake div container
+        const container = document.getElementById('reseller-menu');
+        
+        // Cari atau buat div khusus buat list kartu
+        let listContainer = document.getElementById('reseller-list-cards');
+        if (!listContainer) {
+            listContainer = document.createElement('div');
+            listContainer.id = 'reseller-list-cards';
+            container.insertBefore(listContainer, container.querySelector('br'));
         }
+
+        // Sembunyikan tabel aslinya
+        document.getElementById('reseller-table').style.display = 'none';
+        listContainer.innerHTML = ""; 
 
         dataBarang.forEach(m => {
-            const baris = `
-                <tr>
-                    <td>${m.id}</td>
-                    <td>${m.nama}</td>
-                    <td>${m.stok}</td>
-                    <td>Rp ${m.hargaPerkiraanJual.toLocaleString()}</td>
-                    <td><button onclick="laporPenjualan(${m.id}, '${m.nama}',${m.hargaPerkiraanJual})">
-                    laku</button></td>
-                </tr>`;
-            tbody.innerHTML += baris;
+            const card = `
+                <div class="report-card">
+                    <div class="report-header">
+                        <span class="id-tag">ID: ${m.id}</span>
+                        <span class="stock-tag ${m.stok <= 0 ? 'empty' : ''}">Stok: ${m.stok}</span>
+                    </div>
+                    <div class="report-body">
+                        <h4>${m.nama}</h4>
+                        <p class="price">Harga: Rp ${m.hargaPerkiraanJual.toLocaleString()}</p>
+                    </div>
+                    <button onclick="laporPenjualan(${m.id}, '${m.nama}', ${m.hargaPerkiraanJual})" 
+                            ${m.stok <= 0 ? 'disabled' : ''}>
+                        ${m.stok <= 0 ? 'STOK HABIS' : 'LAPOR TERJUAL'}
+                    </button>
+                </div>`;
+            listContainer.innerHTML += card;
         });
-        /*OPSIONAL ALERT KALAU GW PAKE INI WHERE STOK > 0 HARUS DIHAPUS
+    } catch (error) {
+        console.error("Gagal:", error);
+    }
+}
+/*OPSIONAL ALERT KALAU GW PAKE INI WHERE STOK > 0 HARUS DIHAPUS
         // Di script.js bagian muatKatalogReseller
         dataBarang.forEach(m => {
             const baris = 
@@ -105,11 +116,6 @@ async function muatKatalogReseller(targetTableId) {
                 </tr>;
             tbody.innerHTML += baris;
         }); */
-    } catch (error) {
-        console.error("Gagal total:", error);
-        alert("Server mati atau database error!");
-    }
-}
 async function laporPenjualan(id, nama, hargaSaran) {
     // Prompt sederhana, gak makan RAM gede dibanding bikin modal pop-up custom
     const hargaInput = prompt(`Barang: ${nama}\nHarga Saran: Rp ${hargaSaran.toLocaleString()}\nJual di harga berapa?`, hargaSaran);

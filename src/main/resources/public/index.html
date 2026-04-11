@@ -112,11 +112,15 @@
         </div>
     </div>
 
-    <script src="script.js">
+    <script src="script.js"></script>
+<script>
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-          .then(() => console.log("PWA Active, Bree!"))
-          .catch(err => console.log("PWA Gagal:", err));
-      }</script>
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+              .then(() => console.log("PWA Active, Bree!"))
+              .catch(err => console.log("PWA Gagal:", err));
+        });
+    }
+</script>
 </body>
 </html>
