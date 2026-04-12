@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hw-data-v2';
+const CACHE_NAME = 'hw-data-v3';
 const assets = [
   '/',
   '/index.html',

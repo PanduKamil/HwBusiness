@@ -65,7 +65,7 @@ public class MainanDAO {
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setInt(1, barang.getId());
-            pstmt.setInt(2, barang.getStok());
+            pstmt.setInt(2, jumlah);
             pstmt.setBigDecimal(3, jual);
             pstmt.setBigDecimal(4, komisi);
             pstmt.setBigDecimal(5, labaOwner);
@@ -75,12 +75,16 @@ public class MainanDAO {
         }
     }
     public Laporan getLaporanKeuangan(Integer bulan, Integer tahun){
-        String sql = "SELECT COALESCE(SUM(harga_jual), 0) as total_omset, " +
-                        "COALESCE(SUM(komisi_reseller), 0) as total_komisi, " +
-                        "COALESCE(SUM(net_profit_owner), 0) as total_bersih " +
-                        "FROM transaksi WHERE 1=1";
+        String sql = "SELECT " +
+                        "COALESCE(SUM(t.harga_jual), 0) as total_omset, " +
+                        "COALESCE(SUM(t.komisi_reseller), 0) as total_komisi, " +
+                        "COALESCE(SUM(t.net_profit_owner), 0) as total_bersih, " +
+                        "COALESCE(SUM(t.jumlah * b.harga_modal_avg), 0) as total_modal " +
+                        "FROM transaksi t " +
+                        "LEFT JOIN barang b ON t.barang_id = b.id " +
+                        "WHERE 1=1";
                 if (bulan != null && tahun != null) {
-                    sql += " AND MONTH(tanggal_jual) = ? AND YEAR(tanggal_jual) = ? ";
+                    sql += " AND MONTH(t.tanggal_jual) = ? AND YEAR(t.tanggal_jual) = ? ";
                 }
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -97,6 +101,7 @@ public class MainanDAO {
                             rs.getBigDecimal("total_omset"),
                             rs.getBigDecimal("total_komisi"),
                             rs.getBigDecimal("total_bersih"),
+                            rs.getBigDecimal("total_modal"),
                             label
                             );
                         }
@@ -105,6 +110,34 @@ public class MainanDAO {
             throw new RuntimeException("Gagal Tarik laporan :" + e.getMessage());
         }
         return null;
+    }
+    public Laporan getLaporanBulanan(int bulan, int tahun){
+        String sql = "SELECT COALESCE(SUM(t.harga_jual), 0) as total_omset, " +
+                        "COALESCE(SUM(t.komisi_reseller), 0) as total_komisi, " +
+                        "COALESCE(SUM(t.net_profit_owner), 0) as total_bersih, " +
+                        "COALESCE(SUM(t.jumlah * b.harga_modal_avg), 0) as total_modal " +
+                        "FROM transaksi t " +
+                        "LEFT JOIN barang b ON t.barang_id = b.id " +
+                        "WHERE MONTH(t.tanggal_jual) = ? AND YEAR(t.tanggal_jual) = ?" ;
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setInt(1, bulan);
+                    pstmt.setInt(2, tahun);
+                    
+                        try (ResultSet rs = pstmt.executeQuery();) {
+                            if (rs.next()) {
+                            return new Laporan(
+                            rs.getBigDecimal("total_omset"), 
+                            rs.getBigDecimal("total_komisi"), 
+                            rs.getBigDecimal("total_bersih"),
+                            rs.getBigDecimal("total_modal"),
+                            bulan + "/" + tahun);
+                            }
+                        } 
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal tarik laporan bulanan: " + e.getMessage());
+        }
+       return null;                 
     }
     public List<Mainan> getKatalogOwner(){
         List<Mainan> daftar = new ArrayList<>();
@@ -168,31 +201,6 @@ public class MainanDAO {
             }
         } catch (SQLException e) {e.printStackTrace();}
     return null;
-    }
-    public Laporan getLaporanBulanan(int bulan, int tahun){
-        String sql = "SELECT COALESCE(SUM(harga_jual), 0) as total_omset, " +
-                        "COALESCE(SUM(komisi_reseller), 0) as total_komisi, " +
-                        "COALESCE(SUM(net_profit_owner), 0) as total_bersih " +
-                        "FROM transaksi " + 
-                        "WHERE MONTH(tanggal_jual) = ? AND YEAR(tanggal_jual) = ?" ;
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                    pstmt.setInt(1, bulan);
-                    pstmt.setInt(2, tahun);
-                    
-                        try (ResultSet rs = pstmt.executeQuery();) {
-                            if (rs.next()) {
-                            return new Laporan(
-                            rs.getBigDecimal("total_omset"), 
-                            rs.getBigDecimal("total_komisi"), 
-                            rs.getBigDecimal("total_bersih"),
-                            bulan + "/" + tahun);
-                            }
-                        } 
-        } catch (SQLException e) {
-            throw new RuntimeException("Gagal tarik laporan bulanan: " + e.getMessage());
-        }
-       return null;                 
     }
     public void deleteTransaksi(Connection conn, int idTransaksi) throws SQLException {
     String sqlGetBarangId = "SELECT barang_id FROM transaksi WHERE id = ?";

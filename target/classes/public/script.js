@@ -120,7 +120,31 @@ function updateTampilanLaporan(data) {
     document.getElementById('display-omset').innerText = "Rp " + data.omset.toLocaleString();
     document.getElementById('display-komisi').innerText = "Rp " + data.komisi.toLocaleString();
     document.getElementById('display-profit').innerText = "Rp " + data.profit.toLocaleString();
+    document.getElementById('display-modal').innerText = "Rp " + data.modal.toLocaleString();
     document.getElementById('display-periode').innerText = data.periode;
+
+    // Logika ROI
+    const profit = parseFloat(data.profit);
+    const modal = parseFloat(data.modal);
+    let roi = 0;
+
+    if (modal > 0) {
+        roi = (profit / modal) * 100;
+    }
+
+    // Update tampilan ROI
+    const roiElement = document.getElementById('display-roi');
+    roiElement.innerText = roi.toFixed(2) + "%";
+     if (roi > 20) {
+        roiElement.style.color = "#39FF14"; // Hijau Neon (Sehat Banget)
+        roiElement.style.textShadow = "0 0 10px #39FF14"; // Efek Glow
+    } else if (roi >= 10 && roi <= 20) {
+        roiElement.style.color = "#FFD700"; // Kuning/Gold (Normal)
+        roiElement.style.textShadow = "0 0 10px #FFD700";
+    } else {
+        roiElement.style.color = "#FF3131"; // Merah Neon (Tipis/Evaluasi)
+        roiElement.style.textShadow = "0 0 10px #FF3131";
+    }
 }
 
 // Fungsi Filter khusus Owner

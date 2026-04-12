@@ -153,6 +153,7 @@ input:focus {
 #display-omset { color: #ff5100; font-weight: bold; font-size: 1.1rem; }
 #display-komisi { color: #ffcc00; font-weight: bold; font-size: 1.1rem; }
 #display-profit { color: #00ccff; font-weight: bold; font-size: 1.1rem; }
+#display-modal { color: #ff0000; font-weight: bold; font-size: 1.1rem; }
 
 /* Modals */
 .modal-overlay {
