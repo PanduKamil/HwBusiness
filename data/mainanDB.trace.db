@@ -42,3 +42,6 @@ ORDER BY t.waktu_transaksi DESC [42122-224]
 	at org.h2.server.web.WebThread.process(WebThread.java:190)
 	at org.h2.server.web.WebThread.run(WebThread.java:103)
 	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-04-12 16:29:23.088952+07:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "NAMA_BARANG CHARACTER VARYING(30)": "'Hw Corvette Grand Sport Roadster' (32)"; SQL statement:
+INSERT INTO barang(nama_barang, harga_modal_avg, harga_jual_perkiraan, stok) VALUES(?, ?, ?, ?) [22001-224]

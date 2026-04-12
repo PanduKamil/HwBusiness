@@ -1,4 +1,5 @@
 import io.javalin.Javalin;
+import java.util.List;
 
 public class ApiServer {
     private final GudangService service = GudangService.getInstance();
@@ -17,20 +18,49 @@ public class ApiServer {
         // --- Auth ---
         app.post("/api/login", ctx -> {
             LoginRequest req = ctx.bodyAsClass(LoginRequest.class);
-            if (service.authenticate(req.user, req.password)) ctx.status(200).result("Login Berhasil");
-            else ctx.status(401).result("Login Gagal");
+            if (service.authenticate(req.user, req.password)) {
+                ctx.json(new ApiResponse(true, "Login Berhasil", null));
+            } else {
+                ctx.status(401).json(new ApiResponse(false, "Login Gagal", null));
+            }
         });
 
         // --- Barang ---
         app.get("/api/barang", ctx -> {
-        var data = service.lihatDaftarBarangOwner();
-        ctx.json(new ApiResponse(true, "Data barang dimuat", data));
+            List<Mainan> data = service.lihatDaftarBarangOwner();
+            ctx.json(new ApiResponse(true, "Data barang dimuat", data));
+        });
+
+        app.post("/api/barang", ctx -> {
+            String msg = service.simpanMainan(ctx.bodyAsClass(Mainan.class));
+            ctx.status(201).json(new ApiResponse(true, msg, null));
+        });
+
+        app.put("/api/barang/{id}", ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            Mainan data = ctx.bodyAsClass(Mainan.class);
+            service.editBarang(id, data.getNama(), data.getHargaModal(), data.getHargaPerkiraanJual());
+            ctx.json(new ApiResponse(true, "Update Sukses", null));
         });
 
         // --- Transaksi ---
         app.get("/api/transaksi", ctx -> {
             var data = service.lihatRiwayatTransaksi();
             ctx.json(new ApiResponse(true, "Data transaksi dimuat", data));
+        });
+
+        app.post("/api/transaksi/jual/{id}", ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            // Gunakan Map agar simpel jika JualRequest belum fix
+            java.util.Map<String, Object> body = ctx.bodyAsClass(java.util.Map.class);
+            java.math.BigDecimal hargaLaku = new java.math.BigDecimal(body.get("hargaLaku").toString());
+            service.prosesPenjualan(id, hargaLaku);
+            ctx.json(new ApiResponse(true, "Laporan diterima", null));
+        });
+
+        app.delete("/api/transaksi/{id}", ctx -> {
+            service.batalkanTransaksi(Integer.parseInt(ctx.pathParam("id")));
+            ctx.json(new ApiResponse(true, "Transaksi hangus, stok balik!", null));
         });
 
         // --- Laporan ---
@@ -45,18 +75,11 @@ public class ApiServer {
             var hasil = service.cetakLaporanBulanan(b, t);
             ctx.json(new ApiResponse(true, "Laporan bulanan sukses", hasil));
         });
-        // --- Catch Excecption
-        app.exception(Exception.class, (e, ctx) -> {
-            // Log error di terminal biar lo tau apa yang rusak
-            System.err.println("Error: " + e.getMessage());
-            
-        
-            ctx.status(500).json(new ApiResponse(false, "Terjadi kesalahan: " + e.getMessage(), null));
-        });
 
-        
-        app.exception(GudangException.class, (e, ctx) -> {
-            ctx.status(400).json(new ApiResponse(false, e.getMessage(), null));
+        // --- Exception Handling ---
+        app.exception(Exception.class, (e, ctx) -> {
+            System.err.println("🔥 Error: " + e.getMessage());
+            ctx.status(500).json(new ApiResponse(false, "Server Error: " + e.getMessage(), null));
         });
     }
 }
