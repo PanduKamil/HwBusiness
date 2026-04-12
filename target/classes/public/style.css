@@ -150,7 +150,7 @@ input:focus {
     border: 2px solid #333;
 }
 
-#display-omset { color: #00ff99; font-weight: bold; font-size: 1.1rem; }
+#display-omset { color: #ff5100; font-weight: bold; font-size: 1.1rem; }
 #display-komisi { color: #ffcc00; font-weight: bold; font-size: 1.1rem; }
 #display-profit { color: #00ccff; font-weight: bold; font-size: 1.1rem; }
 

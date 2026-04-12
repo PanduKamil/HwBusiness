@@ -1,13 +1,13 @@
 {
     "name": "HW DATA Warehouse",
-    "short_name": "HWDATA",
+    "short_name": "Ban Panas",
     "start_url": "/index.html",
     "display": "standalone",
     "background_color": "#0d0d0d",
-    "theme_color": "#00ff99",
+    "theme_color": "#bc13fe",
     "icons": [
       {
-        "src": "https://cdn-icons-png.flaticon.com/512/811/811311.png",
+        "src": "https://i.pinimg.com/736x/cc/a7/6d/cca76d244972c8bd5bb96165a0f29b99.jpg",
         "sizes": "512x512",
         "type": "image/png"
       }

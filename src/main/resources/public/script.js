@@ -23,39 +23,40 @@ function showSection(idTerpilih) {
 // 2. Fungsi Ambil Data (GET)
 async function muatKatalog() {
     try {
-        const response = await fetch(`${API_URL}/barang`);
-        const dataBarang = await response.json();
+        const response = await fetch(`${API_URL}/api/barang`);
+        const result = await response.json();
 
         const listContainer = document.getElementById('owner-list-cards');
         if (!listContainer) return;
 
         listContainer.innerHTML = ""; 
+        if (result.success) {
+            const dataBarang = result.data;
 
-        if (dataBarang.length === 0) {
+            if (dataBarang.length === 0) {
             listContainer.innerHTML = "<p style='text-align:center;'>Gudang kosong, silakan input barang.</p>";
             return;
+            }
+                dataBarang.forEach(m => {
+                const card = `
+                    <div class="report-card" style="border-left: 5px solid #00ccff;">
+                        <div class="report-header">
+                            <span class="id-tag">ID: ${m.id}</span>
+                            <span class="stock-tag">Stok: ${m.stok}</span>
+                        </div>
+                        <div class="report-body">
+                            <h4>${m.nama}</h4>
+                            <p class="price" style="color: #ffcc00; margin-bottom: 5px;">Modal: Rp ${m.hargaModal.toLocaleString()}</p>
+                            <p class="price">Jual: Rp ${m.hargaPerkiraanJual.toLocaleString()}</p>
+                        </div>
+                        <button onclick="bukaModalEdit(${m.id}, '${m.nama}', ${m.hargaModal}, ${m.hargaPerkiraanJual})" 
+                                style="border-color: #00ccff; color: #00ccff;">
+                            EDIT BARANG
+                        </button>
+                    </div>`;
+                listContainer.innerHTML += card;
+            });
         }
-
-        dataBarang.forEach(m => {
-            // Kita samain formatnya kyak reseller, tapi isinya lebih lengkap (ada harga modal)
-            const card = `
-                <div class="report-card" style="border-left: 5px solid #00ccff;">
-                    <div class="report-header">
-                        <span class="id-tag">ID: ${m.id}</span>
-                        <span class="stock-tag">Stok: ${m.stok}</span>
-                    </div>
-                    <div class="report-body">
-                        <h4>${m.nama}</h4>
-                        <p class="price" style="color: #ffcc00; margin-bottom: 5px;">Modal: Rp ${m.hargaModal.toLocaleString()}</p>
-                        <p class="price">Jual: Rp ${m.hargaPerkiraanJual.toLocaleString()}</p>
-                    </div>
-                    <button onclick="bukaModalEdit(${m.id}, '${m.nama}', ${m.hargaModal}, ${m.hargaPerkiraanJual})" 
-                            style="border-color: #00ccff; color: #00ccff;">
-                        EDIT BARANG
-                    </button>
-                </div>`;
-            listContainer.innerHTML += card;
-        });
     } catch (error) {
         console.error("Gagal muat katalog owner:", error);
     }
@@ -77,60 +78,44 @@ function filterBarangOwner() {
 }
 async function muatKatalogReseller() { // Gak perlu targetTableId lagi
     try {
-        const response = await fetch(`${API_URL}/barang`);
-        const dataBarang = await response.json();
+        const response = await fetch(`${API_URL}/api/barang`);
+        const result = await response.json();
 
         const listContainer = document.getElementById('reseller-list-cards');
         if (!listContainer) return;
 
         listContainer.innerHTML = ""; 
 
-        if (dataBarang.length === 0) {
-            listContainer.innerHTML = "<p style='text-align:center;'>Barang kosong, Bree.</p>";
-            return;
-        }
+        if (result.success) {
+            const dataBarang = result.data;
 
-        dataBarang.forEach(m => {
-            const card =`
-                <div class="report-card">
-                    <div class="report-header">
-                        <span class="id-tag">ID: ${m.id}</span>
-                        <span class="stock-tag ${m.stok <= 0 ? 'empty' : ''}">Stok: ${m.stok}</span>
-                    </div>
-                    <div class="report-body">
-                        <h4>${m.nama}</h4>
-                        <p class="price">Harga: Rp ${m.hargaPerkiraanJual.toLocaleString()}</p>
-                    </div>
-                    <button onclick="laporPenjualan(${m.id}, '${m.nama}', ${m.hargaPerkiraanJual})" 
-                            ${m.stok <= 0 ? 'disabled' : ''}>
-                        ${m.stok <= 0 ? 'STOK HABIS' : 'LAPOR TERJUAL'}
-                    </button>
-                </div>`;
-            listContainer.innerHTML += card;
-        });
+            if (dataBarang.length === 0) {
+            listContainer.innerHTML = "<p style='text-align:center;'>Gudang kosong, silakan input barang.</p>";
+            return;
+            }
+                dataBarang.forEach(m => {
+                const card =`
+                    <div class="report-card">
+                        <div class="report-header">
+                            <span class="id-tag">ID: ${m.id}</span>
+                            <span class="stock-tag ${m.stok <= 0 ? 'empty' : ''}">Stok: ${m.stok}</span>
+                        </div>
+                        <div class="report-body">
+                            <h4>${m.nama}</h4>
+                            <p class="price">Harga: Rp ${m.hargaPerkiraanJual.toLocaleString()}</p>
+                        </div>
+                        <button onclick="laporPenjualan(${m.id}, '${m.nama}', ${m.hargaPerkiraanJual})" 
+                                ${m.stok <= 0 ? 'disabled' : ''}>
+                            ${m.stok <= 0 ? 'STOK HABIS' : 'LAPOR TERJUAL'}
+                        </button>
+                    </div>`;
+                listContainer.innerHTML += card;
+            });
+        } 
     } catch (error) {
         console.error("Gagal:", error);
     }
 }
-/*OPSIONAL ALERT KALAU GW PAKE INI WHERE STOK > 0 HARUS DIHAPUS
-        // Di script.js bagian muatKatalogReseller
-        dataBarang.forEach(m => {
-            const baris = 
-                <tr>
-                    <td>${m.id}</td>
-                    <td>${m.nama}</td>
-                    <td>${m.stok}</td>
-                    <td>Rp ${m.hargaPerkiraanJual.toLocaleString()}</td>
-                    <td>
-                        <button onclick="laporPenjualan(${m.id}, '${m.nama}', ${m.hargaPerkiraanJual})" 
-                                ${m.stok <= 0 ? 'disabled' : ''}>
-                            ${m.stok <= 0 ? 'Habis' : 'Laku'}
-                        </button>
-                    </td>
-                </tr>;
-            tbody.innerHTML += baris;
-        }); */
-// 1. Fungsi buat buka modal dan isi datanya
 function laporPenjualan(id, nama, hargaSaran) {
     document.getElementById('lapor-id').value = id;
     document.getElementById('lapor-info-barang').innerText = `Barang: ${nama} \n(Saran: Rp ${hargaSaran.toLocaleString()})`;
@@ -328,54 +313,44 @@ async function simpanPerubahanBarang() {
         alert("Server error!");
     }
 }
-// 1. Fungsi muat riwayat
+// Muat Riwayat
 async function muatRiwayat() {
     try {
         const response = await fetch(`${API_URL}/transaksi`);
-        
-        // Cek dulu, responnya OK gak?
-        if (!response.ok) {
-            throw new Error("Gagal ambil data dari server");
-        }
-
-        // Cek isi teks aslinya sebelum di-parse ke JSON
-        const rawData = await response.text();
-        console.log("Isi data dari server:", rawData); // Liat di console isinya apa
-
-        // Baru deh diubah ke JSON kalau yakin isinya JSON
-        const dataTrx = JSON.parse(rawData);
+        const result = await response.json();
 
         const container = document.getElementById('riwayat-list-cards');
         container.innerHTML = "";
 
-        if (dataTrx.length === 0) {
-            container.innerHTML = "<p style='text-align:center;'>Belum ada transaksi.</p>";
-            return;
-        }
+        if (result.success) {
+            const dataTrx = result.data; // Ambil list TransaksiDTO
+            
+            if (dataTrx.length === 0) {
+                container.innerHTML = "<p style='text-align:center;'>Belum ada transaksi.</p>";
+                return;
+            }
 
-        dataTrx.forEach(t => {
-            const card = `
-                <div class="report-card" style="border-left: 5px solid #ffcc00;">
-                    <div class="report-header">
-                        <span>ID Trx: ${t.id}</span>
-                        <span>${t.tanggal || ''}</span>
-                    </div>
-                    <div class="report-body">
-                        <h4>${t.namaBarang}</h4>
-                        <p class="price">Laku: Rp ${t.hargaLaku.toLocaleString()}</p>
-                        <p style="font-size: 0.8rem; color: #888;">Profit: Rp ${t.profit.toLocaleString()}</p>
-                    </div>
-                    <button onclick="batalkanTransaksi(${t.id})" 
-                            style="border-color: #ff4444; color: #ff4444; padding: 0.5rem; font-size: 0.8rem; margin-top: 10px;">
-                        BATALKAN (Hapus)
-                    </button>
-                </div>`;
-            container.innerHTML += card;
-        });
+            dataTrx.forEach(t => {
+                const card = `
+                    <div class="report-card" style="border-left: 5px solid #ffcc00;">
+                        <div class="report-header">
+                            <span>ID Trx: ${t.id}</span>
+                            <span>${t.tanggal}</span>
+                        </div>
+                        <div class="report-body">
+                            <h4>${t.namaBarang}</h4>
+                            <p class="price">Laku: Rp ${t.hargaLaku.toLocaleString()}</p>
+                        </div>
+                        <button onclick="batalkanTransaksi(${t.id})" 
+                                style="border-color: #ff4444; color: #ff4444; padding: 0.5rem; font-size: 0.8rem; margin-top: 10px;">
+                            BATALKAN (Hapus)
+                        </button>
+                    </div>`;
+                container.innerHTML += card;
+            });
+        }
     } catch (err) {
-        console.error("Detail Error:", err);
-        const container = document.getElementById('riwayat-list-cards');
-        if(container) container.innerHTML = `<p style='color:red;'>Error: ${err.message}</p>`;
+        console.error(err);
     }
 }
 

@@ -224,11 +224,13 @@ public class MainanDAO {
         pstmtUpdate.executeUpdate();
     }
 }
-    /*public List<Transaksi> getAllTransaksi() {
-    List<Transaksi> list = new ArrayList<>();
-    String sql = "SELECT t.id, b.nama AS nama_barang, t.harga_laku, t.profit, t.tanggal " +
+
+    public List<TransaksiDTO> getAllTransaksi() {
+    List<TransaksiDTO> list = new ArrayList<>();
+    String sql = "SELECT t.id, b.nama_barang, b.harga_modal_avg, t.harga_jual, t.net_profit_owner, " +
+                 "FORMATDATETIME(t.tanggal_jual, 'dd-MM-yyyy HH:mm') as tgl " +
                  "FROM transaksi t " +
-                 "JOIN barang b ON t.barang_id = b.id " +
+                 "INNER JOIN barang b ON t.barang_id = b.id " +
                  "ORDER BY t.id DESC"; // Biar yang terbaru di atas
 
     try (Connection conn = DatabaseConnection.getConnection();
@@ -236,17 +238,17 @@ public class MainanDAO {
          ResultSet rs = pstmt.executeQuery()) {
 
         while (rs.next()) {
-            Transaksi trx = new Transaksi();
-            trx.setId(rs.getInt("id"));
-            trx.setNamaBarang(rs.getString("nama_barang"));
-            trx.setHargaLaku(rs.getDouble("harga_laku"));
-            trx.setProfit(rs.getDouble("profit"));
-            trx.setTanggal(rs.getString("tanggal"));
-            list.add(trx);
+            list.add(new TransaksiDTO(
+                rs.getInt("id"),
+             rs.getString("nama_barang"), 
+             rs.getBigDecimal("harga_modal_avg"), 
+             rs.getBigDecimal("harga_jual"), 
+             rs.getBigDecimal("net_profit_owner"), 
+             rs.getString("tgl")));
         }
     } catch (SQLException e) {
-        e.printStackTrace();
+        throw new RuntimeException("Gagal mengambil riwayat" + e.getMessage());
     }
     return list;
-}*/
+}
 }

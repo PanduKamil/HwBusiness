@@ -127,5 +127,12 @@
     </div>
 
     <script src="script.js"></script>
-</body>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+            .then(() => console.log("PWA Active"))
+            .catch(err => console.log("PWA Failed", err));
+        }
+    </script>
+    </body>
 </html>

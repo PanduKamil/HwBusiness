@@ -106,9 +106,9 @@ public class GudangService {
             throw new Exception("Gagal mengupdate barang: " + e.getMessage());
         }
     }
-    /*public List<Transaksi> lihatRiwayatTransaksi(){
-        return mainanDAO.getRiwayatTransaksi();
-    } */
+    public List<TransaksiDTO> lihatRiwayatTransaksi(){
+        return mainanDAO.getAllTransaksi();
+    } 
     
     public void batalkanTransaksi(int idTransaksi) {
     Connection conn = null;
