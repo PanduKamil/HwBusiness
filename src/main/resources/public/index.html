@@ -106,15 +106,14 @@
             <div id="reseller-list-cards"></div>
             <button onclick="showSection('main-menu')">Kembali</button>
         </div>
-        <div id="booking-menu" class="section" style="display:none;">
-    <h2>Daftar Booking Aktif</h2>
-    <div class="search-box">
-        <input type="text" id="cari-booking" placeholder="Cari pembooking atau mobil..." onkeyup="filterBooking()">
-    </div>
-    <div id="booking-list-cards" class="katalog-container"></div> 
-    
-    <button onclick="showSection('main-menu')">Kembali</button>
-</div>
+        <div id="booking-menu" class="section">
+            <h2>Daftar Booking Aktif</h2>
+            <div class="search-box">
+                <input type="text" id="cari-booking" placeholder="Cari pembooking..." onkeyup="filterBooking()">
+            </div>
+            <div id="booking-list-cards" class="katalog-container"></div> 
+            <button onclick="showSection('main-menu')">Kembali</button>
+        </div>
     </div> 
     <div id="modal-edit" class="modal-overlay">
         <div class="modal-content" style="border-color: #00ccff;">

@@ -175,6 +175,21 @@ input:focus {
     max-width: 400px;
     border: 2px solid #bc13fe;
 }
+/* Container untuk daftar card agar rapi ke bawah */
+.katalog-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    padding: 10px 0;
+}
+
+/* Pastikan h4 di dalam card tidak terlalu besar */
+.report-body h4 {
+    margin: 5px 0;
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+}
 
 /* PWA Mobile Fix */
 @media (max-width: 600px) {

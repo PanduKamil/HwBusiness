@@ -334,22 +334,21 @@ async function muatDaftarBooking() {
     if(res.success && res.data.length > 0) {
         res.data.forEach(bk => {
             const card = 
-                `<div class="card" style="border-left: 5px solid #00ffcc;">
-                    <div class="card-header">
-                        <span class="stok-tag">Booking Aktif</span>
-                        <h4>${bk.namaBarang}</h4>
+                `<div class="report-card" style="border-left: 5px solid #00ffcc;">
+                    <div class="report-header">
+                        <span>ID Booking: ${bk.id}</span>
+                        <span style="color: #ff3131;">Deadline: ${bk.batasPembayaranStr}</span>
                     </div>
-                    <div class="card-body">
-                        <p><strong>Pembooking:</strong> ${bk.namaPembooking}</p>
-                        <p><strong>Deadline:</strong> <span style="color: #ff3131;">${bk.batasPembayaranStr}</span></p>
-                        <p><strong>Jumlah:</strong> ${bk.jumlah} pcs</p>
+                    <div class="report-body">
+                        <h4 style="color: #00ccff;">${bk.namaBarang}</h4>
+                        <p>Pembooking: <strong>${bk.namaPembooking}</strong></p>
+                        <p>Jumlah: ${bk.jumlah} pcs</p>
                     </div>
-                    <div class="card-actions">
-                        <button class="btn-lunas" onclick="prosesBayarBooking(${bk.id})">LUNAS</button>
-                        <button class="btn-cancel" onclick="handleCancelBooking(${bk.id})">CANCEL</button>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button onclick="prosesBayarBooking(${bk.id})">LUNAS</button>
+                        <button onclick="handleCancelBooking(${bk.id})" style="border-color: #ff3131; color: #ff3131;">CANCEL</button>
                     </div>
-                </div>`
-            ;
+                </div>`;
             container.innerHTML += card;
         });
     } else {
