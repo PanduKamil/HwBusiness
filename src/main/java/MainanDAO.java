@@ -204,29 +204,37 @@ public class MainanDAO {
         }
     }
     public void deleteTransaksi(Connection conn, int idTransaksi) throws SQLException {
-    String sqlGetBarangId = "SELECT barang_id FROM transaksi WHERE id = ?";
+    // 1. Query untuk ambil data sebelum dihapus
+    String sqlGetInfo = "SELECT barang_id, jumlah FROM transaksi WHERE id = ?";
     String sqlDelete = "DELETE FROM transaksi WHERE id = ?";
-    String sqlUpdateStok = "UPDATE barang SET stok = stok + 1 WHERE id = ?";
+    String sqlUpdateStok = "UPDATE barang SET stok = stok + ? WHERE id = ?";
 
     int idBarang = 0;
+    int jumlahTerjual = 0;
 
-    try (PreparedStatement pstmtGet = conn.prepareStatement(sqlGetBarangId)) {
+    // STEP 1: Ambil info barang & jumlah
+    try (PreparedStatement pstmtGet = conn.prepareStatement(sqlGetInfo)) {
         pstmtGet.setInt(1, idTransaksi);
-        ResultSet rs = pstmtGet.executeQuery();
-        if (rs.next()) {
-            idBarang = rs.getInt("barang_id");
-        } else {
-            throw new SQLException("Transaksi tidak ditemukan");
+        try (ResultSet rs = pstmtGet.executeQuery()) {
+            if (rs.next()) {
+                idBarang = rs.getInt("barang_id");
+                jumlahTerjual = rs.getInt("jumlah");
+            } else {
+                throw new SQLException("Transaksi tidak ditemukan!");
+            }
         }
     }
 
+    // STEP 2: Hapus transaksi
     try (PreparedStatement pstmtDelete = conn.prepareStatement(sqlDelete)) {
         pstmtDelete.setInt(1, idTransaksi);
         pstmtDelete.executeUpdate();
     }
 
+    // STEP 3: Balikin stok sesuai jumlah yang tadi diambil
     try (PreparedStatement pstmtUpdate = conn.prepareStatement(sqlUpdateStok)) {
-        pstmtUpdate.setInt(1, idBarang); 
+        pstmtUpdate.setInt(1, jumlahTerjual); // Pakai variabel jumlahTerjual, bukan hardcode 1
+        pstmtUpdate.setInt(2, idBarang);
         pstmtUpdate.executeUpdate();
     }
 }
