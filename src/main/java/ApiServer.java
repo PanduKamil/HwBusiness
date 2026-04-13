@@ -1,5 +1,8 @@
 import io.javalin.Javalin;
+
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 public class ApiServer {
     private final GudangService service = GudangService.getInstance();
@@ -76,10 +79,59 @@ public class ApiServer {
             ctx.json(new ApiResponse(true, "Laporan bulanan sukses", hasil));
         });
 
+        // --- Booking ---
+
+        app.post("/api/booking", ctx -> {
+            Map<String, Object> body = ctx.bodyAsClass(Map.class);
+            
+            // Cara aman: ubah ke String dulu baru ke Integer
+            int idBarang = Integer.parseInt(body.get("idBarang").toString());
+            String nama = body.get("nama").toString();
+            int jumlah = Integer.parseInt(body.get("jumlah").toString());
+            String tanggal = body.get("tanggal").toString();
+
+            try {
+                service.prosesBooking(idBarang, nama, jumlah, tanggal);
+                ctx.json(new ApiResponse(true, "Booking berhasil dicatat!", null));
+            } catch (Exception e) {
+                ctx.status(400).json(new ApiResponse(false, "Gagal booking: " + e.getMessage(), null));
+            }
+        });
+
+        app.get("/api/booking/list", ctx -> {
+            var hasil = service.lihatDaftarBooking(); // Pastikan method ini ada di GudangService
+            ctx.json(new ApiResponse(true, "Data booking berhasil dimuat", hasil));
+        });
+        app.post("/api/booking/cancel/{id}", ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            try {
+                service.cancelBooking(id);
+                ctx.json(new ApiResponse(true, "Booking dibatalkan, stok kembali!", null));
+            } catch (Exception e) {
+                ctx.status(400).json(new ApiResponse(false, e.getMessage(), null));
+            }
+        });
+
+        app.post("/api/booking/lunas/{id}", ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            Map<String, Object> body = ctx.bodyAsClass(Map.class);
+            
+            // Konversi input harga dari String ke BigDecimal
+            BigDecimal hargaLaku = new BigDecimal(body.get("hargaLaku").toString());
+
+            try {
+                service.prosesPelunasan(id, hargaLaku);
+                ctx.json(new ApiResponse(true, "Booking Berhasil Dilunasi!", null));
+            } catch (Exception e) {
+                ctx.status(400).json(new ApiResponse(false, "Gagal melunasi: " + e.getMessage(), null));
+            }
+        });
+
         // --- Exception Handling ---
         app.exception(Exception.class, (e, ctx) -> {
             System.err.println("🔥 Error: " + e.getMessage());
             ctx.status(500).json(new ApiResponse(false, "Server Error: " + e.getMessage(), null));
         });
+        
     }
 }

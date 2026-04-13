@@ -14,7 +14,8 @@
         <div id="main-menu" class="section">
             <button onclick="showSection('owner-login')">1. Owner Only</button>
             <button onclick="showSection('reseller-menu'); muatKatalogReseller()">2. Lapor Penjualan (Reseller)</button>
-            <button onclick="exitApp()">3. Keluar</button>
+            <button onclick="showSection('booking-menu')">3. Booking menu</button>
+            <button onclick="exitApp()">4. Keluar</button>
         </div>
 
         <div id="owner-login" class="section">
@@ -105,7 +106,15 @@
             <div id="reseller-list-cards"></div>
             <button onclick="showSection('main-menu')">Kembali</button>
         </div>
-
+        <div id="booking-menu" class="section" style="display:none;">
+    <h2>Daftar Booking Aktif</h2>
+    <div class="search-box">
+        <input type="text" id="cari-booking" placeholder="Cari pembooking atau mobil..." onkeyup="filterBooking()">
+    </div>
+    <div id="booking-list-cards" class="katalog-container"></div> 
+    
+    <button onclick="showSection('main-menu')">Kembali</button>
+</div>
     </div> 
     <div id="modal-edit" class="modal-overlay">
         <div class="modal-content" style="border-color: #00ccff;">

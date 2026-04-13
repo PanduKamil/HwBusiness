@@ -9,9 +9,10 @@ function showSection(idTerpilih) {
     if (idTerpilih === 'owner-menu' || idTerpilih === 'owner-katalog') muatKatalog();
     if (idTerpilih === 'reseller-menu') muatKatalogReseller();
     if (idTerpilih === 'owner-riwayat') muatRiwayat();
+    if (idTerpilih === 'booking-menu') muatDaftarBooking();
 }
 
-// 2. Load Data Barang (Owner & Reseller)
+// ---- Katalog
 async function muatKatalog() {
     try {
         const response = await fetch(`${API_URL}/api/barang`);
@@ -51,12 +52,15 @@ async function muatKatalogReseller() {
                     <button onclick="laporPenjualan(${m.id}, '${m.nama}', ${m.hargaPerkiraanJual})" ${m.stok <= 0 ? 'disabled' : ''}>
                         ${m.stok <= 0 ? 'STOK HABIS' : 'LAPOR TERJUAL'}
                     </button>
+                    <button onclick="handleBooking(${m.id})" style="background-color: #ff00ff;" ${m.stok <= 0 ? 'disabled' : ''}>
+                    BOOK
+                </button>
                 </div>`;
         });
     } catch (e) { console.error(e); }
 }
 
-// 3. Transaksi & Riwayat
+// ------ Transaksi & Riwayat
 async function eksekusiLaporPenjualan() {
     const id = document.getElementById('lapor-id').value;
     const hargaLaku = parseFloat(document.getElementById('lapor-harga-input').value);
@@ -296,6 +300,99 @@ function filterRiwayat() {
         const teks = card.innerText.toLowerCase();
         card.style.display = teks.includes(input) ? 'flex' : 'none';
     });
+}
+// Booking Feature
+
+async function handleBooking(idBarang) {
+    const nama = prompt("Nama Pembooking:");
+    const tanggal = prompt("Janji bayar (YYYY-MM-DD):", "2026-04-30");
+    
+    if (!nama || !tanggal) return;
+
+    const resp = await fetch(`${API_URL}/api/booking`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            idBarang: idBarang,
+            nama: nama,
+            jumlah: 1, // Default 1 dulu
+            tanggal: tanggal
+        })
+    });
+
+    const res = await resp.json();
+    alert(res.message);
+    if(res.success) location.reload(); // Refresh biar stok terupdate
+}
+async function muatDaftarBooking() {
+    const resp = await fetch(`${API_URL}/api/booking/list`);
+    const res = await resp.json();
+    
+    const container = document.getElementById('booking-list-cards');
+    container.innerHTML = ''; 
+
+    if(res.success && res.data.length > 0) {
+        res.data.forEach(bk => {
+            const card = 
+                `<div class="card" style="border-left: 5px solid #00ffcc;">
+                    <div class="card-header">
+                        <span class="stok-tag">Booking Aktif</span>
+                        <h4>${bk.namaBarang}</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Pembooking:</strong> ${bk.namaPembooking}</p>
+                        <p><strong>Deadline:</strong> <span style="color: #ff3131;">${bk.batasPembayaranStr}</span></p>
+                        <p><strong>Jumlah:</strong> ${bk.jumlah} pcs</p>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-lunas" onclick="prosesBayarBooking(${bk.id})">LUNAS</button>
+                        <button class="btn-cancel" onclick="handleCancelBooking(${bk.id})">CANCEL</button>
+                    </div>
+                </div>`
+            ;
+            container.innerHTML += card;
+        });
+    } else {
+        container.innerHTML = `<p style="text-align:center;">Tidak ada booking aktif</p>`;
+    }
+}
+
+// Tambahkan Fitur Search Booking
+function filterBooking() {
+    const keyword = document.getElementById('cari-booking').value.toLowerCase();
+    const cards = document.querySelectorAll('#booking-list-cards .card');
+    
+    cards.forEach(card => {
+        const isiCard = card.innerText.toLowerCase();
+        card.style.display = isiCard.includes(keyword) ? "block" : "none";
+    });
+}
+async function prosesBayarBooking(id) {
+    const harga = prompt("Masukkan Harga Jual Final:");
+    if (!harga || isNaN(harga)) return;
+
+    try {
+        const resp = await fetch(`${API_URL}/api/booking/lunas/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ hargaLaku: harga })
+        });
+        const res = await resp.json();
+        alert(res.message);
+        if (res.success) muatDaftarBooking(); // Refresh tabel booking
+    } catch (err) {
+        alert("Terjadi kesalahan sistem.");
+    }
+}
+async function handleCancelBooking(id) {
+    if(!confirm("Yakin mau cancel booking ini? Stok akan dikembalikan.")) return;
+
+    const resp = await fetch(`${API_URL}/api/booking/cancel/${id}`, {
+        method: 'POST'
+    });
+    const res = await resp.json();
+    alert(res.message);
+    if(res.success) muatDaftarBooking(); // Refresh tabel
 }
 function exitApp() {
     if(confirm("Yakin mau keluar?")) {

@@ -1,6 +1,7 @@
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class GudangService {
@@ -137,5 +138,97 @@ public class GudangService {
         }
     }
 }
+    // ---- Booking Logic
+    public void prosesBooking(int idBarang, String namaCustomer, int jumlah, String tglJanji) throws Exception {
+        // 1. Cari barangnya dulu
+        Mainan m = mainanDAO.cariBarang(idBarang);
+        if (m == null) throw new Exception("Barang tidak ditemukan!");
+        if (m.getStok() < jumlah) throw new Exception("Stok tidak mencukupi untuk dibooking!");
+
+        // 2. Parsing tanggal dari String (HTML input) ke LocalDate
+        LocalDate deadline = LocalDate.parse(tglJanji); 
+        
+        // 3. Siapkan objek Booking
+        Booking baru = new Booking(idBarang, namaCustomer, jumlah, deadline);
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false); // Mulai Transaksi
+            try {
+                // A. Kurangi stok barang di rak (biar gak dibeli orang lain)
+                m.setStok(m.getStok() - jumlah);
+                mainanDAO.updateBarang(m, conn);
+
+                // B. Catat siapa yang booking
+                mainanDAO.tambahBooking(baru, conn);
+
+                conn.commit();
+                System.out.println("Booking Berhasil! Barang " + m.getNama() + " sudah diamankan.");
+            } catch (Exception e) {
+                conn.rollback();
+                throw new Exception("Gagal proses booking: " + e.getMessage());
+            }
+        }
+    }
+    public List<Booking> lihatDaftarBooking(){
+        return mainanDAO.getActiveBookings();
+    }
+    // ----- cancel booking feature
+    public void cancelBooking(int bookingId) throws Exception {
+        // 1. Ambil data booking dulu (Pakai versi mandiri)
+        Booking bk = mainanDAO.getBookingById(bookingId); 
+        if (bk == null) throw new Exception("Data booking tidak ditemukan!");
+
+        // 2. Buka koneksi baru untuk TRANSAKSI
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false); // Kunci transaksi
+            try {
+                // A. Balikin stok
+                Mainan m = mainanDAO.cariBarang(bk.getBarangId());
+                m.setStok(m.getStok() + bk.getJumlah());
+                mainanDAO.updateBarang(m, conn);
+
+                // B. Update status jadi CANCELLED
+                mainanDAO.updateStatusBooking(bookingId, "CANCELLED", conn);
+
+                conn.commit(); // Eksekusi semua
+            } catch (Exception e) {
+                conn.rollback(); // Batalkan jika ada yang gagal
+                throw e;
+            }
+        }
+    }
+
+    public void prosesPelunasan(int bookingId, BigDecimal hargaLaku) throws Exception {
+        Booking bk = mainanDAO.getBookingById(bookingId);
+        if (bk == null) throw new Exception("Data booking tidak ditemukan!");
+
+        // Ambil objek Mainan lengkap karena method catatTransaksi butuh objeknya
+        Mainan m = mainanDAO.cariBarang(bk.getBarangId());
+        
+        // Hitung Keuangan pakai BigDecimal
+        BigDecimal modalTotal = m.getHargaModal().multiply(new BigDecimal(bk.getJumlah()));
+        BigDecimal profitKotor = hargaLaku.subtract(modalTotal);
+        
+        // Contoh komisi 20% (0.2)
+        BigDecimal komisi = profitKotor.multiply(new BigDecimal("0.2"));
+        BigDecimal profitOwner = profitKotor.subtract(komisi);
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                // PAKAI METHOD catatTransaksi PUNYA LO
+                // Parameter: (objek Mainan, jumlah, hargaJual, komisi, profitOwner, connection)
+                mainanDAO.catatTransaksi(m, bk.getJumlah(), hargaLaku, komisi, profitOwner, conn);
+
+                // Update status booking jadi COMPLETED
+                mainanDAO.updateStatusBooking(bookingId, "COMPLETED", conn);
+
+                conn.commit();
+            } catch (Exception e) {
+                conn.rollback();
+                throw e;
+            }
+        }
+    }
 }
 

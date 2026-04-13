@@ -9,7 +9,6 @@ public class DatabaseConnection {
     private static String URL;
     private static String USER;
     private static String PASSWORD;
-    private static Connection connection;
 
         private DatabaseConnection(){}
         
@@ -26,13 +25,9 @@ public class DatabaseConnection {
                 throw new RuntimeException("File .env gagal terbaca");
             }
         }
-        public static Connection getConnection() throws SQLException{
-            
-                if (connection == null || connection.isClosed()) {
-                    connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                }
-                return connection;
-            }
+        public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+        }
 
         public static void setupDatabase() {
         String sqlBarang ="CREATE TABLE IF NOT EXISTS barang(" +
@@ -53,10 +48,21 @@ public class DatabaseConnection {
                             "net_profit_owner DECIMAL(12,5), " +
                             "tanggal_jual TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                             "FOREIGN KEY (barang_id) REFERENCES barang(id))";
+    
+        String sqlBooking = "CREATE TABLE IF NOT EXISTS booking (" +
+                                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                                "barang_id INT, " +
+                                "nama_pembooking VARCHAR(50), " +
+                                "jumlah INT DEFAULT 1, " +
+                                "tanggal_booking TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                                "batas_pembayaran DATE, " + /// Tanggal dia janji bayar
+                                "status VARCHAR(20) DEFAULT 'ACTIVE', " + // ACTIVE, CANCELLED, COMPLETED
+                                "FOREIGN KEY (barang_id) REFERENCES barang(id)) ";
         try (Connection conn = DatabaseConnection.getConnection();
             Statement pstmt = conn.createStatement();) {
                 pstmt.execute(sqlBarang);
                 pstmt.execute(sqlTransaksi);
+                pstmt.execute(sqlBooking);
         } catch (SQLException e) { e.printStackTrace();
         }
     }
