@@ -1,3 +1,4 @@
+
 const API_URL = "https://specimen-recliner-credible.ngrok-free.dev";
 
 // 1. Fungsi Navigasi & Reset
@@ -105,6 +106,7 @@ async function batalkanTransaksi(id) {
     if(res.success) { alert(res.message); muatRiwayat(); }
 }
 
+
 // 4. Laporan
 async function muatLaporanTotal() {
     const resp = await fetch(`${API_URL}/api/laporan/total`);
@@ -169,7 +171,6 @@ function laporPenjualan(id, nama, hargaSaran) {
     document.getElementById('lapor-id').value = id;
     document.getElementById('lapor-info-barang').innerText = `Barang: ${nama} \n(Saran: Rp ${hargaSaran.toLocaleString()})`;
     document.getElementById('lapor-harga-input').value = hargaSaran; // Default isi harga saran
-    
     document.getElementById('modal-lapor').style.display = 'flex';
 }
 
@@ -226,17 +227,6 @@ async function handleInputBarang() {
     } catch (err) {
         alert("Gagal simpan! Cek terminal Java lo.");
     }
-}
-// 5. Fungsi cek Laporan total
-async function muatLaporanOwner() {
-    const response = await fetch(`${API_URL}/api/laporan/total`);
-    const data = await response.json(); // Isinya object dari class Laporan
-    
-    // Perhatikan nama field-nya harus sama ama di Java (Laporan.java)
-    document.getElementById('display-omset').innerText = data.omset;
-    document.getElementById('display-komisi').innerText = data.komisi;
-    document.getElementById('display-profit').innerText = data.bersih;
-    alert("Laporan untuk: " + data.label);
 }
 
 function filterBarangReseller() {
