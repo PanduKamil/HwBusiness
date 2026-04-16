@@ -58,7 +58,7 @@ public class ApiServer {
             java.util.Map<String, Object> body = ctx.bodyAsClass(java.util.Map.class);
             java.math.BigDecimal hargaLaku = new java.math.BigDecimal(body.get("hargaLaku").toString());
             service.prosesPenjualan(id, hargaLaku);
-            ctx.json(new ApiResponse(true, "Laporan diterima", null));
+            ctx.json(new ApiResponse(true, "[AJ]Laporan diterima", null));
         });
 
         app.delete("/api/transaksi/{id}", ctx -> {
@@ -129,7 +129,7 @@ public class ApiServer {
 
         // --- Exception Handling ---
         app.exception(Exception.class, (e, ctx) -> {
-            System.err.println("🔥 Error: " + e.getMessage());
+            System.err.println("[AJ] Error: " + e.getMessage());
             ctx.status(500).json(new ApiResponse(false, "Server Error: " + e.getMessage(), null));
         });
         

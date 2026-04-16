@@ -36,7 +36,17 @@ async function muatKatalog() {
         });
     } catch (e) { console.error(e); }
 }
+function bukaModalEdit(id, nama, modal, jual) {
+    document.getElementById('edit-id').value = id;
+    document.getElementById('edit-nama').value = nama;
+    document.getElementById('edit-modal').value = modal;
+    document.getElementById('edit-jual').value = jual;
+    document.getElementById('modal-edit').style.display = 'flex';
+}
 
+function tutupModalEdit() {
+    document.getElementById('modal-edit').style.display = 'none';
+}
 async function muatKatalogReseller() {
     try {
         const response = await fetch(`${API_URL}/api/barang`);
@@ -243,17 +253,6 @@ function filterBarangReseller() {
             card.style.display = 'none';
         }
     });
-}
-function bukaModalEdit(id, nama, modal, jual) {
-    document.getElementById('edit-id').value = id;
-    document.getElementById('edit-nama').value = nama;
-    document.getElementById('edit-modal').value = modal;
-    document.getElementById('edit-jual').value = jual;
-    document.getElementById('modal-edit').style.display = 'flex';
-}
-
-function tutupModalEdit() {
-    document.getElementById('modal-edit').style.display = 'none';
 }
 
 async function simpanPerubahanBarang() {

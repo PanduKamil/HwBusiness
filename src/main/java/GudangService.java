@@ -122,7 +122,7 @@ public class GudangService {
         mainanDAO.deleteTransaksi(conn, idTransaksi);
 
         conn.commit(); // Kalau sukses semua, simpan!
-        System.out.println("Sip! Transaksi hangus, stok aman balik ke rak.");
+        System.out.println("Transaksi hangus, stok aman balik ke rak.");
 
     } catch (Exception e) {
         if (conn != null) {

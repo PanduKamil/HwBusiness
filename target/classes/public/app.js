@@ -57,15 +57,17 @@ window.showSection = (idTerpilih) => {
     // Auto-refresh data sesuai section yang dibuka
     if (['owner-menu', 'owner-katalog'].includes(idTerpilih)) muatKatalog();
     if (idTerpilih === 'reseller-menu') muatKatalogReseller();
-    if (idTerpilih === 'owner-riwayat') muatRiwayat();
+    if (idTerpilih === 'riwayat-transaksi-section') muatRiwayat();
     if (idTerpilih === 'booking-menu') muatDaftarBooking();
 };
 // Pembatalan Transaksi
 window.batalkanTransaksi = async (id) => {
     try {
         if(!confirm("Batalin?")) return;
-    const res = await GudangApi.deleteTransaksi();
-    if(res.success) { alert(res.message); muatRiwayat(); }
+    const res = await GudangApi.deleteTransaksi(id);
+    if(res.success) { alert(res.message);
+        console.log("Transaksi berhasil");
+         muatRiwayat(); }
     } catch (error) {
          alert("Error: " + error.message);
     }
@@ -80,6 +82,7 @@ window.eksekusiLaporPenjualan = async () => {
                 alert(res.message);
                 tutupModalLapor();
                 muatKatalogReseller();
+
         }
     } catch (error) {
         alert("Error: " + error.message);
@@ -90,7 +93,7 @@ window.eksekusiLaporPenjualan = async () => {
 window.handleLaporanFilter = async () => {
     const b = document.getElementById('filter-bulan').value;
     const t = document.getElementById('filter-tahun').value;
-    const res = await GudangApi.getLaporanBulanan();
+    const res = await GudangApi.getLaporanBulanan(b, t);
     if(res.success) GudangUi.updateTampilanLaporan(res.data);
 };
 // Login Owner
@@ -125,7 +128,12 @@ window.handleInputBarang = async () => {
         showSection('owner-menu');
 };
 window.laporPenjualan = async (id, nama, hargaSaran) => {
-    GudangUi.isiModalLapor(id, nama, hargaSaran);
+    try {
+        GudangUi.isiModalLapor(id, nama, hargaSaran);
+        console.log("Laporan berhasil");
+    } catch (error) {
+        alert("Error: Gagal Lapor" + error.message);
+    }
 };
 window.simpanPerubahanBarang = async () => {
     const id = document.getElementById('edit-id').value;
@@ -134,9 +142,8 @@ window.simpanPerubahanBarang = async () => {
         hargaModal: parseFloat(document.getElementById('edit-modal').value),
         hargaPerkiraanJual: parseFloat(document.getElementById('edit-jual').value)
     };
-
-    const response = await GudangApi.saveBarang();
-    if (response.ok) {
+    const response = await GudangApi.saveBarang(id, data);
+    if (response.success) {
             alert("Data berhasil diupdate!");
             tutupModalEdit();
             muatKatalog('tabel-owner'); // Refresh tabel
@@ -146,23 +153,32 @@ window.simpanPerubahanBarang = async () => {
 }
 // POP UP
 window.bukaModalEdit = (id, nama, modal, jual) => {
-    GudangUi.toggleModal('modal-edit', 'open', {id, nama, modal, jual});
+    GudangUi.toggleModal({id, nama, modal, jual});
 };
+window.tutupModalEdit = () => {
+    document.getElementById('modal-edit').style.display = 'none';
+}
 
 window.tutupModalLapor = () => {
     document.getElementById('modal-lapor').style.display = 'none';
 };
-window.handleBooking = async (idBarang) => {
-    const nama = prompt("Nama Pembooking:");
-    const tanggal = prompt("Janji bayar (YYYY-MM-DD):", "2026-04-30");
-    
-    if (!nama || !tanggal) return;
+window.handleBooking = async (idBarang, btn) => {
+    if (btn && btn.disabled) return;
+    if(btn) btn.disabled = true;
+    try {
+        const nama = prompt("Nama Pembooking:");
+        const tanggal = prompt("Janji bayar (YYYY-MM-DD):", "2026-04-30");
+        
+        if (!nama || !tanggal) return;
 
-    const resp = await GudangApi.postBooking(idBarang, nama, tanggal);
-
-    const res = await resp.json();
-    alert(res.message);
-    if(res.success) muatKatalogReseller();
+        const resp = await GudangApi.postBooking(idBarang, nama, tanggal);
+        alert(resp.message);
+        if(resp.success) muatKatalogReseller();
+    } catch (error) {
+        console.error(error);
+    }finally{
+        if(btn) btn.disabled = false;
+    }
 }
 window.prosesBayarBooking = async (id) => {
     try {
@@ -181,9 +197,9 @@ window.prosesBayarBooking = async (id) => {
 window.handleCancelBooking = async (id) => {
     if(!confirm("Yakin mau cancel booking ini?")) return;
     const resp = await GudangApi.cancelBooking(id);
-    const res = await resp.json();
-    alert(res.message);
-    if(res.success) muatDaftarBooking();
+    alert(resp.message);
+    console.log("nah kok cancel");
+    if(resp.success) muatDaftarBooking();
 };
 
 // Filterisasi wwkwkwk

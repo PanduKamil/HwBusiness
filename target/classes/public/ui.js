@@ -21,7 +21,7 @@ export const GudangUi = {
                     <button onclick="laporPenjualan(${m.id}, '${m.nama}', ${m.hargaPerkiraanJual})" ${m.stok <= 0 ? 'disabled' : ''}>
                         ${m.stok <= 0 ? 'STOK HABIS' : 'LAPOR TERJUAL'}
                     </button>
-                    <button onclick="handleBooking(${m.id})" style="background-color: #ff00ff;" ${m.stok <= 0 ? 'disabled' : ''}>
+                    <button onclick="handleBooking(${m.id}, this)" style="background-color: #ff00ff;" ${m.stok <= 0 ? 'disabled' : ''}>
                     BOOK
                 </button>
                 </div>`;
@@ -82,12 +82,12 @@ export const GudangUi = {
     },
     
     // Pop Up Control
-    toggleModal(id, nama, modal, jual){
-        document.getElementById('edit-id').value = id;
-        document.getElementById('edit-nama').value = nama;
-        document.getElementById('edit-modal').value = modal;
-        document.getElementById('edit-jual').value = jual;
-        document.getElementById('modal-edit').style.display = 'flex';
+    toggleModal(data) { // Samain sama yang dipanggil di app.js
+    document.getElementById('edit-id').value = data.id;
+    document.getElementById('edit-nama').value = data.nama;
+    document.getElementById('edit-modal').value = data.modal;
+    document.getElementById('edit-jual').value = data.jual;
+    document.getElementById('modal-edit').style.display = 'flex';
     },
 
     //Booking

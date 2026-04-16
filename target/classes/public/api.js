@@ -4,8 +4,18 @@ export const GudangApi = {
 
     // Katalog
     async getBarang() {
-        const response = await fetch(`${API_URL}/api/barang`);
-        return await response.json();
+        try {
+            const response = await fetch(`${API_URL}/api/barang`);
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.message || "Gagal Ambil barang di server");
+            }
+            return result;
+        } catch (error) {
+            console.error("API Error [ Ambil barang]:", error.message);
+         throw error;
+        }
+        
     },
 
     // Riwayat Transaksi
@@ -84,6 +94,7 @@ export const GudangApi = {
 
     // Edit/Update Barang
     async saveBarang(id, data) {
+    console.log("Nembak keu: "), `${API_URL}/api/barang/${id}`;
         const response = await fetch(`${API_URL}/api/barang/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -133,6 +144,7 @@ export const GudangApi = {
     },
 
     async cancelBooking(id) {
-        return await fetch(`${API_URL}/api/booking/cancel/${id}`, { method: 'POST' });
+        const response = await fetch(`${API_URL}/api/booking/cancel/${id}`, { method: 'POST' });
+        return await response.json();
     }
 };
