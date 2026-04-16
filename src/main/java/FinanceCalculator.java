@@ -2,7 +2,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class FinanceCalculator {
-    public static final BigDecimal PERSENTASE_KOMISI_RESELLER = new BigDecimal("0.40");
+    public static final BigDecimal PERSENTASE_KOMISI_RESELLER = new BigDecimal("0.30");
     //Kalo kinerja bagus naekin
     public static final BigDecimal PERSENTASE_KOMISI_SPECIAL = new BigDecimal("0.50");
 
@@ -19,8 +19,9 @@ public class FinanceCalculator {
         return profitKotor.subtract(komisi);
     }
     /*Menghitung profit kotor (Harga Laku - Modal) */
-    public static BigDecimal hitungProfitKotor(BigDecimal hargaLaku, BigDecimal hargaModal){
-        return hargaLaku.subtract(hargaModal);
+    public static BigDecimal hitungProfitKotor(BigDecimal hargaLaku, BigDecimal modalSatuan, int jumlah){
+        BigDecimal modalTotal = modalSatuan.multiply(new BigDecimal(jumlah));
+        return hargaLaku.subtract(modalTotal);
     }
     /*Menhitung rata-rata modal */
     public static BigDecimal hitungRataRataModal(int stokLama, BigDecimal modalLama, int stokBaru, BigDecimal modalBaru){

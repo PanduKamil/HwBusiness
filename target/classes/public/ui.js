@@ -2,7 +2,7 @@ export const GudangUi = {
 
     //Katalog Owner
     templateCardOwner(m){
-        `<div class="report-card" style="border-left: 5px solid #00ccff;">
+        return `<div class="report-card" style="border-left: 5px solid #00ccff;">
                     <div class="report-header"><span>ID: ${m.id}</span><span>Stok: ${m.stok}</span></div>
                     <div class="report-body">
                         <h4>${m.nama}</h4>
@@ -15,20 +15,21 @@ export const GudangUi = {
 
     //Katalog Reseller
     templateCardReseller(m){
-        `<div class="report-card" style="border-left: 5px solid #00ccff;">
-                    <div class="report-header"><span>ID: ${m.id}</span><span>Stok: ${m.stok}</span></div>
-                    <div class="report-body">
-                        <h4>${m.nama}</h4>
-                        <p>Modal: Rp ${m.hargaModal.toLocaleString()}</p>
-                        <p>Jual: Rp ${m.hargaPerkiraanJual.toLocaleString()}</p>
-                    </div>
-                    <button onclick="bukaModalEdit(${m.id}, '${m.nama}', ${m.hargaModal}, ${m.hargaPerkiraanJual})">EDIT</button>
+        return `<div class="report-card">
+                    <div class="report-header"><span>ID: ${m.id}</span><span class="${m.stok <= 0 ? 'empty' : ''}">Stok: ${m.stok}</span></div>
+                    <div class="report-body"><h4>${m.nama}</h4><p>Harga: Rp ${m.hargaPerkiraanJual.toLocaleString()}</p></div>
+                    <button onclick="laporPenjualan(${m.id}, '${m.nama}', ${m.hargaPerkiraanJual})" ${m.stok <= 0 ? 'disabled' : ''}>
+                        ${m.stok <= 0 ? 'STOK HABIS' : 'LAPOR TERJUAL'}
+                    </button>
+                    <button onclick="handleBooking(${m.id})" style="background-color: #ff00ff;" ${m.stok <= 0 ? 'disabled' : ''}>
+                    BOOK
+                </button>
                 </div>`;
     },
 
     // Riwayat Transaksi
     templateCardRiwayat(t){
-        `<div class="report-card" style="border-left: 5px solid #ffcc00;">
+        return `<div class="report-card" style="border-left: 5px solid #ffcc00;">
                     <div class="report-header"><span>Trx: ${t.id}</span><span>${t.tanggal}</span></div>
                     <div class="report-body"><h4>${t.namaBarang}</h4><p>Laku: Rp ${t.hargaLaku.toLocaleString()}</p></div>
                     <button onclick="batalkanTransaksi(${t.id})" style="color:red; border-color:red;">BATALKAN</button>
@@ -80,7 +81,7 @@ export const GudangUi = {
         });
     },
     
-    // Modal Control
+    // Pop Up Control
     toggleModal(id, nama, modal, jual){
         document.getElementById('edit-id').value = id;
         document.getElementById('edit-nama').value = nama;
@@ -107,7 +108,7 @@ export const GudangUi = {
                     </div>
                 </div>`;
     },
-    
+
     // Navigasi Section
     showSection(idTerpilih) {
         document.querySelectorAll('.section').forEach(s => s.style.display = 'none');

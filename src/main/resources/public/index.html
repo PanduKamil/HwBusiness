@@ -13,7 +13,7 @@
 
         <div id="main-menu" class="section">
             <button onclick="showSection('owner-login')">1. Owner Only</button>
-            <button onclick="showSection('reseller-menu'); muatKatalogReseller()">2. Lapor Penjualan (Reseller)</button>
+            <button onclick="showSection('reseller-menu')">2. Lapor Penjualan (Reseller)</button>
             <button onclick="showSection('booking-menu')">3. Booking menu</button>
             <button onclick="exitApp()">4. Keluar</button>
         </div>
@@ -142,7 +142,7 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')

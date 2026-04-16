@@ -84,11 +84,10 @@ public class MainanDAO {
             throw new RuntimeException("Gagal di tambahkan ke database" + e.getMessage());
         }
     }
-    public Mainan cariBarang(int idCari){
+    public Mainan cariBarang(int idCari, Connection conn){
         String sql = "SELECT * FROM barang WHERE id = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, idCari);
             ResultSet rs = pstmt.executeQuery();
 
@@ -103,6 +102,12 @@ public class MainanDAO {
                 m.setId(rs.getInt("id"));
                 return m;
             }
+        } catch (SQLException e) {e.printStackTrace();}
+        return null;
+    }
+    public Mainan cariBarang(int idCari){
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            return cariBarang(idCari, conn);
         } catch (SQLException e) {e.printStackTrace();}
         return null;
     }
@@ -188,7 +193,8 @@ public class MainanDAO {
        return null;                 
     }
     // Transaksi
-    public void catatTransaksi(Mainan barang, int jumlah, BigDecimal jual, BigDecimal komisi, BigDecimal labaOwner, Connection conn){
+    public void catatTransaksi(Mainan barang, int jumlah, BigDecimal jual, BigDecimal komisi, BigDecimal labaOwner, Connection conn)
+    throws SQLException{
         String sql ="INSERT INTO transaksi(barang_id, jumlah , harga_jual, komisi_reseller, net_profit_owner) " +
                     "VALUES(?, ?, ?, ?, ? )";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -199,9 +205,7 @@ public class MainanDAO {
             pstmt.setBigDecimal(4, komisi);
             pstmt.setBigDecimal(5, labaOwner);
             pstmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Gagal dicatat ke database" + e.getMessage());
-        }
+        } 
     }
     public void deleteTransaksi(Connection conn, int idTransaksi) throws SQLException {
     // 1. Query untuk ambil data sebelum dihapus
@@ -308,10 +312,9 @@ public List<Booking> getActiveBookings() {
     return list;
 }
     //Cancel booking
-    public Booking getBookingById(int id) {
+    public Booking getBookingById(int id, Connection conn) {
     String sql = "SELECT bk.*, b.nama_barang FROM booking bk JOIN barang b ON bk.barang_id = b.id WHERE bk.id = ?";
-    try (Connection conn = DatabaseConnection.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
         pstmt.setInt(1, id);
         try (ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
@@ -329,6 +332,12 @@ public List<Booking> getActiveBookings() {
     } catch (SQLException e) { e.printStackTrace(); }
     return null;
 }
+    public Booking getBookingById(int id) {
+    try (Connection conn = DatabaseConnection.getConnection()) {
+            return getBookingById(id, conn);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return null;
+    }
 
 public void updateStatusBooking(int id, String status, Connection conn) throws SQLException {
     String sql = "UPDATE booking SET status = ? WHERE id = ?";

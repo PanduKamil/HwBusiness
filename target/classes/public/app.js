@@ -19,7 +19,7 @@ async function muatKatalogReseller() {
         if (!container || !result.success) return;
 
     container.innerHTML = result.data.length === 0 ? "<p>Gudang Kosong</p>" : 
-    res.data.map(m => GudangUi.templateCardReseller(m)).join('');
+    result.data.map(m => GudangUi.templateCardReseller(m)).join('');
 }
 // Riwayat Transaksi
 async function muatRiwayat() {
@@ -28,7 +28,7 @@ async function muatRiwayat() {
         if (!container || !result.success) return;
 
         container.innerHTML = result.data.length === 0 ? "<p>Belum ada transaksi</p>" :
-        res.data.map(t => GudangUi.templateCardRiwayat(t)).join('');
+        result.data.map(t => GudangUi.templateCardRiwayat(t)).join('');
 }
 // Laporan Transaksi
 async function muatLaporanTotal() {
@@ -44,7 +44,7 @@ async function muatDaftarBooking() {
     if(res.success && res.data.length > 0) {
         container.innerHTML = res.data.map(bk => GudangUi.templateCardBooking(bk)).join('');
     } else {
-        container.innerHTML = <p style="text-align:center;">Tidak ada booking aktif</p>;
+        container.innerHTML = `<p style="text-align:center;">Tidak ada booking aktif</p>`;
     }
 }
 
@@ -62,20 +62,29 @@ window.showSection = (idTerpilih) => {
 };
 // Pembatalan Transaksi
 window.batalkanTransaksi = async (id) => {
-    if(!confirm("Batalin?")) return;
+    try {
+        if(!confirm("Batalin?")) return;
     const res = await GudangApi.deleteTransaksi();
     if(res.success) { alert(res.message); muatRiwayat(); }
+    } catch (error) {
+         alert("Error: " + error.message);
+    }
 };
 // Eksekusi Transaksi
 window.eksekusiLaporPenjualan = async () => {
-    const id = document.getElementById('lapor-id').value;
-    const hargaLaku = parseFloat(document.getElementById('lapor-harga-input').value);
-    const res = await GudangApi.postPenjualan();
-        if (res.success) {
-            alert(res.message);
-            tutupModalLapor();
-            muatKatalogReseller();
+    try {
+        const id = document.getElementById('lapor-id').value;
+        const hargaLaku = parseFloat(document.getElementById('lapor-harga-input').value);
+        const res = await GudangApi.postPenjualan(id, hargaLaku);
+            if (res.success) {
+                alert(res.message);
+                tutupModalLapor();
+                muatKatalogReseller();
         }
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
+    
 };
 // Filter Laporan
 window.handleLaporanFilter = async () => {
@@ -104,8 +113,9 @@ window.handleInputBarang = async () => {
         hargaPerkiraanJual: parseFloat(document.getElementById('hargaJual').value),
         stok: parseInt(document.getElementById('stok').value)
     };
-    const response = await GudangApi.postBarangBaru();
-    alert(text);
+    const response = await GudangApi.postBarangBaru(data);
+
+    alert(response);
 
         document.getElementById('namaBarang').value = "";
         document.getElementById('hargaModal').value = "";
@@ -134,32 +144,38 @@ window.simpanPerubahanBarang = async () => {
             alert("Gagal update data!");
         }
 }
-window.bukaModalEdit = async (id, nama, modal, jual) => {
+// POP UP
+window.bukaModalEdit = (id, nama, modal, jual) => {
     GudangUi.toggleModal('modal-edit', 'open', {id, nama, modal, jual});
 };
-window.tutupModalLapor = async() => {tutupModalEdit
-    GudangUi.toggleModal('modal-edit', 'close');
+
+window.tutupModalLapor = () => {
+    document.getElementById('modal-lapor').style.display = 'none';
 };
-window.handleBooking = async () => {
+window.handleBooking = async (idBarang) => {
     const nama = prompt("Nama Pembooking:");
     const tanggal = prompt("Janji bayar (YYYY-MM-DD):", "2026-04-30");
     
     if (!nama || !tanggal) return;
 
-    const resp = await GudangApi.postBooking({idBarang, nama, jumlah: 1, tanggal});
+    const resp = await GudangApi.postBooking(idBarang, nama, tanggal);
 
     const res = await resp.json();
     alert(res.message);
-    if(res.success) location.reload();
+    if(res.success) muatKatalogReseller();
 }
 window.prosesBayarBooking = async (id) => {
-    const harga = prompt("Masukkan Harga Jual Final:");
+    try {
+        const harga = prompt("Masukkan Harga Jual Final:");
     if (!harga || isNaN(harga)) return;
 
     const resp = await GudangApi.bayarBooking(id, harga);
-    const res = await resp.json();
-    alert(res.message);
-    if (res.success) muatDaftarBooking();
+        alert(resp.message);
+    if (resp.success) muatDaftarBooking();
+
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
 };
 
 window.handleCancelBooking = async (id) => {

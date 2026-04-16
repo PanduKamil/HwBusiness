@@ -26,7 +26,7 @@ public class GudangService {
             if (m.getStok() <= 0) throw new StokKurangException("Stok Barang " + m.getNama() + " Kosong");
 
 
-            BigDecimal profitKotor = FinanceCalculator.hitungProfitKotor(hargaLaku, m.getHargaModal());
+            BigDecimal profitKotor = FinanceCalculator.hitungProfitKotor(hargaLaku, m.getHargaModal(), 1);
             BigDecimal komisiReseller = FinanceCalculator.hitungKomisi(profitKotor);
             BigDecimal labaOwner = FinanceCalculator.hitungNetProfit(profitKotor, komisiReseller);
 
@@ -199,36 +199,44 @@ public class GudangService {
     }
 
     public void prosesPelunasan(int bookingId, BigDecimal hargaLaku) throws Exception {
-        Booking bk = mainanDAO.getBookingById(bookingId);
-        if (bk == null) throw new Exception("Data booking tidak ditemukan!");
-
-        // Ambil objek Mainan lengkap karena method catatTransaksi butuh objeknya
-        Mainan m = mainanDAO.cariBarang(bk.getBarangId());
-        
-        // Hitung Keuangan pakai BigDecimal
-        BigDecimal modalTotal = m.getHargaModal().multiply(new BigDecimal(bk.getJumlah()));
-        BigDecimal profitKotor = hargaLaku.subtract(modalTotal);
-        
-        // Contoh komisi 20% (0.2)
-        BigDecimal komisi = profitKotor.multiply(new BigDecimal("0.2"));
-        BigDecimal profitOwner = profitKotor.subtract(komisi);
-
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
-                // PAKAI METHOD catatTransaksi PUNYA LO
-                // Parameter: (objek Mainan, jumlah, hargaJual, komisi, profitOwner, connection)
+                Booking bk = mainanDAO.getBookingById(bookingId);
+                if (bk == null) throw new Exception("Data booking tidak ditemukan!");
+
+                Mainan m = mainanDAO.cariBarang(bk.getBarangId());
+                if (m == null) throw new Exception("Data Barang asal tidak ditemukan");
+
+                BigDecimal profitKotor = FinanceCalculator.hitungProfitKotor(hargaLaku, m.getHargaModal(), bk.getJumlah());
+                BigDecimal komisi = FinanceCalculator.hitungKomisi(profitKotor);
+                BigDecimal profitOwner = FinanceCalculator.hitungNetProfit(profitKotor, komisi);
+
                 mainanDAO.catatTransaksi(m, bk.getJumlah(), hargaLaku, komisi, profitOwner, conn);
 
-                // Update status booking jadi COMPLETED
                 mainanDAO.updateStatusBooking(bookingId, "COMPLETED", conn);
 
                 conn.commit();
             } catch (Exception e) {
                 conn.rollback();
+                System.err.println("Transaksi Gagal, Rollback" + e.getMessage());
                 throw e;
             }
         }
+        
+
+        // Ambil objek Mainan lengkap karena method catatTransaksi butuh objeknya
+        
+        
+        // Hitung Keuangan pakai BigDecimal
+        
+      
+        
+        // Contoh komisi 20% (0.2)
+        
+        
+
+        
     }
 }
 
