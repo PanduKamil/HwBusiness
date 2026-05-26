@@ -4,8 +4,19 @@
 #Java Compiled Fiiles
 *.class
 
-# IDE folders
+# Abaikan file database H2 lokal
+*.mv.db
+*.trace.db
+
+# Abaikan folder build Maven (isinya file .class dan .jar hasil compile)
+/target/
+*.jar
+
+# Abaikan settingan IDE (VS Code / IntelliJ)
+.target/
 .vscode/
+.idea/
+*.iml
 .settings/
+.classpath
 .project/
-.classpath/

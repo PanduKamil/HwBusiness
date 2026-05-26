@@ -111,7 +111,6 @@ public class ApiServer {
                 ctx.status(400).json(new ApiResponse(false, e.getMessage(), null));
             }
         });
-
         app.post("/api/booking/lunas/{id}", ctx -> {
             int id = Integer.parseInt(ctx.pathParam("id"));
             Map<String, Object> body = ctx.bodyAsClass(Map.class);
@@ -124,6 +123,16 @@ public class ApiServer {
                 ctx.json(new ApiResponse(true, "Booking Berhasil Dilunasi!", null));
             } catch (Exception e) {
                 ctx.status(400).json(new ApiResponse(false, "Gagal melunasi: " + e.getMessage(), null));
+            }
+        });
+
+        // --- Keuangan (Uang Modal & Profit) ---
+        app.get("/api/keuangan/dana-belanja", ctx -> {
+            try {
+                java.math.BigDecimal danaBelanja = service.getDanaSiapBelanja();
+                ctx.json(new ApiResponse(true, "Dana siap belanja berhasil dimuat", danaBelanja));
+            } catch (Exception e) {
+                ctx.status(500).json(new ApiResponse(false, "Gagal memuat dana belanja: " + e.getMessage(), null));
             }
         });
 

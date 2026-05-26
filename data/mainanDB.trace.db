@@ -963,3 +963,6 @@ org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "total_modal" not found [42122-2
 	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.doRunJob(QueuedThreadPool.java:1194)
 	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1149)
 	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-05-26 22:16:14.282137+07:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SCRIPT [*]DATA TO 'data_gudang_real.sql'"; SQL statement:
+SCRIPT DATA TO 'data_gudang_real.sql' [42000-224]

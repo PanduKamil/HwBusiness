@@ -31,7 +31,7 @@ public class DatabaseConnection {
 
         public static void setupDatabase() {
         String sqlBarang ="CREATE TABLE IF NOT EXISTS barang(" +
-                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "id SERIAL PRIMARY KEY, " +
                     "nama_barang VARCHAR(30), " +
                     "harga_modal_avg DECIMAL(12,5), " +
                     "harga_jual_perkiraan DECIMAL(12,5), " +
@@ -40,7 +40,7 @@ public class DatabaseConnection {
                     "tanggal_masuk TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 
         String sqlTransaksi = "CREATE TABLE IF NOT  EXISTS transaksi(" +
-                            "id INT AUTO_INCREMENT, " +
+                            "id SERIAL PRIMARY KEY, " +
                             "barang_id INT , " +
                             "jumlah INT, " +
                             "harga_jual DECIMAL(12,5), " +
@@ -50,7 +50,7 @@ public class DatabaseConnection {
                             "FOREIGN KEY (barang_id) REFERENCES barang(id))";
     
         String sqlBooking = "CREATE TABLE IF NOT EXISTS booking (" +
-                                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                                "id SERIAL PRIMARY KEY, " +
                                 "barang_id INT, " +
                                 "nama_pembooking VARCHAR(50), " +
                                 "jumlah INT DEFAULT 1, " +
@@ -59,7 +59,7 @@ public class DatabaseConnection {
                                 "status VARCHAR(20) DEFAULT 'ACTIVE', " + // ACTIVE, CANCELLED, COMPLETED
                                 "FOREIGN KEY (barang_id) REFERENCES barang(id)) ";
                 String sqlArusKas = "CREATE TABLE IF NOT EXISTS arus_kas (" +
-                                        "id_kas INT AUTO_INCREMENT PRIMARY KEY, " +
+                                        "id_kas SERIAL PRIMARY KEY, " +
                                         "tanggal TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                                         "tipe_kas VARCHAR(10), " +      // Isinya: 'MASUK' atau 'KELUAR'
                                         "dompet VARCHAR(10), " +        // Isinya: 'MODAL' atau 'PROFIT'
@@ -71,7 +71,10 @@ public class DatabaseConnection {
                 pstmt.execute(sqlTransaksi);
                 pstmt.execute(sqlBooking);
                 pstmt.execute(sqlArusKas);
-        } catch (SQLException e) { e.printStackTrace();
-        }
+                System.out.println("Database Supabase PostgreSQL berhasil disinkronisasi!");
+        } catch (SQLException e) { 
+            System.err.println("Gagal setup database di Supabase: " + e.getMessage());
+            e.printStackTrace();
+        }   
     }
 }

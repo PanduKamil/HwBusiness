@@ -51,21 +51,25 @@ public class MainanDAO {
         String sql = "SELECT * FROM barang WHERE LOWER(nama_barang) = LOWER(?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
             pstmt.setString(1, namaCari);
-                    ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                Mainan m = new Mainan(
-                    rs.getString("nama_barang"),
-                    rs.getBigDecimal("harga_modal_avg"),
-                    rs.getBigDecimal("harga_jual_perkiraan"),
-                    rs.getInt("stok"));
-                m.setId(rs.getInt("id"));
-                return m;
+            try (ResultSet rs = pstmt.executeQuery()) { // Dimasukkan ke try-with-resources biar langsung close otomatis
+                if (rs.next()) {
+                    Mainan m = new Mainan(
+                        rs.getString("nama_barang"),
+                        rs.getBigDecimal("harga_modal_avg"),
+                        rs.getBigDecimal("harga_jual_perkiraan"),
+                        rs.getInt("stok")
+                    );
+                    m.setId(rs.getInt("id"));
+                    return m;
+                }
             }
-        } catch (SQLException e) {e.printStackTrace();}
-    return null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public void tambahMainan(Mainan barang, Connection conn){
         String sql = "INSERT INTO barang(nama_barang, harga_modal_avg, harga_jual_perkiraan, stok) " +
@@ -136,9 +140,10 @@ public class MainanDAO {
                         "FROM transaksi t " +
                         "LEFT JOIN barang b ON t.barang_id = b.id " +
                         "WHERE 1=1";
-                if (bulan != null && tahun != null) {
-                    sql += " AND MONTH(t.tanggal_jual) = ? AND YEAR(t.tanggal_jual) = ? ";
-                }
+                // FIX: Mengganti MONTH() dan YEAR() bawaan H2 menjadi EXTRACT() bawaan PostgreSQL
+        if (bulan != null && tahun != null) {
+            sql += " AND EXTRACT(MONTH FROM t.tanggal_jual) = ? AND EXTRACT(YEAR FROM t.tanggal_jual) = ? ";
+        }
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                     )
@@ -165,13 +170,13 @@ public class MainanDAO {
         return null;
     }
     public Laporan getLaporanBulanan(int bulan, int tahun){
-        String sql = "SELECT COALESCE(SUM(t.harga_jual), 0) as total_omset, " +
+       String sql = "SELECT COALESCE(SUM(t.harga_jual), 0) as total_omset, " +
                         "COALESCE(SUM(t.komisi_reseller), 0) as total_komisi, " +
                         "COALESCE(SUM(t.net_profit_owner), 0) as total_bersih, " +
                         "COALESCE(SUM(t.jumlah * b.harga_modal_avg), 0) as total_modal " +
                         "FROM transaksi t " +
                         "LEFT JOIN barang b ON t.barang_id = b.id " +
-                        "WHERE MONTH(t.tanggal_jual) = ? AND YEAR(t.tanggal_jual) = ?" ;
+                        "WHERE EXTRACT(MONTH FROM t.tanggal_jual) = ? AND EXTRACT(YEAR FROM t.tanggal_jual) = ?" ;
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
                     pstmt.setInt(1, bulan);
@@ -245,11 +250,12 @@ public class MainanDAO {
 
     public List<TransaksiDTO> getAllTransaksi() {
     List<TransaksiDTO> list = new ArrayList<>();
+    // FIX: Mengubah FORMATDATETIME() ala H2 menjadi TO_CHAR() standar PostgreSQL
     String sql = "SELECT t.id, b.nama_barang, b.harga_modal_avg, t.harga_jual, t.net_profit_owner, " +
-                 "FORMATDATETIME(t.tanggal_jual, 'dd-MM-yyyy HH:mm') as tgl " +
-                 "FROM transaksi t " +
-                 "INNER JOIN barang b ON t.barang_id = b.id " +
-                 "ORDER BY t.id DESC"; // Biar yang terbaru di atas
+                     "TO_CHAR(t.tanggal_jual, 'DD-MM-YYYY HH24:MI') as tgl " +
+                     "FROM transaksi t " +
+                     "INNER JOIN barang b ON t.barang_id = b.id " +
+                     "ORDER BY t.id DESC"; // Biar yang terbaru di atas
 
     try (Connection conn = DatabaseConnection.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql);

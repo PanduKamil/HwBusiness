@@ -1,3 +1,6 @@
+Booking.class
+JualRequest.class
+ApiResponse.class
 MenuView.class
 FinanceCalculator.class
 Mainan.class
@@ -9,5 +12,8 @@ GudangException.class
 MainanDAO.class
 Laporan.class
 DatabaseConnection.class
+TransaksiDTO.class
 LoginRequest.class
+ApiServer.class
 TransactionWrapper.class
+ArusKasDAO.class

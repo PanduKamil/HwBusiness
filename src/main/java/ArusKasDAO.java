@@ -21,7 +21,7 @@ public class ArusKasDAO {
 
     // Method bantuan untuk menghitung total saldo per dompet (MASUK dikurangi KELUAR)
     public BigDecimal getTotalDana(Connection conn, String tipeKas, String dompet) throws SQLException {
-        String sql = "SELECT SUM(jumlah) FROM arus_kas WHERE tipe_kas = ? AND dompet = ?";
+        String sql = "SELECT COALESCE(SUM(jumlah), 0) FROM arus_kas WHERE tipe_kas = ? AND dompet = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, tipeKas);
             ps.setString(2, dompet);

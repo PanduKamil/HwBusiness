@@ -267,6 +267,6 @@ public class GudangService {
         } catch (SQLException e) {
             throw new Exception("Gagal menghitung dana siap belanja: " + e.getMessage());
         }
-    }
+    } 
 }
 
