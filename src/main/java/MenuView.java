@@ -11,7 +11,7 @@ public class MenuView {
 
     public void displayMenu(){
         while (running) {
-            System.out.println("Menu HW DATA");
+            System.out.println("Menu DIECAST DATA");
             System.out.println("1. Owner Only");
             System.out.println("2. Lapor Penjualan(Reseller)");
             System.out.println("3. Keluar");

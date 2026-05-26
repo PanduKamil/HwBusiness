@@ -7,7 +7,8 @@ import java.util.List;
 public class GudangService {
     private static GudangService instance;
     private MainanDAO mainanDAO = new MainanDAO();
-
+    private ArusKasDAO arusKasDAO = new ArusKasDAO();
+    
     public static synchronized GudangService getInstance(){ 
         if (instance == null) {
             instance = new GudangService();
@@ -36,12 +37,24 @@ public class GudangService {
             m.kurangiStok(1);
             mainanDAO.updateBarang(m, conn);
             mainanDAO.catatTransaksi(m, 1, hargaLaku, komisiReseller, labaOwner, conn);
+            // PISAH DUIT OTOMATIS 
+            // Ambil nilai modal barangnya untuk dikembalikan ke dompet MODAL
+            BigDecimal modalBarang = m.getHargaModal();
+            arusKasDAO.catat(conn, "MASUK", "MODAL", modalBarang, "Modal balik dari penjualan: " + m.getNama());
+
+            // Masukkan keuntungan bersih owner ke dompet PROFIT
+            arusKasDAO.catat(conn, "MASUK", "PROFIT", labaOwner, "Laba owner dari penjualan: " + m.getNama());
+
             conn.commit(); 
             } catch(SQLException e){
-                try {conn.rollback();} catch (SQLException ex) {
+                try { 
+                    conn.rollback(); 
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
+                throw new GudangException("(Proses Transaksi)Gagal eksekusi query internal: " + e.getMessage());
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             throw new GudangException("Gagal Memproses Transaksi: " + e.getMessage());
         }
     }
@@ -52,6 +65,10 @@ public class GudangService {
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
+                // HITUNG TOTAL PENGELUARAN 
+                // Hitung total duit modal yang keluar buat belanja unit baru ini
+                BigDecimal totalPengeluaranModal = barangBaru.getHargaModal().multiply(new BigDecimal(barangBaru.getStok()));
+                
                 if (existing != null) {
                     //Modal Rata-rata
                     BigDecimal modalBaruAvg = FinanceCalculator.hitungRataRataModal(existing.getStok(), existing.getHargaModal(), 
@@ -66,6 +83,10 @@ public class GudangService {
                     mainanDAO.tambahMainan(barangBaru,conn);
                     message = "Barang baru berhasil didaftarkan";
                 }
+                // CATAT KAS KELUAR 
+                // Potong dompet MODAL karena kita pakai duitnya buat belanja barang/restock
+                arusKasDAO.catat(conn, "KELUAR", "MODAL", totalPengeluaranModal, 
+                        "Kulakan barang: " + barangBaru.getNama() + " (x" + barangBaru.getStok() + ")");
             conn.commit();
             return message;
             }catch (Exception e) {
@@ -215,7 +236,18 @@ public class GudangService {
                 mainanDAO.catatTransaksi(m, bk.getJumlah(), hargaLaku, komisi, profitOwner, conn);
 
                 mainanDAO.updateStatusBooking(bookingId, "COMPLETED", conn);
-
+                // ================= LOGIC BARU: PISAH DUIT PELUNASAN BOOKING =================
+                // 1. Hitung total modal dari barang-barang yang laku di booking ini
+                BigDecimal totalModalBooking = m.getHargaModal().multiply(new BigDecimal(bk.getJumlah()));
+                
+                // 2. Balikin total modal ke dompet MODAL
+                arusKasDAO.catat(conn, "MASUK", "MODAL", totalModalBooking, 
+                        "Modal balik dari pelunasan booking: " + m.getNama() + " (x" + bk.getJumlah() + ")");
+                
+                // 3. Masukkan laba bersih owner ke dompet PROFIT
+                arusKasDAO.catat(conn, "MASUK", "PROFIT", profitOwner, 
+                        "Profit dari pelunasan booking: " + m.getNama());
+                // ============================================================================
                 conn.commit();
             } catch (Exception e) {
                 conn.rollback();
@@ -223,20 +255,18 @@ public class GudangService {
                 throw e;
             }
         }
-        
-
-        // Ambil objek Mainan lengkap karena method catatTransaksi butuh objeknya
-        
-        
-        // Hitung Keuangan pakai BigDecimal
-        
-      
-        
-        // Contoh komisi 20% (0.2)
-        
-        
-
-        
+    }
+    public BigDecimal getDanaSiapBelanja() throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // Ambil semua mutasi uang masuk dan keluar di dompet MODAL
+            BigDecimal totalMasuk = arusKasDAO.getTotalDana(conn, "MASUK", "MODAL");
+            BigDecimal totalKeluar = arusKasDAO.getTotalDana(conn, "KELUAR", "MODAL");
+            
+            // Rumus sisa dana: Duit modal yang balik dikurangi duit modal yang udah dibelanjain lagi
+            return totalMasuk.subtract(totalKeluar);
+        } catch (SQLException e) {
+            throw new Exception("Gagal menghitung dana siap belanja: " + e.getMessage());
+        }
     }
 }
 

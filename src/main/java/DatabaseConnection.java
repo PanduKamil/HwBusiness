@@ -58,11 +58,19 @@ public class DatabaseConnection {
                                 "batas_pembayaran DATE, " + /// Tanggal dia janji bayar
                                 "status VARCHAR(20) DEFAULT 'ACTIVE', " + // ACTIVE, CANCELLED, COMPLETED
                                 "FOREIGN KEY (barang_id) REFERENCES barang(id)) ";
+                String sqlArusKas = "CREATE TABLE IF NOT EXISTS arus_kas (" +
+                                        "id_kas INT AUTO_INCREMENT PRIMARY KEY, " +
+                                        "tanggal TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                                        "tipe_kas VARCHAR(10), " +      // Isinya: 'MASUK' atau 'KELUAR'
+                                        "dompet VARCHAR(10), " +        // Isinya: 'MODAL' atau 'PROFIT'
+                                        "jumlah DECIMAL(15,2), " +     // Supaya presisi dapet dua angka di belakang koma (senilai BigDecimal)
+                                        "keterangan VARCHAR(255))";
         try (Connection conn = DatabaseConnection.getConnection();
             Statement pstmt = conn.createStatement();) {
                 pstmt.execute(sqlBarang);
                 pstmt.execute(sqlTransaksi);
                 pstmt.execute(sqlBooking);
+                pstmt.execute(sqlArusKas);
         } catch (SQLException e) { e.printStackTrace();
         }
     }
