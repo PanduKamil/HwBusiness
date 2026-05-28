@@ -42,6 +42,18 @@ let _isOwnerLoggedIn = false;
 // ─────────────────────────────────────────────
 //  DATA LOADERS (async, with skeleton/spinner)
 // ─────────────────────────────────────────────
+function toggleOwnerMenus(show = true){
+    const ownerNavs = document.querySelectorAll(
+        '[data-navigate="katalog-barang"], [data-navigate="laporan-keuangan-section"]'
+    );
+    ownerNavs.forEach(nav => {
+        if(show){
+            nav.classList.remove('hidden');
+        }else{
+            nav.classList.add('hidden');
+        }
+    });
+}
 
 async function loadKatalogOwner() {
     const container = document.getElementById("owner-list-cards");
@@ -124,6 +136,21 @@ async function loadDaftarBooking() {
 // ─────────────────────────────────────────────
 
 function navigate(sectionId) {
+    //First Securty
+    const ruanganOwner = [
+        "owner-menu",
+        "katalog-barang",
+        "laporan-keuangan-section",
+        "riwayat-transaksi-section"
+    ];
+    if (ruanganOwner.includes(sectionId) && !_isOwnerLoggedIn) {
+        showToast("Akses ditolak!", "warning");
+        sectionId = "main-menu";
+    }
+    //Second
+    if (sectionId === "owner-login" && _isOwnerLoggedIn) {
+        sectionId = "owner-menu";
+    }
     showSection(sectionId);
     // Auto-refresh data on enter
     if (sectionId === "owner-menu" || sectionId === "katalog-barang") loadKatalogOwner();
@@ -153,6 +180,16 @@ async function handleOwnerLogin() {
             showToast("Login berhasil!", "success");
             userEl.value = "";
             passEl.value = "";
+            // Idenifikasi Hidden 
+            toggleOwnerMenus(true);
+            document.getElementById("owner-menu")?.addEventListener("click", (e) => {
+                const btnLogout = e.target.closest('[data-navigate="main-menu"]');
+                if (btnLogout) {
+                toggleOwnerMenus(false);
+                _isOwnerLoggedIn = false;
+                showToast("Logout Berhasil uji menu.", "info");
+                }
+            })
             navigate("owner-menu");
         } else {
             showToast("Username atau password salah.", "error");
