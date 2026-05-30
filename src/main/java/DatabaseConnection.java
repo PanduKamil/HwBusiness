@@ -69,12 +69,17 @@ public class DatabaseConnection {
                                         "dompet VARCHAR(10), " +        // Isinya: 'MODAL' atau 'PROFIT'
                                         "jumlah DECIMAL(15,2), " +     // Supaya presisi dapet dua angka di belakang koma (senilai BigDecimal)
                                         "keterangan VARCHAR(255))";
+                    String sqlUsers = "CREATE TABLE IF NOT EXISTS users (" +
+                                        "id SERIAL PRIMARY KEY, " +
+                                        "username VARCHAR(50) UNIQUE NOT NULL, " +
+                                        "password_hash VARCHAR(255) NOT NULL)";
         try (Connection conn = DatabaseConnection.getConnection();
             Statement pstmt = conn.createStatement();) {
                 pstmt.execute(sqlBarang);
                 pstmt.execute(sqlTransaksi);
                 pstmt.execute(sqlBooking);
                 pstmt.execute(sqlArusKas);
+                pstmt.execute(sqlUsers);
                 System.out.println("Database Supabase PostgreSQL berhasil disinkronisasi!");
         } catch (SQLException e) { 
             System.err.println("Gagal setup database di Supabase: " + e.getMessage());

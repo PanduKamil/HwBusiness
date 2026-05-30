@@ -10,15 +10,22 @@ public class GudangService {
     private static GudangService instance;
     private MainanDAO mainanDAO = new MainanDAO();
     private ArusKasDAO arusKasDAO = new ArusKasDAO();
-    
+    private UserDAO userDAO = new UserDAO();
+
     public static synchronized GudangService getInstance(){ 
         if (instance == null) {
             instance = new GudangService();
         }
         return instance;
     }
-    public boolean authenticate(String user, String pass){
-        return user.equals("Pandu Kamil") && pass.equals("Ada");
+
+    public boolean authenticate(String user, String pass) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            return userDAO.verifyPassword(conn, user, pass);
+        } catch (SQLException e) {
+            System.err.println("Gagal autentikasi: " + e.getMessage());
+            return false;
+        }
     }
     public void prosesPenjualan(int idInput, BigDecimal hargaLaku) throws GudangException {
     try (Connection conn = DatabaseConnection.getConnection()) {
