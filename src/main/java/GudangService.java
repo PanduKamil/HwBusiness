@@ -2,7 +2,9 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GudangService {
     private static GudangService instance;
@@ -16,48 +18,41 @@ public class GudangService {
         return instance;
     }
     public boolean authenticate(String user, String pass){
-        return user.equals("Pandu Kamil") && pass.equals("Panduak27");
+        return user.equals("Pandu Kamil") && pass.equals("Ada");
     }
-    public void prosesPenjualan(int idInput, BigDecimal hargaLaku) throws GudangException{
-            Mainan m = mainanDAO.cariBarang(idInput);
+    public void prosesPenjualan(int idInput, BigDecimal hargaLaku) throws GudangException {
+    try (Connection conn = DatabaseConnection.getConnection()) {
+        conn.setAutoCommit(false);
+        try {
+            // PINDAH cariBarang ke dalam blok conn yang sama
+            Mainan m = mainanDAO.cariBarang(idInput, conn); // ← pakai overload dengan conn
 
-            //Validation
-            if (m == null) throw new GudangException("Barang dengan ID: " + idInput + "tidak ditemuka!!");
-
+            if (m == null) throw new GudangException("Barang dengan ID: " + idInput + " tidak ditemukan!");
             if (m.getStok() <= 0) throw new StokKurangException("Stok Barang " + m.getNama() + " Kosong");
-
 
             BigDecimal profitKotor = FinanceCalculator.hitungProfitKotor(hargaLaku, m.getHargaModal(), 1);
             BigDecimal komisiReseller = FinanceCalculator.hitungKomisi(profitKotor);
             BigDecimal labaOwner = FinanceCalculator.hitungNetProfit(profitKotor, komisiReseller);
+            BigDecimal modalSnapshot = m.getHargaModal();
 
-        try (Connection conn = DatabaseConnection.getConnection()){
-            conn.setAutoCommit(false);
-            try {
             m.kurangiStok(1);
             mainanDAO.updateBarang(m, conn);
-            mainanDAO.catatTransaksi(m, 1, hargaLaku, komisiReseller, labaOwner, conn);
-            // PISAH DUIT OTOMATIS 
-            // Ambil nilai modal barangnya untuk dikembalikan ke dompet MODAL
+            mainanDAO.catatTransaksi(m, 1, hargaLaku, komisiReseller, labaOwner, modalSnapshot, conn);
+
             BigDecimal modalBarang = m.getHargaModal();
             arusKasDAO.catat(conn, "MASUK", "MODAL", modalBarang, "Modal balik dari penjualan: " + m.getNama());
-
-            // Masukkan keuntungan bersih owner ke dompet PROFIT
             arusKasDAO.catat(conn, "MASUK", "PROFIT", labaOwner, "Laba owner dari penjualan: " + m.getNama());
+            arusKasDAO.catat(conn, "MASUK", "RESELLER", komisiReseller, "Komisi reseller dari penjualan: " + m.getNama());
 
-            conn.commit(); 
-            } catch(SQLException e){
-                try { 
-                    conn.rollback(); 
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-                throw new GudangException("(Proses Transaksi)Gagal eksekusi query internal: " + e.getMessage());
-            }
+            conn.commit();
         } catch (SQLException e) {
-            throw new GudangException("Gagal Memproses Transaksi: " + e.getMessage());
+            conn.rollback();
+            throw new GudangException("(Proses Transaksi)Gagal eksekusi query internal: " + e.getMessage());
         }
+    } catch (SQLException e) {
+        throw new GudangException("Gagal Memproses Transaksi: " + e.getMessage());
     }
+}
     public String simpanMainan(Mainan barangBaru)throws Exception{ //Cek Barang
         Mainan existing = mainanDAO.cariBarangAccordingName(barangBaru.getNama());
         String message = "";
@@ -107,17 +102,17 @@ public class GudangService {
     public Laporan cetakLaporanBulanan(int bulan, int tahun){
         return mainanDAO.getLaporanBulanan(bulan, tahun);
     }
-    public void editBarang(int id, String nama, BigDecimal hargaModal, BigDecimal hargaJual) throws Exception{
-        Mainan m = mainanDAO.cariBarang(id);
-        if (m == null) throw new Exception("Barang dengan ID: " + id + "tidak ditemuka!!");
-
-        m.setNama(nama);
-        m.setHargaModal(hargaModal);
-        m.setHargaPerkiraanJual(hargaJual);
-
+    public void editBarang(int id, String nama, BigDecimal hargaModal, BigDecimal hargaJual) throws Exception {
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
+                Mainan m = mainanDAO.cariBarang(id, conn); // ← pindah ke dalam, pakai conn
+                if (m == null) throw new Exception("Barang dengan ID: " + id + " tidak ditemukan!");
+
+                m.setNama(nama);
+                m.setHargaModal(hargaModal);
+                m.setHargaPerkiraanJual(hargaJual);
+
                 mainanDAO.updateBarang(m, conn);
                 conn.commit();
             } catch (SQLException e) {
@@ -161,35 +156,28 @@ public class GudangService {
 }
     // ---- Booking Logic
     public void prosesBooking(int idBarang, String namaCustomer, int jumlah, String tglJanji) throws Exception {
-        // 1. Cari barangnya dulu
-        Mainan m = mainanDAO.cariBarang(idBarang);
-        if (m == null) throw new Exception("Barang tidak ditemukan!");
-        if (m.getStok() < jumlah) throw new Exception("Stok tidak mencukupi untuk dibooking!");
+    try (Connection conn = DatabaseConnection.getConnection()) {
+        conn.setAutoCommit(false);
+        try {
+            Mainan m = mainanDAO.cariBarang(idBarang, conn); // ← pindah ke dalam, pakai conn
+            if (m == null) throw new Exception("Barang tidak ditemukan!");
+            if (m.getStok() < jumlah) throw new Exception("Stok tidak mencukupi untuk dibooking!");
 
-        // 2. Parsing tanggal dari String (HTML input) ke LocalDate
-        LocalDate deadline = LocalDate.parse(tglJanji); 
-        
-        // 3. Siapkan objek Booking
-        Booking baru = new Booking(idBarang, namaCustomer, jumlah, deadline);
+            LocalDate deadline = LocalDate.parse(tglJanji);
 
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            conn.setAutoCommit(false); // Mulai Transaksi
-            try {
-                // A. Kurangi stok barang di rak (biar gak dibeli orang lain)
-                m.setStok(m.getStok() - jumlah);
-                mainanDAO.updateBarang(m, conn);
+            Booking booking = new Booking(0, idBarang, namaCustomer, jumlah, deadline, "ACTIVE", m.getNama());
 
-                // B. Catat siapa yang booking
-                mainanDAO.tambahBooking(baru, conn);
+            m.setStok(m.getStok() - jumlah);
+            mainanDAO.updateBarang(m, conn);
+            mainanDAO.tambahBooking(booking, conn);
 
-                conn.commit();
-                System.out.println("Booking Berhasil! Barang " + m.getNama() + " sudah diamankan.");
-            } catch (Exception e) {
-                conn.rollback();
-                throw new Exception("Gagal proses booking: " + e.getMessage());
-            }
+            conn.commit();
+        } catch (Exception e) {
+            conn.rollback();
+            throw e;
         }
     }
+}
     public List<Booking> lihatDaftarBooking(){
         return mainanDAO.getActiveBookings();
     }
@@ -220,21 +208,24 @@ public class GudangService {
     }
 
     public void prosesPelunasan(int bookingId, BigDecimal hargaLaku) throws Exception {
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            conn.setAutoCommit(false);
-            try {
-                Booking bk = mainanDAO.getBookingById(bookingId);
-                if (bk == null) throw new Exception("Data booking tidak ditemukan!");
+    try (Connection conn = DatabaseConnection.getConnection()) {
+        conn.setAutoCommit(false);
+        try {
+            Booking bk = mainanDAO.getBookingById(bookingId, conn); // ← pakai overload dengan conn
+            if (bk == null) throw new Exception("Data booking tidak ditemukan!");
 
-                Mainan m = mainanDAO.cariBarang(bk.getBarangId());
-                if (m == null) throw new Exception("Data Barang asal tidak ditemukan");
+            Mainan m = mainanDAO.cariBarang(bk.getBarangId(), conn); // ← sudah pakai conn
+            if (m == null) throw new Exception("Data Barang asal tidak ditemukan");
+
 
                 BigDecimal profitKotor = FinanceCalculator.hitungProfitKotor(hargaLaku, m.getHargaModal(), bk.getJumlah());
                 BigDecimal komisi = FinanceCalculator.hitungKomisi(profitKotor);
                 BigDecimal profitOwner = FinanceCalculator.hitungNetProfit(profitKotor, komisi);
 
-                mainanDAO.catatTransaksi(m, bk.getJumlah(), hargaLaku, komisi, profitOwner, conn);
-
+                // prosesPelunasan() — sama
+                BigDecimal modalSnapshot = m.getHargaModal(); // freeze avg saat ini
+                mainanDAO.catatTransaksi(m, bk.getJumlah(), hargaLaku, komisi, profitOwner, modalSnapshot, conn);
+                //                                                  
                 mainanDAO.updateStatusBooking(bookingId, "COMPLETED", conn);
                 // ================= LOGIC BARU: PISAH DUIT PELUNASAN BOOKING =================
                 // 1. Hitung total modal dari barang-barang yang laku di booking ini
@@ -247,6 +238,8 @@ public class GudangService {
                 // 3. Masukkan laba bersih owner ke dompet PROFIT
                 arusKasDAO.catat(conn, "MASUK", "PROFIT", profitOwner, 
                         "Profit dari pelunasan booking: " + m.getNama());
+                arusKasDAO.catat(conn, "MASUK", "RESELLER", komisi, 
+                        "Komisi reseller dari penjualan: " + m.getNama());
                 // ============================================================================
                 conn.commit();
             } catch (Exception e) {
@@ -256,17 +249,127 @@ public class GudangService {
             }
         }
     }
-    public BigDecimal getDanaSiapBelanja() throws Exception {
+    // ─── TAMBAH private helper ini ───────────────────────────────────────────────
+// PUBLIC — tetap ada, dipanggil dari luar (ApiServer, dll) — TIDAK DIUBAH
+public BigDecimal getSaldoDompet(String dompet) throws Exception {
+    try (Connection conn = DatabaseConnection.getConnection()) {
+        return arusKasDAO.getSaldoBersih(conn, dompet);
+    } catch (SQLException e) {
+        throw new Exception("Gagal menghitung saldo: " + e.getMessage());
+    }
+}
+
+// PRIVATE — overload baru, dipanggil internal dalam satu transaksi
+private BigDecimal getSaldoDompet(Connection conn, String dompet) throws SQLException {
+    return arusKasDAO.getSaldoBersih(conn, dompet);
+}
+
+// ─── GANTI getDashboardKeuangan() ────────────────────────────────────────────
+public Map<String, Object> getDashboardKeuangan() throws Exception {
+    try (Connection conn = DatabaseConnection.getConnection()) {
+        Map<String, Object> data = new HashMap<>();
+
+        // Semua query pakai conn yang SAMA — snapshot data konsisten
+        data.put("danaBelanjaModal", getSaldoDompet(conn, "MODAL"));
+        data.put("profitSaatIni",    getSaldoDompet(conn, "PROFIT"));
+        data.put("komisiSaatIni",    getSaldoDompet(conn, "RESELLER"));
+
+        data.put("profitAllTime",  arusKasDAO.getRawTotal(conn, "MASUK", "PROFIT"));
+        data.put("komisiAllTime",  arusKasDAO.getRawTotal(conn, "MASUK", "RESELLER"));
+
+        return data;
+    } catch (SQLException e) {
+        throw new Exception("Gagal memuat dashboard keuangan: " + e.getMessage());
+    }
+}
+    // RESET DOMPET
+    // 1. Logic untuk mereset / mencairkan Profit Owner
+    public void resetProfitOwner() throws Exception {
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // Ambil semua mutasi uang masuk dan keluar di dompet MODAL
-            BigDecimal totalMasuk = arusKasDAO.getTotalDana(conn, "MASUK", "MODAL");
-            BigDecimal totalKeluar = arusKasDAO.getTotalDana(conn, "KELUAR", "MODAL");
-            
-            // Rumus sisa dana: Duit modal yang balik dikurangi duit modal yang udah dibelanjain lagi
-            return totalMasuk.subtract(totalKeluar);
+            conn.setAutoCommit(false);
+            try {
+                // Ambil saldo profit saat ini yang siap ditarik
+                BigDecimal saldoSaatIni = getSaldoDompet("PROFIT");
+                
+                // Validasi: Kalau profitnya kosong, gak ada yang bisa ditarik
+                if (saldoSaatIni.compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new Exception("Tidak ada profit owner yang bisa dicairkan/di-reset!");
+                }
+
+                // Catat transaksi KELUAR untuk mereset saldo menjadi Rp0
+                arusKasDAO.catat(conn, "KELUAR", "PROFIT", saldoSaatIni, "Penarikan/Pencairan seluruh profit oleh owner");
+                
+                conn.commit();
+            } catch (Exception e) {
+                conn.rollback(); // Kembalikan ke state semula jika proses gagal
+                throw e;
+            }
         } catch (SQLException e) {
-            throw new Exception("Gagal menghitung dana siap belanja: " + e.getMessage());
+            throw new Exception("Gagal mereset profit owner: " + e.getMessage());
         }
-    } 
+    }
+
+    // 2. Logic untuk mereset / mencairkan Komisi Reseller
+    public void resetKomisiReseller() throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                // Ambil saldo komisi reseller saat ini yang mengendap
+                BigDecimal saldoSaatIni = getSaldoDompet("RESELLER");
+                
+                // Validasi: Kalau komisinya kosong, gak bisa di-reset
+                if (saldoSaatIni.compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new Exception("Tidak ada komisi reseller yang bisa dicairkan/di-reset!");
+                }
+
+                // Catat transaksi KELUAR untuk mereset saldo reseller menjadi Rp0
+                arusKasDAO.catat(conn, "KELUAR", "RESELLER", saldoSaatIni, "Penarikan/Pencairan komisi oleh reseller");
+                
+                conn.commit();
+            } catch (Exception e) {
+                conn.rollback(); // Rollback jika ada error SQL di tengah jalan
+                throw e;
+            }
+        } catch (SQLException e) {
+            throw new Exception("Gagal mereset komisi reseller: " + e.getMessage());
+        }
+    }
+    // Mengamankan data profit owner (Saldo Saat Ini & All-Time)
+    public Map<String, Object> getDataProfitOwner() throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            BigDecimal saldoSaatIni = getSaldoDompet("PROFIT");
+            BigDecimal allTimeCuan = arusKasDAO.getRawTotal(conn, "MASUK", "PROFIT");
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("saldoSaatIni", saldoSaatIni);
+            data.put("allTimeCuan", allTimeCuan);
+            return data;
+        } catch (SQLException e) {
+            throw new Exception("Gagal memuat data profit owner: " + e.getMessage());
+        }
+    }
+
+    // Mengamankan data komisi reseller (Saldo Saat Ini & All-Time)
+    public Map<String, Object> getDataKomisiReseller() throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            BigDecimal saldoSaatIni = getSaldoDompet("RESELLER");
+            BigDecimal allTimeKomisi = arusKasDAO.getRawTotal(conn, "MASUK", "RESELLER");
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("saldoSaatIni", saldoSaatIni);
+            data.put("allTimeKomisi", allTimeKomisi);
+            return data;
+        } catch (SQLException e) {
+            throw new Exception("Gagal memuat data komisi reseller: " + e.getMessage());
+        }
+    }
+    // RIWAYAT DOMPET
+    public List<Map<String, Object>> getRiwayatMutasiKas() throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            return arusKasDAO.getRiwayatMutasi(conn);
+        } catch (SQLException e) {
+            throw new Exception("Gagal mengambil riwayat mutasi kas dari database: " + e.getMessage());
+        }
+    }
 }
 

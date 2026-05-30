@@ -176,3 +176,60 @@ export async function bayarBooking(id, hargaLaku) {
 export async function cancelBooking(id) {
     return apiFetch(`/api/booking/cancel/${id}`, { method: "POST" });
 }
+
+// ─────────────────────────────────────────────
+//  KEUANGAN (THREE POCKETS SYSTEM)
+// ─────────────────────────────────────────────
+
+/**
+ * Mengambil ringkasan saldo dari Tiga Loket sekaligus (Modal, Profit, Reseller).
+ * Mengembalikan data saldo saat ini dan rekor all-time.
+ * @returns {Promise<{
+ * success: boolean, 
+ * data: {
+ * danaBelanjaModal: string,
+ * profitSaatIni: string,
+ * profitAllTime: string,
+ * komisiSaatIni: string,
+ * komisiAllTime: string
+ * }
+ * }>}
+ */
+export async function getDashboardKeuangan() {
+    return apiFetch("/api/keuangan/dashboard-summary");
+}
+
+/**
+ * Mengambil seluruh lembar catatan log transaksi kas secara utuh untuk tabel audit.
+ * @returns {Promise<{success: boolean, data: Array<{
+ * id_kas: number,
+ * tanggal: string,
+ * tipe_kas: string,
+ * dompet: string,
+ * jumlah: number,
+ * keterangan: string
+ * }>}>}
+ */
+export async function getRiwayatMutasiKas() {
+    return apiFetch("/api/keuangan/arus-kas/riwayat");
+}
+
+/**
+ * Melakukan aksi penarikan dana/pencairan seluruh profit owner saat ini (Reset ke Rp0).
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export async function resetProfitOwner() {
+    return apiFetch("/api/keuangan/profit-owner/reset", {
+        method: "POST"
+    });
+}
+
+/**
+ * Melakukan aksi penarikan dana/pencairan seluruh komisi reseller saat ini (Reset ke Rp0).
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export async function resetKomisiReseller() {
+    return apiFetch("/api/keuangan/komisi-reseller/reset", {
+        method: "POST"
+    });
+}

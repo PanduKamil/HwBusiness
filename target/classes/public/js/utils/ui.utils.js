@@ -202,3 +202,15 @@ export function filterCards(containerSelector, keyword) {
         card.style.display = name.includes(lc) ? "" : "none";
     });
 }
+
+/**
+ * Hide an inline spinner by clearing the element content.
+ * @param {HTMLElement} el
+ */
+export function hideSpinner(el) {
+    if (el) {
+        // Karena showSpinner lo numpukin teks dan spinner di dalam elemen tersebut,
+        // kita bersihin innerHTML-nya saat loading selesai.
+        el.innerHTML = "";
+    }
+}

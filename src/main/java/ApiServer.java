@@ -127,14 +127,45 @@ public class ApiServer {
         });
 
         // --- Keuangan (Uang Modal & Profit) ---
-        app.get("/api/keuangan/dana-belanja", ctx -> {
+        // Endpoint untuk ambil sisa UANG MODAL belanja
+        // --- Keuangan (Satu API Ringkasan untuk Tiga Loket) ---
+        
+        // Cukup panggil satu endpoint ini, Frontend langsung dapet semua info saldo & rekor
+        app.get("/api/keuangan/dashboard-summary", ctx -> {
             try {
-                java.math.BigDecimal danaBelanja = service.getDanaSiapBelanja();
-                ctx.json(new ApiResponse(true, "Dana siap belanja berhasil dimuat", danaBelanja));
+                Map<String, Object> summary = service.getDashboardKeuangan();
+                ctx.json(new ApiResponse(true, "Data summary keuangan berhasil dimuat", summary));
             } catch (Exception e) {
-                ctx.status(500).json(new ApiResponse(false, "Gagal memuat dana belanja: " + e.getMessage(), null));
+                ctx.status(500).json(new ApiResponse(false, e.getMessage(), null));
             }
         });
+        // Endpoint Riwayat Mutasi Kas (Tabel Log tetap dipisah karena return-nya List Tabel)
+        app.get("/api/keuangan/arus-kas/riwayat", ctx -> {
+            try {
+                var riwayatKas = service.getRiwayatMutasiKas();
+                ctx.json(new ApiResponse(true, "Riwayat arus kas berhasil dimuat", riwayatKas));
+            } catch (Exception e) {
+                ctx.status(500).json(new ApiResponse(false, e.getMessage(), null));
+            }
+        });
+        // --- Endpoint untuk Aksi Reset / Pencairan Keuangan (Tetap pakai POST) ---
+        app.post("/api/keuangan/profit-owner/reset", ctx -> {
+            try {
+                service.resetProfitOwner();
+                ctx.json(new ApiResponse(true, "Profit owner berhasil dicairkan!", null));
+            } catch (Exception e) {
+                ctx.status(400).json(new ApiResponse(false, e.getMessage(), null));
+            }
+        });
+        app.post("/api/keuangan/komisi-reseller/reset", ctx -> {
+            try {
+                service.resetKomisiReseller();
+                ctx.json(new ApiResponse(true, "Komisi reseller berhasil dicairkan!", null));
+            } catch (Exception e) {
+                ctx.status(400).json(new ApiResponse(false, e.getMessage(), null));
+            }
+        });
+        
 
         // --- Exception Handling ---
         app.exception(Exception.class, (e, ctx) -> {

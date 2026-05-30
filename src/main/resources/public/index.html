@@ -327,8 +327,46 @@
                         <p id="display-roi" class="font-mono text-2xl text-tertiary profit-pulse">0.00%</p>
                     </div>
                 </div>
+
+                <div class="border-t border-outline-variant/30 pt-6 my-6">
+                    <span class="text-primary font-mono text-xs tracking-widest uppercase block mb-4">// Live Pockets Balance (Real-time)</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        
+                        <div class="glass-card border-error/20 rounded-lg p-5 flex flex-col justify-between">
+                            <div>
+                                <p class="font-mono text-[10px] uppercase tracking-widest text-error mb-2">Dana Modal Belanja</p>
+                                <p id="display-modal-berputar" class="font-mono text-xl text-on-surface">Rp 0</p>
+                            </div>
+                            <span class="font-mono text-[9px] text-on-surface-variant mt-4 block">// Sisa dana siap putar</span>
+                        </div>
+
+                        <div class="glass-card border-primary/25 rounded-lg p-5 flex flex-col justify-between">
+                            <div>
+                                <p class="font-mono text-[10px] uppercase tracking-widest text-primary mb-2">Kantong Profit Owner</p>
+                                <p id="display-profit-saat-ini" class="font-mono text-xl text-primary profit-pulse">Rp 0</p>
+                                <p class="font-mono text-[9px] text-on-surface-variant mt-1">Total Record: <span id="display-profit-all-time" class="text-on-surface">Rp 0</span></p>
+                            </div>
+                            <button id="btn-reset-profit" class="w-full mt-4 py-2 bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 font-headline text-[10px] uppercase tracking-widest rounded transition-all">
+                                Cairkan Profit
+                            </button>
+                        </div>
+
+                        <div class="glass-card border-secondary/25 rounded-lg p-5 flex flex-col justify-between">
+                            <div>
+                                <p class="font-mono text-[10px] uppercase tracking-widest text-secondary mb-2">Titipan Komisi Reseller</p>
+                                <p id="display-komisi-saat-ini" class="font-mono text-xl text-secondary">Rp 0</p>
+                                <p class="font-mono text-[9px] text-on-surface-variant mt-1">Total Record: <span id="display-komisi-all-time" class="text-on-surface">Rp 0</span></p>
+                            </div>
+                            <button id="btn-reset-komisi" class="w-full mt-4 py-2 bg-secondary/10 border border-secondary/30 text-secondary hover:bg-secondary/20 font-headline text-[10px] uppercase tracking-widest rounded transition-all">
+                                Ambil Komisi
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
                 <p class="text-center font-mono text-xs text-on-surface-variant">
-                    Periode: <span id="display-periode" class="text-on-surface">-</span>
+                    Periode Laporan: <span id="display-periode" class="text-on-surface">-</span>
                 </p>
             </div>
         </section>
@@ -339,13 +377,32 @@
                 <button data-navigate="owner-menu" class="text-on-surface-variant hover:text-primary transition-colors">
                     <span class="material-symbols-outlined">arrow_back</span>
                 </button>
-                <h2 class="font-headline text-2xl uppercase text-yellow-400">Riwayat Transaksi</h2>
+                <h2 class="font-headline text-2xl uppercase text-yellow-400">Riwayat & Arus Kas</h2>
             </div>
-            <div class="mb-4">
-                <input id="cari-transaksi" type="search" placeholder="Cari nama barang..."
-                    class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-mono text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none transition-all" />
+
+            <div class="flex border-b border-outline-variant/30 mb-6 font-headline text-xs uppercase tracking-widest">
+                <button id="tab-btn-penjualan" class="flex-1 text-center pb-3 border-b-2 border-yellow-400 text-yellow-400 transition-all focus:outline-none">
+                    Riwayat Jual Barang
+                </button>
+                <button id="tab-btn-arus-kas" class="flex-1 text-center pb-3 border-b-2 border-transparent text-on-surface-variant hover:text-on-surface transition-all focus:outline-none">
+                    Log Mutasi Arus Kas
+                </button>
             </div>
-            <div id="riwayat-list-cards" class="flex flex-col gap-4"></div>
+
+            <div id="tab-konten-penjualan" class="block flex flex-col gap-4">
+                <div class="mb-2">
+                    <input id="cari-transaksi" type="search" placeholder="Cari transaksi barang..."
+                        class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-mono text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none transition-all" />
+                </div>
+                <div id="riwayat-list-cards" class="flex flex-col gap-4"></div>
+            </div>
+
+            <div id="tab-konten-arus-kas" class="hidden flex flex-col gap-4">
+                <div class="mb-2">
+                    <span class="font-mono text-[11px] text-on-surface-variant block">// Catatan riwayat mutasi kas keluar masuk pada database log.</span>
+                </div>
+                <div id="arus-kas-riwayat-cards" class="flex flex-col gap-3"></div>
+            </div>
         </section>
 
         <!-- ──── RESELLER MENU ──── -->

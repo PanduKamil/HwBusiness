@@ -21,6 +21,8 @@ public class DatabaseConnection {
                 URL = prop.getProperty("DB_URL");
                 USER = prop.getProperty("DB_USER");
                 PASSWORD = prop.getProperty("DB_PASS");
+                prop.setProperty("prepareThreshold", "0");  // ← ini fix-nya
+                prop.setProperty("preparedStatementCacheQueries", "0");
             } catch (Exception e) {
                 throw new RuntimeException("File .env gagal terbaca");
             }
@@ -39,15 +41,17 @@ public class DatabaseConnection {
                     "status_parkir BOOLEAN DEFAULT TRUE, " +
                     "tanggal_masuk TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 
-        String sqlTransaksi = "CREATE TABLE IF NOT  EXISTS transaksi(" +
-                            "id SERIAL PRIMARY KEY, " +
-                            "barang_id INT , " +
-                            "jumlah INT, " +
-                            "harga_jual DECIMAL(12,5), " +
-                            "komisi_reseller DECIMAL(12,5), " +
-                            "net_profit_owner DECIMAL(12,5), " +
-                            "tanggal_jual TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                            "FOREIGN KEY (barang_id) REFERENCES barang(id))";
+        String sqlTransaksi = "CREATE TABLE IF NOT EXISTS transaksi(" +
+                        "id SERIAL PRIMARY KEY, " +
+                        "barang_id INT, " +
+                        "jumlah INT, " +
+                        "harga_modal_snapshot DECIMAL(12,5) NOT NULL DEFAULT 0, " +  // ← baru
+                        "harga_jual_satuan DECIMAL(12,5) NOT NULL DEFAULT 0, " +     // ← baru
+                        "harga_jual DECIMAL(12,5), " +
+                        "komisi_reseller DECIMAL(12,5), " +
+                        "net_profit_owner DECIMAL(12,5), " +
+                        "tanggal_jual TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                        "FOREIGN KEY (barang_id) REFERENCES barang(id))";
     
         String sqlBooking = "CREATE TABLE IF NOT EXISTS booking (" +
                                 "id SERIAL PRIMARY KEY, " +

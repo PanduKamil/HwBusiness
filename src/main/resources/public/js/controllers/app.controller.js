@@ -14,6 +14,7 @@ import {
     validateHargaInput,
     validateTanggalBooking,
     parseFinancialInput,
+    formatRupiah,
 } from "../utils/sanitize.utils.js";
 import {
     showSection,
@@ -131,6 +132,117 @@ async function loadDaftarBooking() {
     }
 }
 
+// async function loadDashboardKeuangan() {
+//     // 1. Cari container utama laporan keuangan
+//     const section = document.getElementById("laporan-keuangan-section");
+//     if (!section) return;
+    
+//     const displayArea = section.querySelector("laporan-display-area") || section;
+    
+//     // 2. AMANKAN STRUKTUR ASLI: Simpan layout HTML card bawaan index.html lo sebelum ditimpa spinner
+//     const originalHTML = displayArea.innerHTML;
+    
+//     // 3. Jalankan spinner bawaan lo (destruktif, menimpa isi displayArea)
+//     showSpinner(displayArea, "Menghitung kas tiga loket...");
+    
+//     try {
+//         // Tembak API gabungan sakti via ngrok dev lo
+//         const res = await Api.getDashboardKeuangan();
+//         console.log("RESPONSE DARI API:", res);
+        
+//         if (res.success) {
+//             // 4. RESTORE STRUKTUR: Kembalikan layout kotak-kotak card asli ke dalam DOM
+//             // Teks "Menghitung kas..." otomatis hilang secara natural karena ketimpa layout asli
+//             displayArea.innerHTML = originalHTML;
+
+//             const data = res.data;
+//             console.log("ISI DATA:", data);
+//             const fmt = (v) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(parseFloat(v) || 0);
+
+//             // 5. Sekarang elemen ID ini dijamin lahir kembali di DOM, siap ditempel angka rupiah!
+//             const modalEl = document.getElementById("display-modal-berputar");
+//             const profitSaatIniEl = document.getElementById("display-profit-saat-ini");
+//             const profitAllTimeEl = document.getElementById("display-profit-all-time");
+//             const komisiSaatIniEl = document.getElementById("display-komisi-saat-ini");
+//             const komisiAllTimeEl = document.getElementById("display-komisi-all-time");
+
+//             if (modalEl) modalEl.textContent = fmt(data.danaBelanjaModal);
+//             if (profitSaatIniEl) profitSaatIniEl.textContent = fmt(data.profitSaatIni);
+//             if (profitAllTimeEl) profitAllTimeEl.textContent = fmt(data.profitAllTime);
+//             if (komisiSaatIniEl) komisiSaatIniEl.textContent = fmt(data.komisiSaatIni);
+//             if (komisiAllTimeEl) komisiAllTimeEl.textContent = fmt(data.komisiAllTime);
+//         }
+//     } catch (err) {
+//         showToast("Gagal memuat dashboard keuangan: " + err.message, "error");
+//         // Jika API gagal/error, kembalikan layout asli agar layar gak blank hitam atau stuck di spinner
+//         displayArea.innerHTML = originalHTML;
+//     }
+//     // CATATAN: Blok finally sengaja gua hapus total. Gak ada lagi hideSpinner siluman yang bikin crash!
+// }
+async function loadDashboardKeuangan() {
+    const displayArea = document.getElementById("laporan-display-area");
+    if (!displayArea) return;
+
+    try {
+        const res = await Api.getDashboardKeuangan();
+        if (!res || !res.success) return;
+
+        const data = res.data;
+        const fmt = (v) => formatRupiah(parseFloat(v) || 0);
+
+        const set = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val;
+        };
+
+        set("display-modal-berputar",  fmt(data.danaBelanjaModal));
+        set("display-profit-saat-ini", fmt(data.profitSaatIni));
+        set("display-profit-all-time", fmt(data.profitAllTime));
+        set("display-komisi-saat-ini", fmt(data.komisiSaatIni));
+        set("display-komisi-all-time", fmt(data.komisiAllTime));
+
+    } catch (err) {
+        showToast("Gagal memuat dashboard keuangan: " + err.message, "error");
+    }
+}
+
+async function loadArusKasRiwayat() {
+    // Cari container tempat tabel log mutasi arus kas nangkring
+    const container = document.getElementById("arus-kas-riwayat-cards");
+    if (!container) return;
+    
+    // Pakai skeleton loader bawaan biar transisi datanya mulus
+    showSkeleton(container, 5);
+    
+    try {
+        const res = await Api.getRiwayatMutasiKas();
+        if (!res.success) throw new Error(res.message);
+        
+        // Tampilkan pesan kosong jika database belum ada log arus kas
+        if (res.data.length === 0) {
+            container.innerHTML = `<p class="text-center text-on-surface-variant font-mono text-xs py-8">Belum ada mutasi kas masuk/keluar.</p>`;
+            return;
+        }
+
+        // Jika data ada, render menggunakan template card/table row baru lo nanti
+        // Catatan: Pastikan nanti lo buat fungsi `templateCardArusKas` di templates.js
+        if (typeof templateCardArusKas === "function") {
+            container.innerHTML = res.data.map(templateCardArusKas).join("");
+        } else {
+            // Fallback render sederhana jika template fungsi belum lo buat
+            container.innerHTML = res.data.map(item => `
+                <div class="p-2 border-b border-outline font-mono text-xs flex justify-between">
+                    <span>[${item.tipe_kas}] ${item.dompet} - ${item.keterangan}</span>
+                    <span class="${item.tipe_kas === 'MASUK' ? 'text-tertiary' : 'text-error'}">
+                        ${item.tipe_kas === 'MASUK' ? '+' : '-'} Rp ${parseFloat(item.jumlah).toLocaleString('id-ID')}
+                    </span>
+                </div>
+            `).join("");
+        }
+    } catch (err) {
+        container.innerHTML = `<p class="text-center text-error font-mono text-xs py-8">Gagal memuat log kas: ${err.message}</p>`;
+    }
+}
 // ─────────────────────────────────────────────
 //  SECTION NAVIGATION
 // ─────────────────────────────────────────────
@@ -155,9 +267,17 @@ function navigate(sectionId) {
     // Auto-refresh data on enter
     if (sectionId === "owner-menu" || sectionId === "katalog-barang") loadKatalogOwner();
     if (sectionId === "reseller-menu") loadKatalogReseller();
-    if (sectionId === "riwayat-transaksi-section") loadRiwayat();
     if (sectionId === "booking-menu") loadDaftarBooking();
-    if (sectionId === "laporan-keuangan-section") loadLaporanTotal();
+    if (sectionId === "riwayat-transaksi-section") {
+        loadRiwayat();
+        loadArusKasRiwayat(); 
+    }
+    
+    // MODIFIKASI DI SINI: Ketika masuk ke keuangan, muat laporan total DAN dashboard tiga loket
+    if (sectionId === "laporan-keuangan-section") {
+        loadLaporanTotal();
+        loadDashboardKeuangan(); 
+    }
 }
 
 // ─────────────────────────────────────────────
@@ -464,7 +584,47 @@ async function handleCancelBooking(id, btn) {
         restore();
     }
 }
+// ─────────────────────────────────────────────
+//  RESET / PENCAIRAN KEUANGAN
+// ─────────────────────────────────────────────
 
+async function handleResetProfitOwner(btn) {
+    if (!confirm("Yakin ingin mencairkan semua profit owner saat ini? Saldo berjalan akan di-reset ke Rp 0, namun rekor All-Time tetap aman.")) return;
+    
+    // Pasang loading state pada tombol agar aman dari spamming/double-click
+    const restore = setButtonLoading(btn, "Memproses...");
+    try {
+        const res = await Api.resetProfitOwner();
+        showToast(res.message || "Profit berhasil dicairkan!", "success");
+        
+        // Refresh data dashboard keuangan biar angka di card langsung update jadi Rp 0
+        await loadDashboardKeuangan();
+        // Refresh juga log mutasi kas karena ada baris KELUAR baru yang masuk
+        await loadArusKasRiwayat();
+    } catch (err) {
+        showToast("Gagal mencairkan profit: " + err.message, "error");
+    } finally {
+        restore();
+    }
+}
+
+async function handleResetKomisiReseller(btn) {
+    if (!confirm("Yakin ingin mencairkan komisi reseller saat ini? Saldo berjalan akan di-reset ke Rp 0.")) return;
+    
+    const restore = setButtonLoading(btn, "Memproses...");
+    try {
+        const res = await Api.resetKomisiReseller();
+        showToast(res.message || "Komisi reseller berhasil dicairkan!", "success");
+        
+        // Refresh data biar UI langsung sinkron dengan database
+        await loadDashboardKeuangan();
+        await loadArusKasRiwayat();
+    } catch (err) {
+        showToast("Gagal mencairkan komisi: " + err.message, "error");
+    } finally {
+        restore();
+    }
+}
 // ─────────────────────────────────────────────
 //  EVENT DELEGATION — replaces all inline onclick
 // ─────────────────────────────────────────────
@@ -501,6 +661,10 @@ function registerNavSection() {
     // Bayar booking modal
     document.getElementById("btn-konfirmasi-bayar")?.addEventListener("click", handleKonfirmasiBayar);
     document.getElementById("btn-batal-bayar")?.addEventListener("click", () => closeModal("modal-bayar-booking"));
+
+    // Reset/Pencairan Uang
+    document.getElementById("btn-reset-profit")?.addEventListener("click", (e) => handleResetProfitOwner(e.target));
+    document.getElementById("btn-reset-komisi")?.addEventListener("click", (e) => handleResetKomisiReseller(e.target));
 }
 
 function registerCardDelegation() {
@@ -524,10 +688,28 @@ function registerCardDelegation() {
         }
     });
 
-    // Riwayat — batalkan
-    document.getElementById("riwayat-list-cards")?.addEventListener("click", (e) => {
-        const btn = e.target.closest(".btn-batalkan-trx");
-        if (btn) handleBatalkanTransaksi(btn.dataset.id, btn);
+    // Riwayat — SUNTIKAN CLEAN CODE: Handle Batalkan TRX DAN Saklar Tabs Sekaligus
+    document.getElementById("riwayat-transaksi-section")?.addEventListener("click", (e) => {
+        // 1. Cek Tombol Batalkan Transaksi (Logic Lama Lo)
+        const btnBatal = e.target.closest(".btn-batalkan-trx");
+        if (btnBatal) {
+            handleBatalkanTransaksi(btnBatal.dataset.id, btnBatal);
+            return; // Exit early
+        }
+
+        // 2. Cek Tombol Tab Penjualan
+        const isTabPenjualan = e.target.closest("#tab-btn-penjualan");
+        if (isTabPenjualan) {
+            switchRiwayatTab("penjualan");
+            return;
+        }
+
+        // 3. Cek Tombol Tab Arus Kas
+        const isTabArusKas = e.target.closest("#tab-btn-arus-kas");
+        if (isTabArusKas) {
+            switchRiwayatTab("arus-kas");
+            return;
+        }
     });
 
     // Booking — lunas & cancel
@@ -553,7 +735,29 @@ function registerSearchFilters() {
         );
     });
 }
+// Helper private untuk transisi Tabs Riwayat & Arus Kas (Clean & Isolated)
+function switchRiwayatTab(target) {
+    const btnJual = document.getElementById("tab-btn-penjualan");
+    const btnKas = document.getElementById("tab-btn-arus-kas");
+    const kontenJual = document.getElementById("tab-konten-penjualan");
+    const kontenKas = document.getElementById("tab-konten-arus-kas");
 
+    if (!btnJual || !btnKas || !kontenJual || !kontenKas) return;
+
+    if (target === "penjualan") {
+        btnJual.classList.add("border-yellow-400", "text-yellow-400");
+        btnKas.classList.remove("border-yellow-400", "text-yellow-400");
+        btnKas.classList.add("border-transparent", "text-on-surface-variant");
+        kontenJual.classList.replace("hidden", "block");
+        kontenKas.classList.replace("block", "hidden");
+    } else {
+        btnKas.classList.add("border-yellow-400", "text-yellow-400");
+        btnJual.classList.remove("border-yellow-400", "text-yellow-400");
+        btnJual.classList.add("border-transparent", "text-on-surface-variant");
+        kontenKas.classList.replace("hidden", "block");
+        kontenJual.classList.replace("block", "hidden");
+    }
+}
 // ─────────────────────────────────────────────
 //  INIT
 // ─────────────────────────────────────────────

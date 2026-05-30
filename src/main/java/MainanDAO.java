@@ -136,9 +136,10 @@ public class MainanDAO {
                         "COALESCE(SUM(t.harga_jual), 0) as total_omset, " +
                         "COALESCE(SUM(t.komisi_reseller), 0) as total_komisi, " +
                         "COALESCE(SUM(t.net_profit_owner), 0) as total_bersih, " +
-                        "COALESCE(SUM(t.jumlah * b.harga_modal_avg), 0) as total_modal " +
-                        "FROM transaksi t " +
-                        "LEFT JOIN barang b ON t.barang_id = b.id " +
+                        // BARU — tidak perlu JOIN barang hanya untuk modal lagi
+                        "COALESCE(SUM(t.harga_modal_snapshot * t.jumlah), 0) as total_modal " +  // ← pakai snapshot
+                        "FROM transaksi t LEFT JOIN barang b ON t.barang_id = b.id " +
+                        // JOIN ke barang tetap dipertahankan kalau ada field lain yang dipakai
                         "WHERE 1=1";
                 // FIX: Mengganti MONTH() dan YEAR() bawaan H2 menjadi EXTRACT() bawaan PostgreSQL
         if (bulan != null && tahun != null) {
@@ -173,9 +174,10 @@ public class MainanDAO {
        String sql = "SELECT COALESCE(SUM(t.harga_jual), 0) as total_omset, " +
                         "COALESCE(SUM(t.komisi_reseller), 0) as total_komisi, " +
                         "COALESCE(SUM(t.net_profit_owner), 0) as total_bersih, " +
-                        "COALESCE(SUM(t.jumlah * b.harga_modal_avg), 0) as total_modal " +
-                        "FROM transaksi t " +
-                        "LEFT JOIN barang b ON t.barang_id = b.id " +
+                        // BARU — tidak perlu JOIN barang hanya untuk modal lagi
+                        "COALESCE(SUM(t.harga_modal_snapshot * t.jumlah), 0) as total_modal " +  // ← pakai snapshot
+                        "FROM transaksi t LEFT JOIN barang b ON t.barang_id = b.id " +
+// JOIN ke barang tetap dipertahankan kalau ada field lain yang dipakai
                         "WHERE EXTRACT(MONTH FROM t.tanggal_jual) = ? AND EXTRACT(YEAR FROM t.tanggal_jual) = ?" ;
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -198,20 +200,22 @@ public class MainanDAO {
        return null;                 
     }
     // Transaksi
-    public void catatTransaksi(Mainan barang, int jumlah, BigDecimal jual, BigDecimal komisi, BigDecimal labaOwner, Connection conn)
-    throws SQLException{
-        String sql ="INSERT INTO transaksi(barang_id, jumlah , harga_jual, komisi_reseller, net_profit_owner) " +
-                    "VALUES(?, ?, ?, ?, ? )";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, barang.getId());
-            pstmt.setInt(2, jumlah);
-            pstmt.setBigDecimal(3, jual);
-            pstmt.setBigDecimal(4, komisi);
-            pstmt.setBigDecimal(5, labaOwner);
-            pstmt.executeUpdate();
-        } 
+    public void catatTransaksi(Mainan barang, int jumlah, BigDecimal jual,
+    BigDecimal komisi, BigDecimal labaOwner, BigDecimal modalSnapshot, Connection conn) throws SQLException {
+    String sql = "INSERT INTO transaksi(barang_id, jumlah, harga_modal_snapshot, harga_jual_satuan, " +
+                 "harga_jual, komisi_reseller, net_profit_owner) " +
+                 "VALUES(?, ?, ?, ?, ?, ?, ?)";
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, barang.getId());
+        pstmt.setInt(2, jumlah);
+        pstmt.setBigDecimal(3, modalSnapshot);                          // frozen avg saat ini
+        pstmt.setBigDecimal(4, jual.divide(new BigDecimal(jumlah)));    // harga per unit
+        pstmt.setBigDecimal(5, jual);                                   // total harga jual
+        pstmt.setBigDecimal(6, komisi);
+        pstmt.setBigDecimal(7, labaOwner);
+        pstmt.executeUpdate();
     }
+}
     public void deleteTransaksi(Connection conn, int idTransaksi) throws SQLException {
     // 1. Query untuk ambil data sebelum dihapus
     String sqlGetInfo = "SELECT barang_id, jumlah FROM transaksi WHERE id = ?";
@@ -250,13 +254,11 @@ public class MainanDAO {
 
     public List<TransaksiDTO> getAllTransaksi() {
     List<TransaksiDTO> list = new ArrayList<>();
-    // FIX: Mengubah FORMATDATETIME() ala H2 menjadi TO_CHAR() standar PostgreSQL
-    String sql = "SELECT t.id, b.nama_barang, b.harga_modal_avg, t.harga_jual, t.net_profit_owner, " +
-                     "TO_CHAR(t.tanggal_jual, 'DD-MM-YYYY HH24:MI') as tgl " +
-                     "FROM transaksi t " +
-                     "INNER JOIN barang b ON t.barang_id = b.id " +
-                     "ORDER BY t.id DESC"; // Biar yang terbaru di atas
-
+    // BARU — tidak perlu JOIN ke barang hanya untuk modal
+        String sql = "SELECT t.id, b.nama_barang, t.harga_modal_snapshot, t.harga_jual, t.net_profit_owner, " +
+                    "TO_CHAR(t.tanggal_jual, 'DD-MM-YYYY HH24:MI') as tgl " +
+                    "FROM transaksi t INNER JOIN barang b ON t.barang_id = b.id " +
+                    "ORDER BY t.id DESC";
     try (Connection conn = DatabaseConnection.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql);
          ResultSet rs = pstmt.executeQuery()) {
@@ -265,7 +267,7 @@ public class MainanDAO {
             list.add(new TransaksiDTO(
                 rs.getInt("id"),
              rs.getString("nama_barang"), 
-             rs.getBigDecimal("harga_modal_avg"), 
+             rs.getBigDecimal("harga_modal_snapshot"), 
              rs.getBigDecimal("harga_jual"), 
              rs.getBigDecimal("net_profit_owner"), 
              rs.getString("tgl")));
