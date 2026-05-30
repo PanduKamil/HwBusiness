@@ -12,19 +12,24 @@ public class DatabaseConnection {
 
         private DatabaseConnection(){}
         
-        static{
+        static {
             try {
-                Properties prop = new Properties();
+                // Coba baca dari environment variables dulu (Railway/Cloud)
+                URL = System.getenv("DB_URL");
+                USER = System.getenv("DB_USER");
+                PASSWORD = System.getenv("DB_PASS");
 
-                prop.load(new FileInputStream(".env"));
+                // Kalau tidak ada (local development), fallback ke .env
+                if (URL == null || USER == null || PASSWORD == null) {
+                    Properties prop = new Properties();
+                    prop.load(new FileInputStream(".env"));
+                    URL = prop.getProperty("DB_URL");
+                    USER = prop.getProperty("DB_USER");
+                    PASSWORD = prop.getProperty("DB_PASS");
+                }
 
-                URL = prop.getProperty("DB_URL");
-                USER = prop.getProperty("DB_USER");
-                PASSWORD = prop.getProperty("DB_PASS");
-                prop.setProperty("prepareThreshold", "0");  // ← ini fix-nya
-                prop.setProperty("preparedStatementCacheQueries", "0");
             } catch (Exception e) {
-                throw new RuntimeException("File .env gagal terbaca");
+                throw new RuntimeException("Gagal membaca konfigurasi database: " + e.getMessage());
             }
         }
         public static Connection getConnection() throws SQLException {
