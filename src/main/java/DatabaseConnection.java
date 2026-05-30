@@ -18,8 +18,7 @@ public class DatabaseConnection {
                 URL = System.getenv("DB_URL");
                 USER = System.getenv("DB_USER");
                 PASSWORD = System.getenv("DB_PASS");
-
-                // Kalau tidak ada (local development), fallback ke .env
+                
                 if (URL == null || USER == null || PASSWORD == null) {
                     Properties prop = new Properties();
                     prop.load(new FileInputStream(".env"));
