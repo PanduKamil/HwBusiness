@@ -5,7 +5,7 @@
  * Update CACHE_NAME whenever deploying a new version to invalidate old caches.
  */
 
-const CACHE_NAME = "HW-DATA-V10";
+const CACHE_NAME = "HW-DATA-V11";
 
 const STATIC_ASSETS = [
     "/",
