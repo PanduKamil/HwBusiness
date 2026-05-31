@@ -4,6 +4,10 @@
  * Design system: Pixel/retro terminal aesthetic — sharp corners, IBM Plex Mono,
  * px-card / px-btn component language matching index-2.html.
  *
+ * CRITICAL: Button class names (.btn-edit-barang, .btn-lapor-terjual, .btn-booking,
+ * .btn-batalkan-trx, .btn-lunas, .btn-cancel-booking) are used by app.controller.js
+ * via event delegation — do NOT rename them.
+ *
  * All user-supplied string values are passed through sanitizeText() before injection
  * to prevent XSS. Numeric event data is passed via data attributes, never inline JS args.
  */
@@ -52,9 +56,9 @@ export function templateCardOwner(item) {
             </div>
         </div>
 
-        <!-- Action button -->
+        <!-- Action button — class "btn-edit-barang" wajib ada untuk event delegation di controller -->
         <button
-            class="px-btn px-btn-amber w-full py-3"
+            class="btn-edit-barang px-btn px-btn-amber w-full py-3"
             data-id="${id}"
             data-nama="${nama}"
             data-modal="${item.hargaModal}"
@@ -100,9 +104,10 @@ export function templateCardReseller(item) {
         </div>
 
         <!-- Action buttons -->
+        <!-- "btn-lapor-terjual" & "btn-booking" wajib ada untuk event delegation di controller -->
         <div class="flex gap-2">
             <button
-                class="px-btn flex-[2] py-3 ${habis ? "px-btn-ghost cursor-not-allowed" : "px-btn-green"}"
+                class="btn-lapor-terjual px-btn flex-[2] py-3 ${habis ? "px-btn-ghost cursor-not-allowed" : "px-btn-green"}"
                 data-id="${id}"
                 data-nama="${nama}"
                 data-harga="${item.hargaPerkiraanJual}"
@@ -112,7 +117,7 @@ export function templateCardReseller(item) {
                     : `<span class="material-symbols-outlined" style="font-size:14px;">check_circle</span> Lapor Terjual`}
             </button>
             <button
-                class="px-btn px-btn-blue flex-1 py-3"
+                class="btn-booking px-btn px-btn-blue flex-1 py-3"
                 data-id="${id}"
                 ${habis ? "disabled" : ""}>
                 <span class="material-symbols-outlined" style="font-size:14px;">bookmark_add</span>
@@ -153,9 +158,9 @@ export function templateCardRiwayat(trx) {
             <p class="font-mono text-[13px] mt-1" style="color:#4AE060;">${formatRupiah(trx.hargaLaku)}</p>
         </div>
 
-        <!-- Cancel button -->
+        <!-- "btn-batalkan-trx" wajib ada untuk event delegation di controller -->
         <button
-            class="px-btn px-btn-red w-full py-2.5"
+            class="btn-batalkan-trx px-btn px-btn-red w-full py-2.5"
             data-id="${id}">
             <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
             Batalkan
@@ -201,16 +206,16 @@ export function templateCardBooking(bk) {
             <span class="font-mono text-[10px]" style="color:#e4e2e5;">${Number(bk.jumlah)} pcs</span>
         </div>
 
-        <!-- Action buttons -->
+        <!-- "btn-lunas" & "btn-cancel-booking" wajib ada untuk event delegation di controller -->
         <div class="flex gap-2">
             <button
-                class="px-btn px-btn-green flex-[2] py-3"
+                class="btn-lunas px-btn px-btn-green flex-[2] py-3"
                 data-id="${id}">
                 <span class="material-symbols-outlined" style="font-size:14px;">payments</span>
                 Lunas
             </button>
             <button
-                class="px-btn px-btn-red flex-1 py-3"
+                class="btn-cancel-booking px-btn px-btn-red flex-1 py-3"
                 data-id="${id}">
                 <span class="material-symbols-outlined" style="font-size:14px;">close</span>
             </button>
@@ -218,4 +223,3 @@ export function templateCardBooking(bk) {
 
     </div>`;
 }
-
