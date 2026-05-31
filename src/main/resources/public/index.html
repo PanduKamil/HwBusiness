@@ -130,6 +130,26 @@
         }
         .px-input::placeholder { color: #2A5F8A; }
         .px-input:focus { border-color: #F5C87A; }
+        .px-input:active {
+    -webkit-text-fill-color: #e4e2e5 !important;
+    caret-color: #F5C87A;
+}
+
+.px-input:-webkit-autofill,
+.px-input:-webkit-autofill:hover,
+.px-input:-webkit-autofill:focus,
+.px-input:-webkit-autofill:active {
+    -webkit-text-fill-color: #e4e2e5 !important;
+    -webkit-box-shadow: 0 0 0px 1000px #0A1628 inset !important;
+    border-color: #F5C87A !important;
+}
+
+input[type="search"],
+input[type="text"],
+input[type="password"],
+input[type="number"] {
+    -webkit-text-fill-color: #e4e2e5 !important;
+}
 
         /* ── Label ── */
         .px-label {
