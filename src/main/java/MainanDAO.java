@@ -355,4 +355,23 @@ public void updateStatusBooking(int id, String status, Connection conn) throws S
         pstmt.executeUpdate();
     }
 }
+public TransaksiSnapshot getTransaksiById(int id, Connection conn) throws SQLException {
+    String sql = "SELECT b.nama_barang, t.harga_modal_snapshot, t.net_profit_owner, t.komisi_reseller " +
+                 "FROM transaksi t JOIN barang b ON t.barang_id = b.id " +
+                 "WHERE t.id = ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, id);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return new TransaksiSnapshot(
+                    rs.getString("nama_barang"),
+                    rs.getBigDecimal("harga_modal_snapshot"),
+                    rs.getBigDecimal("net_profit_owner"),
+                    rs.getBigDecimal("komisi_reseller")
+                );
+            }
+        }
+    }
+    return null;
+}
 }

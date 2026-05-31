@@ -140,10 +140,20 @@ public class GudangService {
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false); // Kunci dimulai!
 
-        // Panggil DAO dengan mengirimkan 'conn' yang sama
-        // Gak perlu getTransaksiById terpisah kalau di DAO udah dihandle semua
+        // Ambil data transaksi SEBELUM dihapus
+        // Perlu tau modal, profit, komisi yang harus di-reverse
+        TransaksiSnapshot snap = mainanDAO.getTransaksiById(idTransaksi, conn);
+        if (snap == null) throw new RuntimeException("Transaksi tidak ditemukan!");
+
         mainanDAO.deleteTransaksi(conn, idTransaksi);
 
+        // Reverse arus kas — balik semua yang masuk jadi keluar
+        arusKasDAO.catat(conn, "KELUAR", "MODAL", snap.getModalSnapshot(),
+            "Pembatalan transaksi #" + idTransaksi + ": " + snap.getNamaBarang());
+        arusKasDAO.catat(conn, "KELUAR", "PROFIT", snap.getNetProfitOwner(),
+            "Pembatalan transaksi #" + idTransaksi + ": " + snap.getNamaBarang());
+        arusKasDAO.catat(conn, "KELUAR", "RESELLER", snap.getKomisiReseller(),
+            "Pembatalan transaksi #" + idTransaksi + ": " + snap.getNamaBarang());
         conn.commit(); // Kalau sukses semua, simpan!
         System.out.println("Transaksi hangus, stok aman balik ke rak.");
 
