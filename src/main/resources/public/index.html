@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HW DATA — WheelFlow Pro</title>
+    <title>DiecastData — Warehouse System</title>
 
-    <!-- Fonts -->
+    <!-- Fonts: Pixel + Mono aesthetic -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Manrope:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
-    <!-- Tailwind CDN (Dev) — replace with compiled bundle for production -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -19,568 +18,607 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary":                   "#d394ff",
-                        "primary-dim":               "#aa30fa",
-                        "primary-container":         "#cb80ff",
-                        "primary-fixed":             "#cb80ff",
-                        "primary-fixed-dim":         "#c26bff",
-                        "on-primary":                "#4a0076",
-                        "on-primary-container":      "#39005c",
-                        "on-primary-fixed":          "#000000",
-                        "on-primary-fixed-variant":  "#470071",
-                        "inverse-primary":           "#9100e0",
-                        "secondary":                 "#00fbfb",
-                        "secondary-dim":             "#00ecec",
-                        "secondary-fixed":           "#00fbfb",
-                        "secondary-fixed-dim":       "#00ecec",
-                        "secondary-container":       "#006a6a",
-                        "on-secondary":              "#005c5c",
-                        "on-secondary-container":    "#d9fffe",
-                        "on-secondary-fixed":        "#004747",
-                        "on-secondary-fixed-variant":"#006666",
-                        "tertiary":                  "#8eff71",
-                        "tertiary-dim":              "#2be800",
-                        "tertiary-fixed":            "#2ff801",
-                        "tertiary-fixed-dim":        "#2be800",
-                        "tertiary-container":        "#2ff801",
-                        "on-tertiary":               "#0d6100",
-                        "on-tertiary-container":     "#0b5800",
-                        "on-tertiary-fixed":         "#064200",
-                        "on-tertiary-fixed-variant": "#0d6200",
-                        "error":                     "#ff6e84",
-                        "error-dim":                 "#d73357",
-                        "error-container":           "#a70138",
-                        "on-error":                  "#490013",
-                        "on-error-container":        "#ffb2b9",
-                        "surface":                   "#0e0e0e",
-                        "surface-dim":               "#0e0e0e",
-                        "surface-bright":            "#2c2c2c",
-                        "surface-container-lowest":  "#000000",
-                        "surface-container-low":     "#131313",
-                        "surface-container":         "#191919",
-                        "surface-container-high":    "#1f1f1f",
-                        "surface-container-highest": "#262626",
-                        "surface-variant":           "#262626",
-                        "surface-tint":              "#d394ff",
-                        "on-surface":                "#ffffff",
-                        "on-surface-variant":        "#ababab",
-                        "inverse-surface":           "#f9f9f9",
-                        "inverse-on-surface":        "#555555",
-                        "background":                "#0e0e0e",
-                        "on-background":             "#ffffff",
-                        "outline":                   "#757575",
-                        "outline-variant":           "#484848",
+                        "night-void":      "#0A1628",
+                        "midnight-blue":   "#122140",
+                        "storm-cloud":     "#1E3A5F",
+                        "twilight":        "#2A5F8A",
+                        "fog-blue":        "#3B7EA6",
+                        "window-amber":    "#F5C87A",
+                        "warning-red":     "#E05A4E",
+                        "foliage-bright":  "#4AE060",
+                        "foliage-mid":     "#2D7A3A",
+                        "window-cool":     "#A8D4F0",
+                        "on-surface":      "#e4e2e5",
+                        "on-surface-dim":  "#8a8d96",
+                        "error-dark":      "#7a1010",
                     },
-                    borderRadius: { "DEFAULT": "0.25rem", "lg": "16px", "xl": "24px", "full": "9999px" },
+                    borderRadius: {
+                        "DEFAULT": "0px", "sm": "0px", "md": "0px",
+                        "lg": "0px", "xl": "0px", "full": "9999px"
+                    },
                     fontFamily: {
-                        "headline": ["Orbitron", "sans-serif"],
-                        "body":     ["Manrope", "sans-serif"],
-                        "mono":     ["Share Tech Mono", "monospace"]
+                        "pixel":  ["'Press Start 2P'", "monospace"],
+                        "mono":   ["'IBM Plex Mono'", "monospace"],
+                    },
+                    spacing: {
+                        "1": "4px", "2": "8px", "3": "16px", "4": "24px",
+                        "5": "32px", "6": "48px", "7": "64px", "8": "96px",
                     }
                 }
             }
         }
     </script>
 
-    <!-- PWA -->
     <link rel="manifest" href="manifest.json" />
 
     <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
-        .glass-card { background: rgba(211,148,255,0.05); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(211,148,255,0.1); }
-        .profit-pulse { text-shadow: 0 0 10px rgba(142,255,113,0.4); }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #484848; border-radius: 10px; }
-        body { min-height: 100dvh; }
-        /* Smooth section transitions */
-        [data-section] { transition: opacity 0.15s ease; }
+        * { box-sizing: border-box; }
+        html, body { min-height: 100dvh; }
+
+        body {
+            background-color: #0A1628;
+            color: #e4e2e5;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* ── Pixel border card ── */
+        .px-card {
+            background: #122140;
+            border: 2px solid #1E3A5F;
+            position: relative;
+        }
+        .px-card::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px;
+            width: 8px; height: 8px;
+            background: #F5C87A;
+        }
+
+        /* ── Accent top bar on cards ── */
+        .px-card-amber  { border-top: 2px solid #F5C87A; }
+        .px-card-green  { border-top: 2px solid #4AE060; }
+        .px-card-blue   { border-top: 2px solid #A8D4F0; }
+        .px-card-red    { border-top: 2px solid #E05A4E; }
+
+        /* ── Pixel button ── */
+        .px-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            border: 2px solid;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.05s, transform 0.05s;
+            position: relative;
+        }
+        .px-btn:active { transform: translate(2px, 2px); }
+
+        .px-btn-amber  { background: #F5C87A; color: #0A1628; border-color: #c9a050; box-shadow: 3px 3px 0 #c9a050; }
+        .px-btn-amber:active  { box-shadow: none; }
+        .px-btn-green  { background: #4AE060; color: #0A1628; border-color: #2D7A3A; box-shadow: 3px 3px 0 #2D7A3A; }
+        .px-btn-green:active  { box-shadow: none; }
+        .px-btn-blue   { background: transparent; color: #A8D4F0; border-color: #A8D4F0; }
+        .px-btn-blue:hover { background: #1E3A5F; }
+        .px-btn-red    { background: transparent; color: #E05A4E; border-color: #E05A4E; }
+        .px-btn-red:hover { background: rgba(224,90,78,0.1); }
+        .px-btn-ghost  { background: transparent; color: #8a8d96; border-color: #1E3A5F; }
+        .px-btn-ghost:hover { color: #e4e2e5; border-color: #2A5F8A; }
+
+        /* ── Input ── */
+        .px-input {
+            width: 100%;
+            background: #0A1628;
+            border: 2px solid #1E3A5F;
+            color: #e4e2e5;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            padding: 10px 14px;
+            outline: none;
+            transition: border-color 0.1s;
+        }
+        .px-input::placeholder { color: #2A5F8A; }
+        .px-input:focus { border-color: #F5C87A; }
+
+        /* ── Label ── */
+        .px-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #3B7EA6;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        /* ── Section nav ── */
+        [data-section] { transition: opacity 0.1s ease; }
         [data-section].hidden { display: none; }
+
+        /* ── Scanline ── */
+        .scanline-overlay {
+            pointer-events: none;
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 3px,
+                rgba(10,22,40,0.15) 3px,
+                rgba(10,22,40,0.15) 4px
+            );
+            z-index: 999;
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0A1628; }
+        ::-webkit-scrollbar-thumb { background: #1E3A5F; }
+
+        /* ── Tab active ── */
+        .tab-active { color: #F5C87A; border-bottom: 2px solid #F5C87A; }
+
+        /* ── Pixel tag ── */
+        .px-tag {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border: 1px solid;
+        }
+
+        /* Status dot blink */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+        .blink { animation: blink 1.8s ease-in-out infinite; }
+
+        /* Number tick on load */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.4s ease-out forwards; }
     </style>
 </head>
 
-<body class="bg-surface-container-lowest text-on-surface font-body selection:bg-primary/30">
+<body>
+<div class="scanline-overlay" aria-hidden="true"></div>
 
-    <!-- ═══ TOP APP BAR ═══ -->
-    <header class="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-xl border-b border-purple-500/10 shadow-[0_0_15px_rgba(211,148,255,0.1)]">
-        <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
-            <div class="flex items-center gap-4">
-                <h1 class="font-headline uppercase font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-400 to-purple-700 tracking-tighter text-lg">
-                    Diecast DATA
-                </h1>
-                <span class="font-mono text-[10px] text-on-surface-variant uppercase tracking-widest hidden sm:block">Warehouse System</span>
-            </div>
-            <nav class="hidden md:flex gap-8">
-                <button data-navigate="main-menu" class="text-purple-400 font-headline text-xs tracking-widest uppercase hover:text-white transition-colors">Menu</button>
-                <button data-navigate="katalog-barang" class="hidden text-zinc-500 hover:text-cyan-400 font-headline text-xs tracking-widest uppercase transition-colors">Katalog</button>
-                <button data-navigate="laporan-keuangan-section" class="hidden text-zinc-500 hover:text-cyan-400 font-headline text-xs tracking-widest uppercase transition-colors">Laporan</button>
-            </nav>
+<!-- ═══ TOP APP BAR ═══ -->
+<header class="fixed top-0 w-full z-50 bg-night-void border-b-2 border-storm-cloud">
+    <div class="flex justify-between items-center px-3 h-14 max-w-4xl mx-auto">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-window-amber text-[18px]">analytics</span>
+            <span class="font-mono text-[11px] font-semibold tracking-tight text-window-amber">DIECAST_DATA</span>
+            <span class="font-mono text-[9px] text-twilight hidden sm:block tracking-widest ml-1">// WAREHOUSE SYS</span>
         </div>
-    </header>
+        <div class="flex items-center gap-2">
+            <div class="w-2 h-2 bg-foliage-bright blink"></div>
+            <span class="font-mono text-[9px] text-foliage-bright tracking-widest uppercase">Online</span>
+        </div>
+    </div>
+</header>
 
-    <!-- ═══ MAIN CONTENT ═══ -->
-    <main class="pt-24 pb-32 px-4 md:px-6 max-w-4xl mx-auto">
+<!-- ═══ MAIN ═══ -->
+<main class="pt-20 pb-28 px-3 max-w-4xl mx-auto">
 
-        <!-- ──── MAIN MENU ──── -->
-        <section id="main-menu" data-section class="flex flex-col items-center justify-center min-h-[70vh] gap-4">
-            <div class="mb-8 text-center">
-                <span class="text-secondary font-mono text-sm tracking-widest uppercase block mb-2">System Online</span>
-                <h2 class="font-headline text-4xl md:text-5xl font-black uppercase tracking-tight">
-                    Menu <span class="text-primary">Diecast Data</span>
-                </h2>
-            </div>
-            <div class="w-full max-w-sm flex flex-col gap-3">
-                <button data-navigate="owner-login"
-                    class="w-full py-4 glass-card rounded-lg font-headline text-sm uppercase tracking-widest text-primary border-primary/30 hover:bg-primary/10 active:scale-95 transition-all flex items-center justify-center gap-3">
-                    <span class="material-symbols-outlined">admin_panel_settings</span>Owner Only
-                </button>
-                <button data-navigate="reseller-menu"
-                    class="w-full py-4 glass-card rounded-lg font-headline text-sm uppercase tracking-widest text-secondary border-secondary/30 hover:bg-secondary/10 active:scale-95 transition-all flex items-center justify-center gap-3">
-                    <span class="material-symbols-outlined">storefront</span>Lapor Penjualan (Reseller)
-                </button>
-                <button data-navigate="booking-menu"
-                    class="w-full py-4 glass-card rounded-lg font-headline text-sm uppercase tracking-widest text-tertiary border-tertiary/30 hover:bg-tertiary/10 active:scale-95 transition-all flex items-center justify-center gap-3">
-                    <span class="material-symbols-outlined">bookmark_add</span>Booking Menu
-                </button>
-            </div>
-        </section>
-
-        <!-- ──── OWNER LOGIN ──── -->
-        <section id="owner-login" data-section class="hidden max-w-sm mx-auto pt-8">
-            <div class="flex items-center gap-3 mb-8">
-                <button data-navigate="main-menu" class="text-on-surface-variant hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </button>
-                <h2 class="font-headline text-2xl uppercase text-primary">Owner Login</h2>
-            </div>
-            <div class="glass-card rounded-lg p-6 flex flex-col gap-4">
-                <div>
-                    <label class="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant block mb-2">Username</label>
-                    <input id="login-user" type="text" autocomplete="username"
-                        class="w-full bg-surface-container-high border border-outline-variant rounded-md px-4 py-3 text-on-surface font-mono focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none transition-all"
-                        placeholder="Masukkan username" />
-                </div>
-                <div>
-                    <label class="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant block mb-2">Password</label>
-                    <input id="login-password" type="password" autocomplete="current-password"
-                        class="w-full bg-surface-container-high border border-outline-variant rounded-md px-4 py-3 text-on-surface font-mono focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none transition-all"
-                        placeholder="Masukkan password" />
-                </div>
-                <button id="btn-login"
-                    class="w-full py-4 bg-gradient-to-r from-primary to-primary-dim text-on-primary font-headline text-sm uppercase tracking-widest rounded-lg shadow-[0_4px_15px_rgba(160,32,240,0.4)] hover:shadow-[0_4px_25px_rgba(160,32,240,0.6)] active:scale-95 transition-all mt-2">
-                    Masuk
-                </button>
-            </div>
-        </section>
-
-        <!-- ──── OWNER MENU ──── -->
-        <section id="owner-menu" data-section class="hidden">
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="font-headline text-2xl uppercase text-primary">Menu Owner</h2>
-                <button data-navigate="main-menu" class="font-mono text-xs text-on-surface-variant hover:text-error transition-colors uppercase tracking-widest">
-                    <span class="material-symbols-outlined text-sm align-middle mr-1">logout</span>Logout
-                </button>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button data-navigate="input-barang"
-                    class="glass-card rounded-lg p-6 text-left hover:border-primary/40 active:scale-95 transition-all group">
-                    <span class="material-symbols-outlined text-primary text-3xl mb-3 block">add_box</span>
-                    <p class="font-headline text-sm uppercase tracking-wide text-on-surface">Input Barang Masuk</p>
-                    <p class="font-mono text-[10px] text-on-surface-variant mt-1">Tambah stok baru ke gudang</p>
-                </button>
-                <button data-navigate="laporan-keuangan-section"
-                    class="glass-card rounded-lg p-6 text-left hover:border-secondary/40 active:scale-95 transition-all group">
-                    <span class="material-symbols-outlined text-secondary text-3xl mb-3 block">analytics</span>
-                    <p class="font-headline text-sm uppercase tracking-wide text-on-surface">Laporan Keuangan</p>
-                    <p class="font-mono text-[10px] text-on-surface-variant mt-1">Omset, profit, ROI</p>
-                </button>
-                <button data-navigate="katalog-barang"
-                    class="glass-card rounded-lg p-6 text-left hover:border-primary/40 active:scale-95 transition-all group">
-                    <span class="material-symbols-outlined text-primary text-3xl mb-3 block">inventory_2</span>
-                    <p class="font-headline text-sm uppercase tracking-wide text-on-surface">Katalog Barang</p>
-                    <p class="font-mono text-[10px] text-on-surface-variant mt-1">Lihat & edit stok gudang</p>
-                </button>
-                <button data-navigate="riwayat-transaksi-section"
-                    class="glass-card rounded-lg p-6 text-left hover:border-yellow-400/40 active:scale-95 transition-all group">
-                    <span class="material-symbols-outlined text-yellow-400 text-3xl mb-3 block">receipt_long</span>
-                    <p class="font-headline text-sm uppercase tracking-wide text-on-surface">Riwayat Transaksi</p>
-                    <p class="font-mono text-[10px] text-on-surface-variant mt-1">Semua history penjualan</p>
-                </button>
-            </div>
-        </section>
-
-        <!-- ──── INPUT BARANG ──── -->
-        <section id="input-barang" data-section class="hidden max-w-sm mx-auto pt-8">
-            <div class="flex items-center gap-3 mb-8">
-                <button data-navigate="owner-menu" class="text-on-surface-variant hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </button>
-                <h2 class="font-headline text-2xl uppercase text-primary">Input Barang</h2>
-            </div>
-            <div class="glass-card rounded-lg p-6 flex flex-col gap-4">
-                <div>
-                    <label class="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant block mb-2">Nama Barang</label>
-                    <input id="namaBarang" type="text" maxlength="200"
-                        class="w-full bg-surface-container-high border border-outline-variant rounded-md px-4 py-3 text-on-surface font-mono focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none transition-all"
-                        placeholder="Nama HotWheels" />
-                </div>
-                <div>
-                    <label class="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant block mb-2">Harga Modal (Rp)</label>
-                    <input id="hargaModal" type="number" min="0" step="any"
-                        class="w-full bg-surface-container-high border border-outline-variant rounded-md px-4 py-3 text-on-surface font-mono focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none transition-all"
-                        placeholder="0" />
-                </div>
-                <div>
-                    <label class="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant block mb-2">Estimasi Harga Jual (Rp)</label>
-                    <input id="hargaJual" type="number" min="0" step="any"
-                        class="w-full bg-surface-container-high border border-outline-variant rounded-md px-4 py-3 text-on-surface font-mono focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none transition-all"
-                        placeholder="0" />
-                </div>
-                <div>
-                    <label class="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant block mb-2">Jumlah Stok</label>
-                    <input id="stok" type="number" min="0" step="1"
-                        class="w-full bg-surface-container-high border border-outline-variant rounded-md px-4 py-3 text-on-surface font-mono focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none transition-all"
-                        placeholder="1" />
-                </div>
-                <div class="flex gap-3 mt-2">
-                    <button id="btn-simpan-barang"
-                        class="flex-[2] py-4 bg-gradient-to-r from-primary to-primary-dim text-on-primary font-headline text-sm uppercase tracking-widest rounded-lg active:scale-95 transition-all shadow-[0_4px_15px_rgba(160,32,240,0.3)]">
-                        Simpan
-                    </button>
-                    <button data-navigate="owner-menu"
-                        class="flex-1 py-4 border border-outline-variant text-on-surface-variant font-headline text-sm uppercase tracking-widest rounded-lg hover:border-error/50 hover:text-error active:scale-95 transition-all">
-                        Batal
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ──── KATALOG BARANG (OWNER) ──── -->
-        <section id="katalog-barang" data-section class="hidden">
-            <div class="flex items-center gap-3 mb-6">
-                <button data-navigate="owner-menu" class="text-on-surface-variant hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </button>
-                <h2 class="font-headline text-2xl uppercase text-primary">Katalog Stok</h2>
-            </div>
-            <div class="mb-4">
-                <input id="cari-barang-owner" type="search" placeholder="Cari stok di gudang..."
-                    class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-mono text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none transition-all" />
-            </div>
-            <div id="owner-list-cards" class="flex flex-col gap-4"></div>
-        </section>
-
-        <!-- ──── LAPORAN KEUANGAN ──── -->
-        <section id="laporan-keuangan-section" data-section class="hidden">
-            <div class="flex items-center gap-3 mb-6">
-                <button data-navigate="owner-menu" class="text-on-surface-variant hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </button>
-                <h2 class="font-headline text-2xl uppercase text-primary">Laporan Keuangan</h2>
-            </div>
-
-            <!-- Filter bar -->
-            <div class="glass-card rounded-lg p-5 mb-6 flex flex-col sm:flex-row gap-3 items-end">
-                <div class="flex-1">
-                    <label class="font-mono text-[10px] uppercase text-on-surface-variant block mb-2">Bulan (1–12)</label>
-                    <input id="filter-bulan" type="number" min="1" max="12"
-                        class="w-full bg-surface-container-high border border-outline-variant rounded-md px-3 py-2 font-mono text-sm text-on-surface outline-none focus:border-primary transition-all"
-                        placeholder="Bulan" />
-                </div>
-                <div class="flex-1">
-                    <label class="font-mono text-[10px] uppercase text-on-surface-variant block mb-2">Tahun</label>
-                    <input id="filter-tahun" type="number" min="2020"
-                        class="w-full bg-surface-container-high border border-outline-variant rounded-md px-3 py-2 font-mono text-sm text-on-surface outline-none focus:border-primary transition-all"
-                        value="2026" />
-                </div>
-                <button id="btn-cek-laporan"
-                    class="px-5 py-2.5 bg-primary/20 border border-primary/40 text-primary font-headline text-xs uppercase tracking-widest rounded-md hover:bg-primary/30 active:scale-95 transition-all whitespace-nowrap">
-                    Cek Laporan
-                </button>
-                <button id="btn-laporan-total"
-                    class="px-5 py-2.5 border border-outline-variant text-on-surface-variant font-headline text-xs uppercase tracking-widest rounded-md hover:border-secondary/40 hover:text-secondary active:scale-95 transition-all whitespace-nowrap">
-                    Semua Periode
-                </button>
-            </div>
-
-            <!-- Stats grid -->
-            <div id="laporan-display-area">
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                    <div class="glass-card rounded-lg p-5">
-                        <p class="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant mb-3">Omset</p>
-                        <p id="display-omset" class="font-mono text-xl text-on-surface">Rp 0</p>
-                    </div>
-                    <div class="glass-card rounded-lg p-5">
-                        <p class="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant mb-3">Komisi</p>
-                        <p id="display-komisi" class="font-mono text-xl text-secondary">Rp 0</p>
-                    </div>
-                    <div class="glass-card rounded-lg p-5">
-                        <p class="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant mb-3">Net Profit</p>
-                        <p id="display-profit" class="font-mono text-xl text-primary">Rp 0</p>
-                    </div>
-                    <div class="glass-card rounded-lg p-5">
-                        <p class="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant mb-3">Modal</p>
-                        <p id="display-modal" class="font-mono text-xl text-error">Rp 0</p>
-                    </div>
-                    <div class="glass-card rounded-lg p-5 col-span-2 md:col-span-1">
-                        <p class="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant mb-3">ROI</p>
-                        <p id="display-roi" class="font-mono text-2xl text-tertiary profit-pulse">0.00%</p>
-                    </div>
-                </div>
-
-                <div class="border-t border-outline-variant/30 pt-6 my-6">
-                    <span class="text-primary font-mono text-xs tracking-widest uppercase block mb-4">// Live Pockets Balance (Real-time)</span>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        
-                        <div class="glass-card border-error/20 rounded-lg p-5 flex flex-col justify-between">
-                            <div>
-                                <p class="font-mono text-[10px] uppercase tracking-widest text-error mb-2">Dana Modal Belanja</p>
-                                <p id="display-modal-berputar" class="font-mono text-xl text-on-surface">Rp 0</p>
-                            </div>
-                            <span class="font-mono text-[9px] text-on-surface-variant mt-4 block">// Sisa dana siap putar</span>
-                        </div>
-
-                        <div class="glass-card border-primary/25 rounded-lg p-5 flex flex-col justify-between">
-                            <div>
-                                <p class="font-mono text-[10px] uppercase tracking-widest text-primary mb-2">Kantong Profit Owner</p>
-                                <p id="display-profit-saat-ini" class="font-mono text-xl text-primary profit-pulse">Rp 0</p>
-                                <p class="font-mono text-[9px] text-on-surface-variant mt-1">Total Record: <span id="display-profit-all-time" class="text-on-surface">Rp 0</span></p>
-                            </div>
-                            <button id="btn-reset-profit" class="w-full mt-4 py-2 bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 font-headline text-[10px] uppercase tracking-widest rounded transition-all">
-                                Cairkan Profit
-                            </button>
-                        </div>
-
-                        <div class="glass-card border-secondary/25 rounded-lg p-5 flex flex-col justify-between">
-                            <div>
-                                <p class="font-mono text-[10px] uppercase tracking-widest text-secondary mb-2">Titipan Komisi Reseller</p>
-                                <p id="display-komisi-saat-ini" class="font-mono text-xl text-secondary">Rp 0</p>
-                                <p class="font-mono text-[9px] text-on-surface-variant mt-1">Total Record: <span id="display-komisi-all-time" class="text-on-surface">Rp 0</span></p>
-                            </div>
-                            <button id="btn-reset-komisi" class="w-full mt-4 py-2 bg-secondary/10 border border-secondary/30 text-secondary hover:bg-secondary/20 font-headline text-[10px] uppercase tracking-widest rounded transition-all">
-                                Ambil Komisi
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-
-                <p class="text-center font-mono text-xs text-on-surface-variant">
-                    Periode Laporan: <span id="display-periode" class="text-on-surface">-</span>
-                </p>
-            </div>
-        </section>
-
-        <!-- ──── RIWAYAT TRANSAKSI ──── -->
-        <section id="riwayat-transaksi-section" data-section class="hidden">
-            <div class="flex items-center gap-3 mb-6">
-                <button data-navigate="owner-menu" class="text-on-surface-variant hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </button>
-                <h2 class="font-headline text-2xl uppercase text-yellow-400">Riwayat & Arus Kas</h2>
-            </div>
-
-            <div class="flex border-b border-outline-variant/30 mb-6 font-headline text-xs uppercase tracking-widest">
-                <button id="tab-btn-penjualan" class="flex-1 text-center pb-3 border-b-2 border-yellow-400 text-yellow-400 transition-all focus:outline-none">
-                    Riwayat Jual Barang
-                </button>
-                <button id="tab-btn-arus-kas" class="flex-1 text-center pb-3 border-b-2 border-transparent text-on-surface-variant hover:text-on-surface transition-all focus:outline-none">
-                    Log Mutasi Arus Kas
-                </button>
-            </div>
-
-            <div id="tab-konten-penjualan" class="block flex flex-col gap-4">
-                <div class="mb-2">
-                    <input id="cari-transaksi" type="search" placeholder="Cari transaksi barang..."
-                        class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-mono text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary/30 outline-none transition-all" />
-                </div>
-                <div id="riwayat-list-cards" class="flex flex-col gap-4"></div>
-            </div>
-
-            <div id="tab-konten-arus-kas" class="hidden flex flex-col gap-4">
-                <div class="mb-2">
-                    <span class="font-mono text-[11px] text-on-surface-variant block">// Catatan riwayat mutasi kas keluar masuk pada database log.</span>
-                </div>
-                <div id="arus-kas-riwayat-cards" class="flex flex-col gap-3"></div>
-            </div>
-        </section>
-
-        <!-- ──── RESELLER MENU ──── -->
-        <section id="reseller-menu" data-section class="hidden">
-            <div class="flex items-center gap-3 mb-6">
-                <button data-navigate="main-menu" class="text-on-surface-variant hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </button>
-                <h2 class="font-headline text-2xl uppercase text-secondary">Daftar Barang</h2>
-            </div>
-            <div class="mb-4">
-                <input id="cari-barang" type="search" placeholder="Cari nama HotWheels..."
-                    class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-mono text-sm text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary/30 outline-none transition-all" />
-            </div>
-            <div id="reseller-list-cards" class="flex flex-col gap-4"></div>
-        </section>
-
-        <!-- ──── BOOKING MENU ──── -->
-        <section id="booking-menu" data-section class="hidden">
-            <div class="flex items-center gap-3 mb-6">
-                <button data-navigate="main-menu" class="text-on-surface-variant hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </button>
-                <h2 class="font-headline text-2xl uppercase text-tertiary">Daftar Booking</h2>
-            </div>
-            <div class="mb-4">
-                <input id="cari-booking" type="search" placeholder="Cari pembooking..."
-                    class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-mono text-sm text-on-surface focus:border-tertiary focus:ring-1 focus:ring-tertiary/30 outline-none transition-all" />
-            </div>
-            <div id="booking-list-cards" class="flex flex-col gap-4"></div>
-        </section>
-
-    </main><!-- /main -->
-
-    <!-- ═══ BOTTOM NAV (Mobile) ═══ -->
-    <nav class="fixed bottom-0 w-full z-50 bg-black/90 backdrop-blur-2xl border-t border-purple-500/10 rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.5)] md:hidden">
-        <div class="flex justify-around items-center h-20 px-4 pb-safe">
-            <button data-navigate="main-menu" class="flex flex-col items-center justify-center text-purple-400 active:scale-90 transition-all">
-                <span class="material-symbols-outlined">home</span>
-                <span class="font-mono text-[10px] uppercase tracking-wider mt-1">Menu</span>
+    <!-- ──── MAIN MENU ──── -->
+    <section id="main-menu" data-section class="flex flex-col items-center justify-center min-h-[70vh] gap-4">
+        <div class="mb-6 text-center">
+            <span class="font-mono text-[9px] text-foliage-bright tracking-widest uppercase block mb-3">// SYSTEM ONLINE</span>
+            <h2 class="font-pixel text-[13px] sm:text-[16px] leading-loose text-on-surface">
+                MENU <span class="text-window-amber">DIECAST</span><br/>DATA
+            </h2>
+        </div>
+        <div class="w-full max-w-xs flex flex-col gap-3">
+            <button data-navigate="owner-login" class="px-btn px-btn-amber w-full py-4">
+                <span class="material-symbols-outlined text-[16px]">admin_panel_settings</span>
+                Owner Only
             </button>
-            <button data-navigate="reseller-menu" class="flex flex-col items-center justify-center text-zinc-600 hover:text-cyan-300 active:scale-90 transition-all">
-                <span class="material-symbols-outlined">storefront</span>
-                <span class="font-mono text-[10px] uppercase tracking-wider mt-1">Jual</span>
+            <button data-navigate="reseller-menu" class="px-btn px-btn-blue w-full py-4">
+                <span class="material-symbols-outlined text-[16px]">storefront</span>
+                Lapor Penjualan
             </button>
-            <button data-navigate="booking-menu" class="flex flex-col items-center justify-center text-zinc-600 hover:text-cyan-300 active:scale-90 transition-all">
-                <span class="material-symbols-outlined">bookmark_add</span>
-                <span class="font-mono text-[10px] uppercase tracking-wider mt-1">Booking</span>
-            </button>
-            <button data-navigate="owner-login" class="flex flex-col items-center justify-center text-zinc-600 hover:text-cyan-300 active:scale-90 transition-all">
-                <span class="material-symbols-outlined">admin_panel_settings</span>
-                <span class="font-mono text-[10px] uppercase tracking-wider mt-1">Owner</span>
+            <button data-navigate="booking-menu" class="px-btn px-btn-green w-full py-4">
+                <span class="material-symbols-outlined text-[16px]">bookmark_add</span>
+                Booking Menu
             </button>
         </div>
-    </nav>
+    </section>
 
-    <!-- ═══ AMBIENT BG ═══ -->
-    <div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
-        <div class="absolute top-[10%] left-[5%] w-96 h-96 bg-primary/5 blur-[120px] rounded-full"></div>
-        <div class="absolute bottom-[10%] right-[5%] w-64 h-64 bg-secondary/5 blur-[100px] rounded-full"></div>
-    </div>
-
-    <!-- ═══════════════════════════════════════
-         MODALS — No inline onclick
-    ════════════════════════════════════════ -->
-
-    <!-- Modal: Edit Barang -->
-    <div id="modal-edit" class="fixed inset-0 bg-black/85 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
-        <div class="bg-surface-container-high rounded-xl p-6 w-full max-w-sm border border-primary/30 flex flex-col gap-4 shadow-2xl">
-            <h3 id="modal-edit-title" class="font-headline text-lg uppercase text-primary">Edit HotWheels</h3>
-            <input type="hidden" id="edit-id" />
+    <!-- ──── OWNER LOGIN ──── -->
+    <section id="owner-login" data-section class="hidden max-w-xs mx-auto pt-4">
+        <div class="flex items-center gap-2 mb-6">
+            <button data-navigate="main-menu" class="text-on-surface-dim hover:text-window-amber transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h2 class="font-pixel text-[10px] text-window-amber leading-relaxed">OWNER LOGIN</h2>
+        </div>
+        <div class="px-card px-card-amber p-4 flex flex-col gap-4">
             <div>
-                <label class="font-mono text-[10px] uppercase text-on-surface-variant block mb-2">Nama Barang</label>
-                <input id="edit-nama" type="text" maxlength="200"
-                    class="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2.5 font-mono text-sm text-on-surface focus:border-primary outline-none transition-all" />
+                <label class="px-label">Username</label>
+                <input id="login-user" type="text" autocomplete="username" class="px-input" placeholder="Masukkan username" />
             </div>
             <div>
-                <label class="font-mono text-[10px] uppercase text-on-surface-variant block mb-2">Harga Modal (Rp)</label>
-                <input id="edit-modal" type="number" min="0" step="any"
-                    class="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2.5 font-mono text-sm text-on-surface focus:border-primary outline-none transition-all" />
+                <label class="px-label">Password</label>
+                <input id="login-password" type="password" autocomplete="current-password" class="px-input" placeholder="••••••••" />
+            </div>
+            <button id="btn-login" class="px-btn px-btn-amber w-full py-3 mt-1">
+                <span class="material-symbols-outlined text-[15px]">login</span> Masuk
+            </button>
+        </div>
+    </section>
+
+    <!-- ──── OWNER MENU ──── -->
+    <section id="owner-menu" data-section class="hidden">
+        <div class="flex items-center justify-between mb-6">
+            <div class="border-l-2 border-window-amber pl-3">
+                <h2 class="font-pixel text-[10px] text-window-amber leading-loose">OWNER MENU</h2>
+            </div>
+            <button data-navigate="main-menu" class="px-btn px-btn-ghost py-2 px-3 text-[9px]">
+                <span class="material-symbols-outlined text-[14px]">logout</span> Logout
+            </button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button data-navigate="input-barang" class="px-card px-card-amber p-5 text-left hover:bg-midnight-blue transition-colors">
+                <span class="material-symbols-outlined text-window-amber text-2xl mb-3 block">add_box</span>
+                <p class="font-mono text-[11px] font-semibold uppercase tracking-wide text-on-surface">Input Barang Masuk</p>
+                <p class="font-mono text-[9px] text-on-surface-dim mt-1">Tambah stok baru ke gudang</p>
+            </button>
+            <button data-navigate="laporan-keuangan-section" class="px-card px-card-blue p-5 text-left hover:bg-midnight-blue transition-colors">
+                <span class="material-symbols-outlined text-window-cool text-2xl mb-3 block">analytics</span>
+                <p class="font-mono text-[11px] font-semibold uppercase tracking-wide text-on-surface">Laporan Keuangan</p>
+                <p class="font-mono text-[9px] text-on-surface-dim mt-1">Omset, profit, ROI</p>
+            </button>
+            <button data-navigate="katalog-barang" class="px-card px-card-amber p-5 text-left hover:bg-midnight-blue transition-colors">
+                <span class="material-symbols-outlined text-window-amber text-2xl mb-3 block">inventory_2</span>
+                <p class="font-mono text-[11px] font-semibold uppercase tracking-wide text-on-surface">Katalog Barang</p>
+                <p class="font-mono text-[9px] text-on-surface-dim mt-1">Lihat & edit stok gudang</p>
+            </button>
+            <button data-navigate="riwayat-transaksi-section" class="px-card px-card-green p-5 text-left hover:bg-midnight-blue transition-colors">
+                <span class="material-symbols-outlined text-foliage-bright text-2xl mb-3 block">receipt_long</span>
+                <p class="font-mono text-[11px] font-semibold uppercase tracking-wide text-on-surface">Riwayat Transaksi</p>
+                <p class="font-mono text-[9px] text-on-surface-dim mt-1">Semua history penjualan</p>
+            </button>
+        </div>
+    </section>
+
+    <!-- ──── INPUT BARANG ──── -->
+    <section id="input-barang" data-section class="hidden max-w-xs mx-auto pt-4">
+        <div class="flex items-center gap-2 mb-6">
+            <button data-navigate="owner-menu" class="text-on-surface-dim hover:text-window-amber transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h2 class="font-pixel text-[10px] text-window-amber leading-relaxed">INPUT BARANG</h2>
+        </div>
+        <div class="px-card px-card-amber p-4 flex flex-col gap-4">
+            <div>
+                <label class="px-label">Nama Barang</label>
+                <input id="namaBarang" type="text" maxlength="200" class="px-input" placeholder="Nama HotWheels" />
             </div>
             <div>
-                <label class="font-mono text-[10px] uppercase text-on-surface-variant block mb-2">Est. Harga Jual (Rp)</label>
-                <input id="edit-jual" type="number" min="0" step="any"
-                    class="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2.5 font-mono text-sm text-on-surface focus:border-primary outline-none transition-all" />
+                <label class="px-label">Harga Modal (Rp)</label>
+                <input id="hargaModal" type="number" min="0" step="any" class="px-input" placeholder="0" />
             </div>
-            <div class="flex gap-3 mt-2">
-                <button id="btn-simpan-edit"
-                    class="flex-[2] py-3 bg-gradient-to-r from-primary to-primary-dim text-on-primary font-headline text-xs uppercase tracking-widest rounded-lg active:scale-95 transition-all">
-                    Simpan
+            <div>
+                <label class="px-label">Estimasi Harga Jual (Rp)</label>
+                <input id="hargaJual" type="number" min="0" step="any" class="px-input" placeholder="0" />
+            </div>
+            <div>
+                <label class="px-label">Jumlah Stok</label>
+                <input id="stok" type="number" min="0" step="1" class="px-input" placeholder="1" />
+            </div>
+            <div class="flex gap-2 mt-1">
+                <button id="btn-simpan-barang" class="px-btn px-btn-amber flex-[2] py-3">
+                    <span class="material-symbols-outlined text-[14px]">save</span> Simpan
                 </button>
-                <button id="btn-batal-edit"
-                    class="flex-1 py-3 border border-error/50 text-error font-headline text-xs uppercase tracking-widest rounded-lg hover:bg-error/10 active:scale-95 transition-all">
-                    Batal
-                </button>
+                <button data-navigate="owner-menu" class="px-btn px-btn-ghost flex-1 py-3">Batal</button>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Modal: Lapor Terjual -->
-    <div id="modal-lapor" class="fixed inset-0 bg-black/85 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-lapor-title">
-        <div class="bg-surface-container-high rounded-xl p-6 w-full max-w-sm border border-secondary/30 flex flex-col gap-4 shadow-2xl">
-            <h3 id="modal-lapor-title" class="font-headline text-lg uppercase text-secondary">Lapor Terjual</h3>
-            <p id="lapor-info-barang" class="font-mono text-xs text-on-surface-variant leading-relaxed"></p>
-            <input type="hidden" id="lapor-id" />
-            <div>
-                <label class="font-mono text-[10px] uppercase text-on-surface-variant block mb-2">Harga Jual Laku (Rp)</label>
-                <input id="lapor-harga-input" type="number" min="0" step="any"
-                    class="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2.5 font-mono text-lg text-on-surface focus:border-secondary outline-none transition-all" />
-            </div>
-            <div class="flex gap-3 mt-2">
-                <button id="btn-konfirmasi-lapor"
-                    class="flex-[2] py-3 bg-gradient-to-r from-secondary/80 to-secondary text-black font-headline text-xs uppercase tracking-widest rounded-lg active:scale-95 transition-all">
-                    Konfirmasi Laku
-                </button>
-                <button id="btn-batal-lapor"
-                    class="flex-1 py-3 border border-error/50 text-error font-headline text-xs uppercase tracking-widest rounded-lg hover:bg-error/10 active:scale-95 transition-all">
-                    Batal
-                </button>
+    <!-- ──── KATALOG BARANG (OWNER) ──── -->
+    <section id="katalog-barang" data-section class="hidden">
+        <div class="flex items-center gap-2 mb-5">
+            <button data-navigate="owner-menu" class="text-on-surface-dim hover:text-window-amber transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="border-l-2 border-window-amber pl-3">
+                <h2 class="font-pixel text-[10px] text-window-amber leading-loose">KATALOG STOK</h2>
             </div>
         </div>
-    </div>
+        <div class="mb-4 relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-twilight text-[18px]">search</span>
+            <input id="cari-barang-owner" type="search" placeholder="CARI STOK DI GUDANG..." class="px-input pl-10" />
+        </div>
+        <div id="owner-list-cards" class="flex flex-col gap-3"></div>
+    </section>
 
-    <!-- Modal: Booking Baru -->
-    <div id="modal-booking" class="fixed inset-0 bg-black/85 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-booking-title">
-        <div class="bg-surface-container-high rounded-xl p-6 w-full max-w-sm border border-tertiary/30 flex flex-col gap-4 shadow-2xl">
-            <h3 id="modal-booking-title" class="font-headline text-lg uppercase text-tertiary">New Booking</h3>
-            <input type="hidden" id="booking-id-barang" />
-            <div>
-                <label class="font-mono text-[10px] uppercase text-on-surface-variant block mb-2">Nama Pembooking</label>
-                <input id="booking-nama" type="text" maxlength="100" autocomplete="off"
-                    class="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2.5 font-mono text-sm text-on-surface focus:border-tertiary outline-none transition-all"
-                    placeholder="Nama lengkap" />
-            </div>
-            <div>
-                <label class="font-mono text-[10px] uppercase text-on-surface-variant block mb-2">Janji Bayar</label>
-                <input id="booking-tanggal" type="date"
-                    class="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2.5 font-mono text-sm text-on-surface focus:border-tertiary outline-none transition-all" />
-            </div>
-            <div class="flex gap-3 mt-2">
-                <button id="btn-konfirmasi-booking"
-                    class="flex-[2] py-3 bg-gradient-to-r from-tertiary/80 to-tertiary text-black font-headline text-xs uppercase tracking-widest rounded-lg active:scale-95 transition-all">
-                    Konfirmasi Booking
-                </button>
-                <button id="btn-batal-booking"
-                    class="flex-1 py-3 border border-error/50 text-error font-headline text-xs uppercase tracking-widest rounded-lg hover:bg-error/10 active:scale-95 transition-all">
-                    Batal
-                </button>
+    <!-- ──── LAPORAN KEUANGAN ──── -->
+    <section id="laporan-keuangan-section" data-section class="hidden">
+        <div class="flex items-center gap-2 mb-5">
+            <button data-navigate="owner-menu" class="text-on-surface-dim hover:text-window-amber transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="border-l-2 border-window-cool pl-3">
+                <h2 class="font-pixel text-[10px] text-window-cool leading-loose">LAPORAN KEUANGAN</h2>
             </div>
         </div>
-    </div>
 
-    <!-- Modal: Bayar Booking -->
-    <div id="modal-bayar-booking" class="fixed inset-0 bg-black/85 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-bayar-title">
-        <div class="bg-surface-container-high rounded-xl p-6 w-full max-w-sm border border-tertiary/30 flex flex-col gap-4 shadow-2xl">
-            <h3 id="modal-bayar-title" class="font-headline text-lg uppercase text-tertiary">Proses Pelunasan</h3>
-            <input type="hidden" id="bayar-booking-id" />
-            <div>
-                <label class="font-mono text-[10px] uppercase text-on-surface-variant block mb-2">Harga Jual Final (Rp)</label>
-                <input id="bayar-harga-input" type="number" min="0" step="any"
-                    class="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2.5 font-mono text-lg text-on-surface focus:border-tertiary outline-none transition-all"
-                    placeholder="0" />
+        <!-- Filter bar -->
+        <div class="px-card px-card-blue p-4 mb-5 flex flex-col sm:flex-row gap-3 items-end">
+            <div class="flex-1">
+                <label class="px-label">Bulan (1–12)</label>
+                <input id="filter-bulan" type="number" min="1" max="12" class="px-input" placeholder="Bulan" />
             </div>
-            <div class="flex gap-3 mt-2">
-                <button id="btn-konfirmasi-bayar"
-                    class="flex-[2] py-3 bg-gradient-to-r from-tertiary/80 to-tertiary text-black font-headline text-xs uppercase tracking-widest rounded-lg active:scale-95 transition-all">
-                    Proses Lunas
-                </button>
-                <button id="btn-batal-bayar"
-                    class="flex-1 py-3 border border-error/50 text-error font-headline text-xs uppercase tracking-widest rounded-lg hover:bg-error/10 active:scale-95 transition-all">
-                    Batal
-                </button>
+            <div class="flex-1">
+                <label class="px-label">Tahun</label>
+                <input id="filter-tahun" type="number" min="2020" class="px-input" value="2026" />
+            </div>
+            <div class="flex gap-2">
+                <button id="btn-cek-laporan" class="px-btn px-btn-blue py-2.5 px-3 whitespace-nowrap">Cek</button>
+                <button id="btn-laporan-total" class="px-btn px-btn-ghost py-2.5 px-3 whitespace-nowrap">Semua</button>
             </div>
         </div>
-    </div>
 
-    <!-- ═══ ENTRY POINT SCRIPT (module, no inline logic) ═══ -->
-    <script type="module" src="js/main.js"></script>
+        <!-- Stats grid -->
+        <div id="laporan-display-area">
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div class="px-card p-4">
+                    <p class="px-label text-twilight">Omset</p>
+                    <p id="display-omset" class="font-mono text-[15px] text-on-surface mt-1 fade-up">Rp 0</p>
+                </div>
+                <div class="px-card p-4">
+                    <p class="px-label text-twilight">Komisi</p>
+                    <p id="display-komisi" class="font-mono text-[15px] text-window-cool mt-1 fade-up">Rp 0</p>
+                </div>
+                <div class="px-card px-card-green p-4">
+                    <p class="px-label text-foliage-bright">Net Profit</p>
+                    <p id="display-profit" class="font-mono text-[15px] text-foliage-bright mt-1 fade-up">Rp 0</p>
+                </div>
+                <div class="px-card px-card-red p-4">
+                    <p class="px-label text-warning-red">Modal</p>
+                    <p id="display-modal" class="font-mono text-[15px] text-warning-red mt-1 fade-up">Rp 0</p>
+                </div>
+                <div class="px-card px-card-amber col-span-2 p-4">
+                    <p class="px-label text-window-amber">ROI</p>
+                    <p id="display-roi" class="font-mono text-[22px] text-window-amber mt-1 fade-up">0.00%</p>
+                </div>
+            </div>
+
+            <!-- Live Pockets -->
+            <div class="border-t-2 border-storm-cloud pt-4 mt-2">
+                <span class="font-mono text-[9px] text-window-cool tracking-widest uppercase block mb-3">// Live Pockets Balance (Real-time)</span>
+                <div class="flex flex-col gap-3">
+
+                    <div class="px-card px-card-red p-4 flex flex-col gap-2">
+                        <p class="px-label text-warning-red">Dana Modal Belanja</p>
+                        <p id="display-modal-berputar" class="font-mono text-[18px] text-on-surface fade-up">Rp 0</p>
+                        <span class="font-mono text-[9px] text-on-surface-dim">// Sisa dana siap putar</span>
+                    </div>
+
+                    <div class="px-card px-card-amber p-4 flex flex-col gap-2">
+                        <p class="px-label text-window-amber">Kantong Profit Owner</p>
+                        <p id="display-profit-saat-ini" class="font-mono text-[18px] text-window-amber fade-up">Rp 0</p>
+                        <p class="font-mono text-[9px] text-on-surface-dim">Total Record: <span id="display-profit-all-time" class="text-on-surface">Rp 0</span></p>
+                        <button id="btn-reset-profit" class="px-btn px-btn-amber w-full py-2.5 mt-1">
+                            <span class="material-symbols-outlined text-[14px]">account_balance</span> Cairkan Profit
+                        </button>
+                    </div>
+
+                    <div class="px-card px-card-blue p-4 flex flex-col gap-2">
+                        <p class="px-label text-window-cool">Titipan Komisi Reseller</p>
+                        <p id="display-komisi-saat-ini" class="font-mono text-[18px] text-window-cool fade-up">Rp 0</p>
+                        <p class="font-mono text-[9px] text-on-surface-dim">Total Record: <span id="display-komisi-all-time" class="text-on-surface">Rp 0</span></p>
+                        <button id="btn-reset-komisi" class="px-btn px-btn-blue w-full py-2.5 mt-1">
+                            <span class="material-symbols-outlined text-[14px]">send</span> Ambil Komisi
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <p class="text-center font-mono text-[9px] text-on-surface-dim mt-4">
+                Periode Laporan: <span id="display-periode" class="text-on-surface">-</span>
+            </p>
+        </div>
+    </section>
+
+    <!-- ──── RIWAYAT TRANSAKSI ──── -->
+    <section id="riwayat-transaksi-section" data-section class="hidden">
+        <div class="flex items-center gap-2 mb-5">
+            <button data-navigate="owner-menu" class="text-on-surface-dim hover:text-window-amber transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="border-l-2 border-foliage-bright pl-3">
+                <h2 class="font-pixel text-[10px] text-foliage-bright leading-loose">RIWAYAT & ARUS KAS</h2>
+            </div>
+        </div>
+
+        <div class="flex border-b-2 border-storm-cloud mb-5 font-mono text-[10px] uppercase tracking-widest">
+            <button id="tab-btn-penjualan" class="flex-1 text-center pb-3 tab-active transition-all focus:outline-none">
+                Riwayat Jual
+            </button>
+            <button id="tab-btn-arus-kas" class="flex-1 text-center pb-3 border-b-2 border-transparent text-on-surface-dim hover:text-on-surface transition-all focus:outline-none">
+                Log Mutasi Kas
+            </button>
+        </div>
+
+        <div id="tab-konten-penjualan" class="block flex flex-col gap-3">
+            <div class="mb-2">
+                <input id="cari-transaksi" type="search" placeholder="CARI TRANSAKSI BARANG..." class="px-input" />
+            </div>
+            <div id="riwayat-list-cards" class="flex flex-col gap-3"></div>
+        </div>
+
+        <div id="tab-konten-arus-kas" class="hidden flex flex-col gap-3">
+            <div class="mb-2">
+                <span class="font-mono text-[9px] text-on-surface-dim block">// Log mutasi kas masuk & keluar</span>
+            </div>
+            <div id="arus-kas-riwayat-cards" class="flex flex-col gap-2"></div>
+        </div>
+    </section>
+
+    <!-- ──── RESELLER MENU ──── -->
+    <section id="reseller-menu" data-section class="hidden">
+        <div class="flex items-center gap-2 mb-5">
+            <button data-navigate="main-menu" class="text-on-surface-dim hover:text-window-cool transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="border-l-2 border-window-cool pl-3">
+                <h2 class="font-pixel text-[10px] text-window-cool leading-loose">DAFTAR BARANG</h2>
+            </div>
+        </div>
+        <div class="mb-4 relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-twilight text-[18px]">search</span>
+            <input id="cari-barang" type="search" placeholder="CARI NAMA HOTWHEELS..." class="px-input pl-10" />
+        </div>
+        <div id="reseller-list-cards" class="flex flex-col gap-3"></div>
+    </section>
+
+    <!-- ──── BOOKING MENU ──── -->
+    <section id="booking-menu" data-section class="hidden">
+        <div class="flex items-center gap-2 mb-5">
+            <button data-navigate="main-menu" class="text-on-surface-dim hover:text-foliage-bright transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="border-l-2 border-foliage-bright pl-3">
+                <h2 class="font-pixel text-[10px] text-foliage-bright leading-loose">DAFTAR BOOKING</h2>
+            </div>
+        </div>
+        <div class="mb-4 relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-twilight text-[18px]">search</span>
+            <input id="cari-booking" type="search" placeholder="CARI PEMBOOKING..." class="px-input pl-10" />
+        </div>
+        <div id="booking-list-cards" class="flex flex-col gap-3"></div>
+    </section>
+
+</main>
+
+<!-- ═══ BOTTOM NAV ═══ -->
+<nav class="fixed bottom-0 w-full z-50 bg-night-void border-t-2 border-storm-cloud md:hidden">
+    <div class="flex justify-around items-center h-16 px-2">
+        <button data-navigate="main-menu" class="flex flex-col items-center justify-center text-window-amber active:scale-90 transition-all gap-1">
+            <span class="material-symbols-outlined text-[20px]">home</span>
+            <span class="font-mono text-[8px] uppercase tracking-wider">Menu</span>
+        </button>
+        <button data-navigate="reseller-menu" class="flex flex-col items-center justify-center text-on-surface-dim hover:text-window-cool active:scale-90 transition-all gap-1">
+            <span class="material-symbols-outlined text-[20px]">storefront</span>
+            <span class="font-mono text-[8px] uppercase tracking-wider">Jual</span>
+        </button>
+        <button data-navigate="booking-menu" class="flex flex-col items-center justify-center text-on-surface-dim hover:text-foliage-bright active:scale-90 transition-all gap-1">
+            <span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+            <span class="font-mono text-[8px] uppercase tracking-wider">Booking</span>
+        </button>
+        <button data-navigate="owner-login" class="flex flex-col items-center justify-center text-on-surface-dim hover:text-window-amber active:scale-90 transition-all gap-1">
+            <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+            <span class="font-mono text-[8px] uppercase tracking-wider">Owner</span>
+        </button>
+    </div>
+</nav>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Modal: Edit Barang -->
+<div id="modal-edit" class="fixed inset-0 bg-black/90 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
+    <div class="px-card px-card-amber w-full max-w-sm p-5 flex flex-col gap-4 shadow-2xl">
+        <h3 id="modal-edit-title" class="font-pixel text-[9px] text-window-amber leading-relaxed">EDIT HOTWHEELS</h3>
+        <input type="hidden" id="edit-id" />
+        <div>
+            <label class="px-label">Nama Barang</label>
+            <input id="edit-nama" type="text" maxlength="200" class="px-input" />
+        </div>
+        <div>
+            <label class="px-label">Harga Modal (Rp)</label>
+            <input id="edit-modal" type="number" min="0" step="any" class="px-input" />
+        </div>
+        <div>
+            <label class="px-label">Est. Harga Jual (Rp)</label>
+            <input id="edit-jual" type="number" min="0" step="any" class="px-input" />
+        </div>
+        <div class="flex gap-2 mt-1">
+            <button id="btn-simpan-edit" class="px-btn px-btn-amber flex-[2] py-3">Simpan</button>
+            <button id="btn-batal-edit" class="px-btn px-btn-red flex-1 py-3">Batal</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Lapor Terjual -->
+<div id="modal-lapor" class="fixed inset-0 bg-black/90 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-lapor-title">
+    <div class="px-card px-card-green w-full max-w-sm p-5 flex flex-col gap-4 shadow-2xl">
+        <h3 id="modal-lapor-title" class="font-pixel text-[9px] text-foliage-bright leading-relaxed">LAPOR TERJUAL</h3>
+        <p id="lapor-info-barang" class="font-mono text-[11px] text-on-surface-dim leading-relaxed"></p>
+        <input type="hidden" id="lapor-id" />
+        <div>
+            <label class="px-label">Harga Jual Laku (Rp)</label>
+            <input id="lapor-harga-input" type="number" min="0" step="any" class="px-input text-[16px]" />
+        </div>
+        <div class="flex gap-2 mt-1">
+            <button id="btn-konfirmasi-lapor" class="px-btn px-btn-green flex-[2] py-3">
+                <span class="material-symbols-outlined text-[14px]">check_circle</span> Konfirmasi Laku
+            </button>
+            <button id="btn-batal-lapor" class="px-btn px-btn-red flex-1 py-3">Batal</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Booking Baru -->
+<div id="modal-booking" class="fixed inset-0 bg-black/90 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-booking-title">
+    <div class="px-card px-card-green w-full max-w-sm p-5 flex flex-col gap-4 shadow-2xl">
+        <h3 id="modal-booking-title" class="font-pixel text-[9px] text-foliage-bright leading-relaxed">NEW BOOKING</h3>
+        <input type="hidden" id="booking-id-barang" />
+        <div>
+            <label class="px-label">Nama Pembooking</label>
+            <input id="booking-nama" type="text" maxlength="100" autocomplete="off" class="px-input" placeholder="Nama lengkap" />
+        </div>
+        <div>
+            <label class="px-label">Janji Bayar</label>
+            <input id="booking-tanggal" type="date" class="px-input" />
+        </div>
+        <div class="flex gap-2 mt-1">
+            <button id="btn-konfirmasi-booking" class="px-btn px-btn-green flex-[2] py-3">
+                <span class="material-symbols-outlined text-[14px]">bookmark_add</span> Konfirmasi Booking
+            </button>
+            <button id="btn-batal-booking" class="px-btn px-btn-red flex-1 py-3">Batal</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Bayar Booking -->
+<div id="modal-bayar-booking" class="fixed inset-0 bg-black/90 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-bayar-title">
+    <div class="px-card px-card-green w-full max-w-sm p-5 flex flex-col gap-4 shadow-2xl">
+        <h3 id="modal-bayar-title" class="font-pixel text-[9px] text-foliage-bright leading-relaxed">PROSES PELUNASAN</h3>
+        <input type="hidden" id="bayar-booking-id" />
+        <div>
+            <label class="px-label">Harga Jual Final (Rp)</label>
+            <input id="bayar-harga-input" type="number" min="0" step="any" class="px-input text-[16px]" placeholder="0" />
+        </div>
+        <div class="flex gap-2 mt-1">
+            <button id="btn-konfirmasi-bayar" class="px-btn px-btn-green flex-[2] py-3">
+                <span class="material-symbols-outlined text-[14px]">payments</span> Proses Lunas
+            </button>
+            <button id="btn-batal-bayar" class="px-btn px-btn-red flex-1 py-3">Batal</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SCRIPT ═══ -->
+<script type="module" src="js/main.js"></script>
 
 </body>
 </html>
