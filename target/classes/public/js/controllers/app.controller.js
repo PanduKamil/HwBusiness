@@ -479,10 +479,10 @@ function renderLaporan(data) {
     if (roiEl) {
         roiEl.textContent = roi.toFixed(2) + "%";
         roiEl.className = roi > 20
-            ? "font-mono text-2xl text-tertiary profit-pulse"
+            ? "font-mono text-[22px] text-window-amber mt-1 fade-up"
             : roi >= 10
-            ? "font-mono text-2xl text-yellow-400"
-            : "font-mono text-2xl text-error";
+            ? "font-mono text-[22px] text-foliage-bright mt-1 fade-up"
+            : "font-mono text-[22px] text-warning-red mt-1 fade-up";
     }
 }
 
@@ -745,15 +745,13 @@ function switchRiwayatTab(target) {
     if (!btnJual || !btnKas || !kontenJual || !kontenKas) return;
 
     if (target === "penjualan") {
-        btnJual.classList.add("border-yellow-400", "text-yellow-400");
-        btnKas.classList.remove("border-yellow-400", "text-yellow-400");
-        btnKas.classList.add("border-transparent", "text-on-surface-variant");
+        btnJual.className = "flex-1 text-center pb-3 tab-active transition-all focus:outline-none font-mono text-[10px] uppercase tracking-widest";
+        btnKas.className  = "flex-1 text-center pb-3 border-b-2 border-transparent text-on-surface-dim transition-all focus:outline-none font-mono text-[10px] uppercase tracking-widest";
         kontenJual.classList.replace("hidden", "block");
         kontenKas.classList.replace("block", "hidden");
     } else {
-        btnKas.classList.add("border-yellow-400", "text-yellow-400");
-        btnJual.classList.remove("border-yellow-400", "text-yellow-400");
-        btnJual.classList.add("border-transparent", "text-on-surface-variant");
+        btnKas.className  = "flex-1 text-center pb-3 tab-active transition-all focus:outline-none font-mono text-[10px] uppercase tracking-widest";
+        btnJual.className = "flex-1 text-center pb-3 border-b-2 border-transparent text-on-surface-dim transition-all focus:outline-none font-mono text-[10px] uppercase tracking-widest";
         kontenKas.classList.replace("hidden", "block");
         kontenJual.classList.replace("block", "hidden");
     }
